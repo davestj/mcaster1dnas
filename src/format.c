@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -320,7 +320,7 @@ static const char *search_ua_namever (const char *ua, const char *patt)
 #define FMT_DROP_RANGE                      (1<<5)
 
 
-static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, client_t *client)
+static int apply_client_tweaks (mc_http_t *http, format_plugin_t *plugin, client_t *client)
 {
     const char *fs = httpp_getvar (client->parser, "__FILESIZE");
     const char *opt = httpp_get_query_param (client->parser, "_hdr");
@@ -363,7 +363,7 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
     if (fmtcode & FMT_DISABLE_CHUNKED)
         client->flags &= ~CLIENT_KEEPALIVE;
     if (fmtcode & FMT_RETURN_ICY)
-        http_flags |= ICE_HTTP_USE_ICY;
+        http_flags |= MC_HTTP_USE_ICY;
     if (fmtcode & FMT_LOWERCASE_TYPE)
         contenttypehdr = "content-type";
     // the following may eventually go and just assume aac instead of aacp
@@ -384,8 +384,8 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
                 unsigned plen = 40 + ((args) ? strlen (args) : 0);
                 char params [plen];
                 snprintf (params, sizeof params,"%s%c_ic2=%"PRId64, (args)?args:"", sep, timing_get_time());
-                ice_http_setup_flags (http, client, 302, 0, NULL);
-                ice_http_printf (http, "Location", 0, "%s://%s%s%s", proto, uhost, uri, params);
+                mc_http_setup_flags (http, client, 302, 0, NULL);
+                mc_http_printf (http, "Location", 0, "%s://%s%s%s", proto, uhost, uri, params);
                 client->connection.flags |= CONN_FLG_DISCON;
                 client->connection.discon.sent = 0;
                 client->flags &= ~CLIENT_AUTHENTICATED;
@@ -445,14 +445,14 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
         }
         else
         {
-            ice_http_setup_flags (http, client, 206, 0, NULL);
+            mc_http_setup_flags (http, client, 206, 0, NULL);
             uint64_t last = client->connection.discon.sent + client->connection.start_pos -1;
             if (fs)
                 snprintf (total_size, sizeof total_size, "%" PRIu64, length);
             else
                 snprintf (total_size, sizeof total_size, "%" PRIu64, ((uint64_t)1<<30)-1);
-            ice_http_printf (http, "Accept-Ranges", 0, "bytes");
-            ice_http_printf (http, "Content-Range", 0, "bytes %" PRIu64 "-%" PRIu64 "/%s",
+            mc_http_printf (http, "Accept-Ranges", 0, "bytes");
+            mc_http_printf (http, "Content-Range", 0, "bytes %" PRIu64 "-%" PRIu64 "/%s",
                     (uint64_t)client->connection.start_pos, last, total_size );
             http->in_length = range > 0 ? range : -1;
             DEBUG3 ("client %" PRI_ConnID ", req %s range %" PRIu64 " requested\n", CONN_ID(client), client->mount, range);
@@ -461,7 +461,7 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
                 char line [range+1];
                 memset (line, 'F', range);
                 line[range] = 0;
-                ice_http_printf (http, NULL, 0, "%s", line);
+                mc_http_printf (http, NULL, 0, "%s", line);
                 client->connection.flags &= ~CONN_FLG_DISCON;
                 client->connection.discon.sent = 0;
                 client->flags &= ~(CLIENT_AUTHENTICATED|CLIENT_HAS_INTRO_CONTENT); // drop these flags
@@ -471,7 +471,7 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
     }
     if (client->respcode == 0)
     {
-        ice_http_setup_flags (http, client, 200, http_flags, NULL);
+        mc_http_setup_flags (http, client, 200, http_flags, NULL);
         http->in_length = (off_t)((length) ? length : -1);
         int chunked = 0;
 
@@ -480,17 +480,17 @@ static int apply_client_tweaks (ice_http_t *http, format_plugin_t *plugin, clien
         if (chunked && (fmtcode & FMT_DISABLE_CHUNKED) == 0)
         {
             client->flags |= CLIENT_CHUNKED;
-            ice_http_printf (http, "Transfer-Encoding", 0, "chunked");
+            mc_http_printf (http, "Transfer-Encoding", 0, "chunked");
         }
     }
     if (contenttype)
-        ice_http_printf (http, contenttypehdr, 0, "%s", contenttype);
+        mc_http_printf (http, contenttypehdr, 0, "%s", contenttype);
 
     return fmtcode;
 }
 
 
-int format_client_headers (format_plugin_t *plugin, ice_http_t *http, client_t *client)
+int format_client_headers (format_plugin_t *plugin, mc_http_t *http, client_t *client)
 {
     if (apply_client_tweaks (http, plugin, client) & FMT_REDIRECT_WPARAM)
         return 0;
@@ -513,8 +513,8 @@ int format_client_headers (format_plugin_t *plugin, ice_http_t *http, client_t *
 
                 brfield = strstr (var->value, "bitrate=");
                 if (brfield && sscanf (brfield, "bitrate=%u", &bitrate) == 1)
-                    ice_http_printf (http, "icy-br", 0, "%u", bitrate);
-                ice_http_printf (http, var->name, 0, "%s", var->value);
+                    mc_http_printf (http, "icy-br", 0, "%u", bitrate);
+                mc_http_printf (http, var->name, 0, "%s", var->value);
                 continue;
             }
             if (strcasecmp (var->name, "ice-password") == 0) continue;
@@ -523,20 +523,20 @@ int format_client_headers (format_plugin_t *plugin, ice_http_t *http, client_t *
             if (strncasecmp ("ice-", var->name, 4) == 0)
             {
                 if (!strcasecmp ("ice-public", var->name))
-                    ice_http_printf (http, "icy-pub", 0, "%s", var->value);
+                    mc_http_printf (http, "icy-pub", 0, "%s", var->value);
                 else
                     if (strcasecmp ("ice-bitrate", var->name) == 0)
-                        ice_http_printf (http, "icy-br", 0, "%s", var->value);
+                        mc_http_printf (http, "icy-br", 0, "%s", var->value);
                     else
                     {
                         char icyname[1000];
                         snprintf (icyname, sizeof icyname, "icy%s", var->name + 3);
-                        ice_http_printf (http, icyname, 0, "%s", var->value);
+                        mc_http_printf (http, icyname, 0, "%s", var->value);
                     }
                 continue;
             }
             if (!strncasecmp ("icy-", var->name, 4))
-                ice_http_printf (http, var->name, 0, "%s", var->value);
+                mc_http_printf (http, var->name, 0, "%s", var->value);
         }
         avl_tree_unlock (plugin->parser->vars);
     }

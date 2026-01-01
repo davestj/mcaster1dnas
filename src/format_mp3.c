@@ -1,5 +1,5 @@
 /* -*- c-basic-offset: 4; -*- */
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -55,7 +55,7 @@ static void format_mp3_free_plugin(format_plugin_t *plugin, client_t *client);
 static refbuf_t *mp3_get_filter_meta (source_t *source);
 static refbuf_t *mp3_get_no_meta (source_t *source);
 
-static int  format_mp3_create_client_data (format_plugin_t *plugin, ice_http_t *, client_t *client);
+static int  format_mp3_create_client_data (format_plugin_t *plugin, mc_http_t *, client_t *client);
 static void free_mp3_client_data (client_t *client);
 static int  format_mp3_write_buf_to_client(client_t *client);
 static int  write_mpeg_buf_to_client (client_t *client);
@@ -1083,7 +1083,7 @@ static refbuf_t *mp3_get_filter_meta (source_t *source)
 }
 
 
-static int format_mp3_create_client_data (format_plugin_t *plugin, ice_http_t *http, client_t *client)
+static int format_mp3_create_client_data (format_plugin_t *plugin, mc_http_t *http, client_t *client)
 {
     mp3_client_data *client_mp3;
     mp3_state *source_mp3 = plugin->_state;
@@ -1128,7 +1128,7 @@ static int format_mp3_create_client_data (format_plugin_t *plugin, ice_http_t *h
     if (httpp_getvar (client->parser, "iceblocks"))
     {
         client->flags |= CLIENT_WANTS_META;
-        ice_http_printf (http, "IceBlocks", 0, "1.1");
+        mc_http_printf (http, "IceBlocks", 0, "1.1");
     }
     else
     {
@@ -1137,7 +1137,7 @@ static int format_mp3_create_client_data (format_plugin_t *plugin, ice_http_t *h
         {
             client_mp3->interval = source_mp3->icy_interval;
             if (client_mp3->interval)
-                ice_http_printf (http, "icy-metaint", 0, "%u", client_mp3->interval);
+                mc_http_printf (http, "icy-metaint", 0, "%u", client_mp3->interval);
         }
     }
     return 0;

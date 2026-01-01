@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -20,8 +20,8 @@
 void yp_add (const char *mount);
 void yp_remove (const char *mount);
 void yp_touch (const char *mount, stats_handle_t stats);
-void yp_recheck_config (ice_config_t *config);
-void yp_initialize (ice_config_t *config);
+void yp_recheck_config (mc_config_t *config);
+void yp_initialize (mc_config_t *config);
 void yp_shutdown(void);
 void yp_thread_startup (void);
 void yp_stop (void);

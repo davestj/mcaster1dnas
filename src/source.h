@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -118,7 +118,7 @@ typedef struct source_tag
 int  source_reserve (const char *mount, source_t **sp, int flags);
 void *source_client_thread (void *arg);
 int  source_startup (client_t *client, const char *uri);
-void source_update_settings (ice_config_t *config, source_t *source, mount_proxy *mountinfo);
+void source_update_settings (mc_config_t *config, source_t *source, mount_proxy *mountinfo);
 void source_clear_listeners (source_t *source);
 void source_clear_source (source_t *source);
 void source_reset_client_stats (source_t *source, int not_locked);
@@ -135,7 +135,7 @@ void source_setup_listener (source_t *source, client_t *client);
 void source_init (source_t *source);
 void source_shutdown (source_t *source, int with_fallback);
 void source_set_fallback (source_t *source, fbinfo *fallback);
-int  source_set_intro (source_t *source, ice_config_t *_c, const char *file_pattern);
+int  source_set_intro (source_t *source, mc_config_t *_c, const char *file_pattern);
 int  source_format_init (source_t *source, client_t *client);
 void source_listeners_wakeup (source_t *source);
 

@@ -4,11 +4,11 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = BUILDING COPYING README TODO avl.dsp test.c
 
-noinst_LTLIBRARIES = libiceavl.la
+noinst_LTLIBRARIES = libmcavl.la
 noinst_HEADERS = avl.h
 
-libiceavl_la_SOURCES = avl.c
-libiceavl_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmcavl_la_SOURCES = avl.c
+libmcavl_la_CFLAGS = @XIPH_CFLAGS@ -static
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 

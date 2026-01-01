@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -31,7 +31,7 @@ void fserve_initialize(void);
 void fserve_shutdown(void);
 int fserve_client_create(client_t *httpclient, const char *path);
 char *fserve_content_type (const char *path);
-void fserve_recheck_mime_types (ice_config_t *config);
+void fserve_recheck_mime_types (mc_config_t *config);
 
 int  fserve_setup_client (client_t *client);
 int  fserve_setup_client_fb (client_t *client, fbinfo *finfo);
@@ -42,7 +42,7 @@ int  fserve_kill_client (client_t *client, const char *mount, int response);
 int  fserve_query_count (fbinfo *finfo, mount_proxy *mountinfo);
 void fserve_write_mime_ext (const char *mimetype, char *buf, unsigned int len);
 
-int  client_http_send (ice_http_t *http);
+int  client_http_send (mc_http_t *http);
 
 int  file_in_use (icefile_handle f);
 int  file_open (icefile_handle *f, const char *fn);

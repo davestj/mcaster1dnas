@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -138,7 +138,7 @@ void client_destroy(client_t *client)
     do
     {
         global_lock ();
-        if (global.running != ICE_RUNNING || (client->connection.error == CONN_ERR_DOWN) ||
+        if (global.running != MC_RUNNING || (client->connection.error == CONN_ERR_DOWN) ||
                 (client->flags & CLIENT_KEEPALIVE) == 0 || client_connected (client) == 0)
         {
             global.clients--;
@@ -213,18 +213,18 @@ int client_read_bytes (client_t *client, void *buf, unsigned len)
 int client_send_302(client_t *client, const char *location)
 {
     if (location == NULL) return -1;
-    ice_http_t http = ICE_HTTP_INIT;
-    ice_http_setup_flags (&http, client, 302, 0, NULL);
-    ice_http_printf (&http, "Location", 0, "%s", location);
+    mc_http_t http = MC_HTTP_INIT;
+    mc_http_setup_flags (&http, client, 302, 0, NULL);
+    mc_http_printf (&http, "Location", 0, "%s", location);
     return client_http_send (&http);
 }
 
 
 int client_send_400(client_t *client, const char *message)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    ice_http_setup_flags (&http, client, 400, 0, NULL);
-    ice_http_printf (&http, NULL, 0, "%s", message);
+    mc_http_t http = MC_HTTP_INIT;
+    mc_http_setup_flags (&http, client, 400, 0, NULL);
+    mc_http_printf (&http, NULL, 0, "%s", message);
     return client_http_send (&http);
 
 }
@@ -240,40 +240,40 @@ int client_send_403redirect (client_t *client, const char *mount, const char *re
 
 int client_send_401 (client_t *client, const char *realm)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 401, 0, NULL) < 0) return -1;
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 401, 0, NULL) < 0) return -1;
     client_set_queue (client,NULL);
-    ice_http_printf (&http, "WWW-Authenticate", 0, "Basic realm=\"%s\"", (realm ? realm : http.in_realm));
+    mc_http_printf (&http, "WWW-Authenticate", 0, "Basic realm=\"%s\"", (realm ? realm : http.in_realm));
     return client_http_send (&http);
 }
 
 
 int client_send_403 (client_t *client, const char *reason)
 {
-    ice_http_t http = ICE_HTTP_INIT;
+    mc_http_t http = MC_HTTP_INIT;
     client_set_queue (client,NULL);
-    if (ice_http_setup_flags (&http, client, 403, 0, reason) < 0) return -1;
+    if (mc_http_setup_flags (&http, client, 403, 0, reason) < 0) return -1;
     return client_http_send (&http);
 }
 
 int client_send_404 (client_t *client, const char *message)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 404, 0, NULL) < 0) return -1;
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 404, 0, NULL) < 0) return -1;
     client_set_queue (client,NULL);
     if (message)
-        ice_http_printf (&http, NULL, 0, "%s", message);
+        mc_http_printf (&http, NULL, 0, "%s", message);
     return client_http_send (&http);
 }
 
 
 int client_send_416(client_t *client)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 416, 0, NULL) < 0) return -1;
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 416, 0, NULL) < 0) return -1;
     const char *fs = httpp_getvar (client->parser, "__FILESIZE");
     if (fs)
-        ice_http_printf (&http, "Content-Range", 0, "*/%s", fs);
+        mc_http_printf (&http, "Content-Range", 0, "*/%s", fs);
     client_set_queue (client,NULL);
     return client_http_send (&http);
 }
@@ -281,16 +281,16 @@ int client_send_416(client_t *client)
 
 int client_send_501(client_t *client)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 501, 0, NULL) < 0) return -1;
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 501, 0, NULL) < 0) return -1;
     return client_http_send (&http);
 }
 
 
 int client_send_options(client_t *client)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 204, 0, NULL) < 0) return -1;
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 204, 0, NULL) < 0) return -1;
     client_set_queue (client,NULL);
     return client_http_send (&http);
 }
@@ -382,19 +382,19 @@ int client_send_m3u (client_t *client, const char *path)
         }
         if (host == NULL)
         {
-            ice_config_t *config = config_get_config();
+            mc_config_t *config = config_get_config();
             int ret = snprintf (hostport, sizeof hostport, "%s:%u", config->hostname, config->port);
             if (ret < 0 || ret >= sizeof hostport)
                 break;
             config_release_config();
             host = hostport;
         }
-        ice_http_t http = ICE_HTTP_INIT;
-        ice_http_setup_flags (&http, client, 200, 0, NULL);
-        ice_http_printf (&http, "Content-Type", 0,              "%s", "audio/x-mpegurl");
-        ice_http_printf (&http, "Content-Disposition", 0,       "%s", "attachment; filename=\"listen.m3u\"");
-        ice_http_printf (&http, NULL, 0, "%s://%s%s%s%s\n", protocol, userpass, host, sourceuri, args?args:"");
-        ice_http_complete (&http);
+        mc_http_t http = MC_HTTP_INIT;
+        mc_http_setup_flags (&http, client, 200, 0, NULL);
+        mc_http_printf (&http, "Content-Type", 0,              "%s", "audio/x-mpegurl");
+        mc_http_printf (&http, "Content-Disposition", 0,       "%s", "attachment; filename=\"listen.m3u\"");
+        mc_http_printf (&http, NULL, 0, "%s://%s%s%s%s\n", protocol, userpass, host, sourceuri, args?args:"");
+        mc_http_complete (&http);
         free (sourceuri);
         return fserve_setup_client_fb (client, NULL);
     } while (0);
@@ -1055,7 +1055,7 @@ static void *log_commit_thread (void *arg)
         if (ret == 0)
         {
             global_lock();
-            int loop = (global.running == ICE_RUNNING);
+            int loop = (global.running == MC_RUNNING);
             global_unlock();
             if (loop) continue;
         }
@@ -1071,7 +1071,7 @@ static void *log_commit_thread (void *arg)
             }
         }
         int err = 0;
-        if (ret < 0 && sock_recoverable ((err = sock_error())) && global.running == ICE_RUNNING)
+        if (ret < 0 && sock_recoverable ((err = sock_error())) && global.running == MC_RUNNING)
             continue;
         sock_close (logger_fd[0]);
         thread_rwlock_rlock (&workers_lock);

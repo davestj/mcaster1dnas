@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -386,7 +386,7 @@ static http_parser_t *relay_get_response (client_t *client)
             global_lock();
             int running = global.running;
             global_unlock();
-            if (running != ICE_RUNNING || client->connection.error)
+            if (running != MC_RUNNING || client->connection.error)
                 return NULL;
             thread_sleep (100);
             continue;
@@ -475,19 +475,19 @@ static int open_relay_connection (client_t *client, relay_server *relay, relay_s
         if (secure && connection_uses_ssl (&client->connection, 0) < 0)
             break;
 
-        ice_http_t http = ICE_HTTP_INIT;
-        ice_http_setup_flags (&http, client, 0, ICE_HTTP_REQUEST, mount);
+        mc_http_t http = MC_HTTP_INIT;
+        mc_http_setup_flags (&http, client, 0, MC_HTTP_REQUEST, mount);
         if (relay->flags & RELAY_ICY_META)
-            ice_http_printf (&http, "Icy-MetaData", 0, "1");
+            mc_http_printf (&http, "Icy-MetaData", 0, "1");
         if (auth)
-            ice_http_printf (&http, "Authorization", 0, "Basic %s", auth);
+            mc_http_printf (&http, "Authorization", 0, "Basic %s", auth);
         if (secure || port != 80)
-            ice_http_printf (&http, "Host", 0, "%s:%d", server, port);
+            mc_http_printf (&http, "Host", 0, "%s:%d", server, port);
         else
-            ice_http_printf (&http, "Host", 0, "%s", server);
-        ice_http_apply_cfg (&http, relay->http_hdrs);
-        ice_http_apply_cfg (&http, host->http_hdrs);
-        ice_http_complete (&http);
+            mc_http_printf (&http, "Host", 0, "%s", server);
+        mc_http_apply_cfg (&http, relay->http_hdrs);
+        mc_http_apply_cfg (&http, host->http_hdrs);
+        mc_http_complete (&http);
 
         parser = relay_get_response (client);
         if (parser == NULL)
@@ -617,7 +617,7 @@ int open_relay (relay_server *relay)
         }
         relay->in_use = host;
         return 1;
-    } while ((host = host->next) && global.running == ICE_RUNNING);
+    } while ((host = host->next) && global.running == MC_RUNNING);
     return -1;
 }
 
@@ -636,7 +636,7 @@ static void *start_relay_stream (void *arg)
     client->connection.con_time = time (NULL);
     do
     {
-        ice_config_t *config;
+        mc_config_t *config;
         mount_proxy *mountinfo;
 
         relay = client->shared_data;
@@ -804,7 +804,7 @@ size_t icecurl_server_running (void *clientp, curl_off_t dltotal, curl_off_t dln
 {
     static time_t shutdown_time = (time_t)0;
     global_lock ();
-    int down = (global.running != ICE_RUNNING) ? 1 : 0;
+    int down = (global.running != MC_RUNNING) ? 1 : 0;
     if (down)
     {
         if (shutdown_time == (time_t)0)
@@ -1114,7 +1114,7 @@ static void *streamlist_thread (void *arg)
 #endif
 
 
-void update_relays (ice_config_t *config)
+void update_relays (mc_config_t *config)
 {
     int notfound, trap = 10;
     relay_server *relay, *result, *copy, find;
@@ -1170,7 +1170,7 @@ void update_relays (ice_config_t *config)
 }
 
 
-static void update_from_master (ice_config_t *config)
+static void update_from_master (mc_config_t *config)
 {
 #ifdef HAVE_CURL
     struct master_conn_details *details;
@@ -1206,7 +1206,7 @@ static void update_from_master (ice_config_t *config)
 }
 
 
-static void update_master_as_slave (ice_config_t *config)
+static void update_master_as_slave (mc_config_t *config)
 {
     redirect_host *redirect;
 
@@ -1228,7 +1228,7 @@ static void update_master_as_slave (ice_config_t *config)
 
 static void slave_startup (void)
 {
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
 
 #ifdef HAVE_GETRLIMIT
     struct rlimit rlimit;
@@ -1279,7 +1279,7 @@ static void _slave_thread(void)
         thread_get_timespec (&current);
 
         global_lock();
-        if (global.running != ICE_RUNNING)
+        if (global.running != MC_RUNNING)
             break;
         /* re-read xml file if requested */
         if (global . schedule_config_reread)
@@ -1301,7 +1301,7 @@ static void _slave_thread(void)
 
         if (streamlist_check <= current.tv_sec)
         {
-            ice_config_t *config = config_get_config();
+            mc_config_t *config = config_get_config();
 
             streamlist_check = current.tv_sec + config->master_update_interval;
             update_master_as_slave (config);
@@ -1335,7 +1335,7 @@ static void _slave_thread(void)
         stats_global_calc (current.tv_sec);
         fserve_scan (current.tv_sec);
 
-        /* allow for terminating icecast if no streams running */
+        /* allow for terminating mcaster1 if no streams running */
         if (inactivity_timer)
         {
             if (global.sources)
@@ -1346,7 +1346,7 @@ static void _slave_thread(void)
             else if (inactivity_timer <= current.tv_sec)
             {
                 INFO0 ("inactivity timeout reached, terminating server");
-                global.running = ICE_HALTING;
+                global.running = MC_HALTING;
             }
         }
         else
@@ -1407,7 +1407,7 @@ void redirector_clearall (void)
 }
 
 
-void redirector_setup (ice_config_t *config)
+void redirector_setup (mc_config_t *config)
 {
     redirect_host *redir = config->redirect_hosts;
 
@@ -1447,7 +1447,7 @@ void redirector_update (client_t *client)
     redirect = find_slave_host (rserver, rport);
     if (redirect == NULL)
     {
-        ice_config_t *config = config_get_config();
+        mc_config_t *config = config_get_config();
         unsigned int allowed = config->max_redirects;
 
         config_release_config();
@@ -1593,7 +1593,7 @@ int relay_source_reactivated (source_t *source)
     relayclient = calloc (1, sizeof (client_t));
     connection_init (&relayclient->connection, SOCK_ERROR, NULL);
     global_lock();
-    if (global.running == ICE_RUNNING)
+    if (global.running == MC_RUNNING)
     {
         client_t *client = source->client;
         INFO1 ("Detected a relay to restart on %s", source->mount);
@@ -1686,7 +1686,7 @@ static void *relay_switch (void *arg)
 
     do
     {
-        if (global.running != ICE_RUNNING) break;
+        if (global.running != MC_RUNNING) break;
         if (relay_expired (relay)) break;
         if (host->skip_until > time(NULL)) continue;
         snprintf (msg+n, remain, "host %s:%d%s prio %d", host->ip, host->port, host->mount, host->priority);
@@ -1867,10 +1867,10 @@ static int relay_read (client_t *client)
     {
         /* this section is for once through code */
         int serv_state = global_state();
-        int fallback = (serv_state == ICE_RUNNING) ? 1 : 0;
-        if (serv_state != ICE_RUNNING)
+        int fallback = (serv_state == MC_RUNNING) ? 1 : 0;
+        if (serv_state != MC_RUNNING)
             relay->flags |= RELAY_CLEANUP;
-        if (client->connection.con_time && serv_state == ICE_RUNNING)
+        if (client->connection.con_time && serv_state == MC_RUNNING)
         {
             relay_server_host *hs = relay->in_use;
             if ((relay->flags & RELAY_RUNNING) && hs)
@@ -2027,7 +2027,7 @@ static int relay_initialise (client_t *client)
 {
     relay_server *relay = get_relay_details (client);
 
-    if (global_state() != ICE_RUNNING || (relay->flags & RELAY_CLEANUP))
+    if (global_state() != MC_RUNNING || (relay->flags & RELAY_CLEANUP))
         return relay_read (client);
     int rc = relay_has_source (relay, client);
     if (rc <= 0)
@@ -2050,7 +2050,7 @@ static int relay_initialise (client_t *client)
         {
             if (relay->flags & RELAY_ON_DEMAND)
             {
-                ice_config_t *config;
+                mc_config_t *config;
                 mount_proxy *mountinfo;
 
                 config = config_get_config();
@@ -2091,7 +2091,7 @@ static int relay_startup (client_t *client)
         DEBUG1 ("relay %s disabled", relay->localmount);
         return client->ops->process (client);
     }
-    if (global_state() != ICE_RUNNING)  /* wait for cleanup */
+    if (global_state() != MC_RUNNING)  /* wait for cleanup */
     {
         client->schedule_ms = client->worker->time_ms + 50;
         return 0;

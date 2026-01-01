@@ -4,11 +4,11 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = BUILDING COPYING README TODO
 
-noinst_LTLIBRARIES = libicethread.la
+noinst_LTLIBRARIES = libmcthread.la
 noinst_HEADERS = thread.h
 
-libicethread_la_SOURCES = thread.c
-libicethread_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmcthread_la_SOURCES = thread.c
+libmcthread_la_CFLAGS = @XIPH_CFLAGS@ -static
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 

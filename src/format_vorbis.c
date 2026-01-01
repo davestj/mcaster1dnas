@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -324,7 +324,7 @@ static int process_vorbis_headers (ogg_state_t *ogg_info, ogg_codec_t *codec)
     {
         vorbis_comment vc;
         ogg_packet header;
-        ice_config_t *config;
+        mc_config_t *config;
 
         vorbis_comment_init (&vc);
         if (ogg_info->artist) 

@@ -14,11 +14,11 @@
 
 !include WinVer.nsh
 
-Name "Icecast KH"
-OutFile "icecast-@PACKAGE_VERSION@_win32_setup.exe"
+Name "Mcaster1 KH"
+OutFile "mcaster1-@PACKAGE_VERSION@_win32_setup.exe"
 
-InstallDir "$ProgramFiles\Icecast KH"
-InstallDirRegKey HKLM SOFTWARE\Icecast "Install_Dir"
+InstallDir "$ProgramFiles\Mcaster1 KH"
+InstallDirRegKey HKLM SOFTWARE\Mcaster1 "Install_Dir"
 
 LoadLanguageFile "${NSISDIR}\Contrib\Language files\English.nlf"
 
@@ -34,10 +34,10 @@ XPStyle on
 ;Version Information
 
 VIProductVersion "2.4.0.22"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Icecast KH"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Mcaster1 KH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductVersion" "2.4.0"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Karl Heyes @2000-2023"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Icecast KH streaming media server installer"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Mcaster1 KH streaming media server installer"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "@PACKAGE_VERSION@"
 
 Page components
@@ -49,12 +49,12 @@ ComponentText "Select which optional components you want to install."
 DirText "Please select the installation folder."
 
 Function un.onInit
-    MessageBox MB_YESNO "Uninstall icecast KH from $INSTDIR ?" IDYES NoAbort
+    MessageBox MB_YESNO "Uninstall mcaster1 KH from $INSTDIR ?" IDYES NoAbort
       Abort ; causes uninstaller to quit.
     NoAbort:
 FunctionEnd
 
-Section "Icecast Installation"
+Section "Mcaster1 Installation"
   SectionIn RO
 
   SetOutPath "$INSTDIR"
@@ -66,9 +66,9 @@ Section "Icecast Installation"
 
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-  File "x32/icecast.exe"
+  File "x32/mcaster1.exe"
   SetOverwrite off
-  File "x32/icecast.xml"
+  File "x32/mcaster1.xml"
   SetOverwrite on
 
   SetOutPath "$INSTDIR\logs"
@@ -83,47 +83,47 @@ Section "Icecast Installation"
   SetOutPath "$INSTDIR\web"
   File /r "x32/web/"
 
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Icecast KH" \
-                 "DisplayName" "Icecast KH"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Icecast KH" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mcaster1 KH" \
+                 "DisplayName" "Mcaster1 KH"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mcaster1 KH" \
                  "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
 SectionEnd
 
 Section "Install Service"
   SetOutPath "$INSTDIR"
-  ExecWait '"$INSTDIR\icecast.exe" "install" "$INSTDIR"'
+  ExecWait '"$INSTDIR\mcaster1.exe" "install" "$INSTDIR"'
 SectionEnd
 
 Section "Start Menu Shortcuts"
-  CreateDirectory "$SMPROGRAMS\Icecast KH"
+  CreateDirectory "$SMPROGRAMS\Mcaster1 KH"
   SetOutPath "$INSTDIR"
-  CreateShortCut "$SMPROGRAMS\Icecast KH\Edit Configuration.lnk" "notepad.exe" "$INSTDIR\icecast.xml"
-  CreateShortCut "$SMPROGRAMS\Icecast KH\Uninstall Icecast.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Icecast KH\Run Icecast.lnk" "$INSTDIR\icecast.exe" '-c "$INSTDIR\icecast.xml"'
+  CreateShortCut "$SMPROGRAMS\Mcaster1 KH\Edit Configuration.lnk" "notepad.exe" "$INSTDIR\mcaster1.xml"
+  CreateShortCut "$SMPROGRAMS\Mcaster1 KH\Uninstall Mcaster1.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mcaster1 KH\Run Mcaster1.lnk" "$INSTDIR\mcaster1.exe" '-c "$INSTDIR\mcaster1.xml"'
 SectionEnd
 
 Section "Desktop Icons"
   SetOutPath "$INSTDIR"
-  CreateShortCut "$DESKTOP\Icecast.lnk" "$INSTDIR\icecast.exe" '-c "$INSTDIR\icecast.xml"'
+  CreateShortCut "$DESKTOP\Mcaster1.lnk" "$INSTDIR\mcaster1.exe" '-c "$INSTDIR\mcaster1.xml"'
 SectionEnd
 
 Section "Uninstall"
-  ExecWait '"$INSTDIR\icecast.exe" "remove"'
+  ExecWait '"$INSTDIR\mcaster1.exe" "remove"'
   Delete $INSTDIR\Uninstall.exe
-  Delete /rebootok "$DESKTOP\Icecast.lnk"
-  Delete /rebootok "$SMPROGRAMS\Icecast KH\Run Icecast.lnk"
-  Delete /rebootok "$SMPROGRAMS\Icecast KH\Uninstall Icecast.lnk"
-  Delete /rebootok "$SMPROGRAMS\Icecast KH\Edit Configuration.lnk"
-  RMDir "$SMPROGRAMS\Icecast KH"
+  Delete /rebootok "$DESKTOP\Mcaster1.lnk"
+  Delete /rebootok "$SMPROGRAMS\Mcaster1 KH\Run Mcaster1.lnk"
+  Delete /rebootok "$SMPROGRAMS\Mcaster1 KH\Uninstall Mcaster1.lnk"
+  Delete /rebootok "$SMPROGRAMS\Mcaster1 KH\Edit Configuration.lnk"
+  RMDir "$SMPROGRAMS\Mcaster1 KH"
 
   RMDir /r "$INSTDIR\web"
   RMDir /r "$INSTDIR\doc"
   RMDir /r "$INSTDIR\admin"
 
-  Delete /rebootok "$INSTDIR\icecast.exe"
+  Delete /rebootok "$INSTDIR\mcaster1.exe"
 
   Delete /rebootok "$INSTDIR\*.dll"
 
   RMDir "$INSTDIR"
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Icecast KH"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mcaster1 KH"
 SectionEnd

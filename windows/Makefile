@@ -259,6 +259,9 @@ PACKAGE_URL =
 PACKAGE_VERSION = 2.5.0
 PATH_SEPARATOR = :
 PKGCONFIG = /usr/bin/pkg-config
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 PROFILE = -pg -g
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = 
@@ -287,8 +290,10 @@ VORBIS_PREFIX =
 XIPH_CFLAGS = 
 XIPH_CPPFLAGS = -Wall -ffast-math -fsigned-char -I/usr/include/libxml2 -I/var/www/mcaster1.com/mcaster1dnas/build/include
 XIPH_LDFLAGS =  -L/var/www/mcaster1.com/mcaster1dnas/build/lib
-XIPH_LIBS =  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
+XIPH_LIBS =  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
 XSLTCONFIG = /usr/bin/xslt-config
+YAML_CFLAGS = 
+YAML_LIBS = -lyaml 
 abs_builddir = /var/www/mcaster1.com/mcaster1dnas/windows
 abs_srcdir = /var/www/mcaster1.com/mcaster1dnas/windows
 abs_top_builddir = /var/www/mcaster1.com/mcaster1dnas
@@ -367,7 +372,7 @@ mcaster1_DEPENDENCIES = \
 mcaster1_SOURCES = mcaster1Service.cpp
 mcaster1_CPPFLAGS = -I$(top_srcdir)/src  -Wall -ffast-math -fsigned-char -I/usr/include/libxml2 -I/var/www/mcaster1.com/mcaster1dnas/build/include
 mcaster1_LDFLAGS = -static-libgcc
-mcaster1_LDADD = $(mcaster1_DEPENDENCIES)  -L/var/www/mcaster1.com/mcaster1dnas/build/lib  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
+mcaster1_LDADD = $(mcaster1_DEPENDENCIES)  -L/var/www/mcaster1.com/mcaster1dnas/build/lib  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
 all: all-am
 
 .SUFFIXES:

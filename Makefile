@@ -200,8 +200,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/install-sh \
 	$(top_srcdir)/build-aux/ltmain.sh \
-	$(top_srcdir)/build-aux/missing AUTHORS COPYING NEWS README \
-	TODO build-aux/compile build-aux/config.guess \
+	$(top_srcdir)/build-aux/missing AUTHORS COPYING ChangeLog NEWS \
+	README TODO build-aux/compile build-aux/config.guess \
 	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
 	build-aux/ltmain.sh build-aux/missing config.sub
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -326,6 +326,9 @@ PACKAGE_URL =
 PACKAGE_VERSION = 2.5.0
 PATH_SEPARATOR = :
 PKGCONFIG = /usr/bin/pkg-config
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 PROFILE = -pg -g
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = 
@@ -354,8 +357,10 @@ VORBIS_PREFIX =
 XIPH_CFLAGS = 
 XIPH_CPPFLAGS = -Wall -ffast-math -fsigned-char -I/usr/include/libxml2 -I/var/www/mcaster1.com/mcaster1dnas/build/include
 XIPH_LDFLAGS =  -L/var/www/mcaster1.com/mcaster1dnas/build/lib
-XIPH_LIBS =  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
+XIPH_LIBS =  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
 XSLTCONFIG = /usr/bin/xslt-config
+YAML_CFLAGS = 
+YAML_LIBS = -lyaml 
 abs_builddir = /var/www/mcaster1.com/mcaster1dnas
 abs_srcdir = /var/www/mcaster1.com/mcaster1dnas
 abs_top_builddir = /var/www/mcaster1.com/mcaster1dnas

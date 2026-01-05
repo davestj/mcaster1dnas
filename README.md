@@ -1,11 +1,13 @@
 # Mcaster1DNAS - Digital Network Audio Server
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Version](https://img.shields.io/badge/version-2.5.0-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
+[![Version](https://img.shields.io/badge/version-2.6.0-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://github.com/davestj/mcaster1dnas)
 [![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
 [![Language](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20BSD%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/davestj/mcaster1dnas)
+[![ICY-META](https://img.shields.io/badge/ICY--META-v2.1+-purple.svg)](ICY2_PROTOCOL_SPEC.md)
+[![YAML Config](https://img.shields.io/badge/config-YAML%20%7C%20XML-yellow.svg)](YAML_IMPLEMENTATION.md)
 
 ### Audio Format Support
 [![MP3](https://img.shields.io/badge/codec-MP3-red.svg)](https://en.wikipedia.org/wiki/MP3)
@@ -21,6 +23,7 @@
 [![HTTPS/SSL](https://img.shields.io/badge/protocol-HTTPS%2FSSL-green.svg)](https://en.wikipedia.org/wiki/HTTPS)
 [![Icecast](https://img.shields.io/badge/protocol-Icecast-orange.svg)](https://icecast.org/)
 [![Shoutcast](https://img.shields.io/badge/protocol-Shoutcast-red.svg)](https://en.wikipedia.org/wiki/Shoutcast)
+[![ICY-META v2.1+](https://img.shields.io/badge/protocol-ICY--META_v2.1+-purple.svg)](ICY2_PROTOCOL_SPEC.md)
 
 ---
 
@@ -31,6 +34,8 @@
 ### 🎯 Key Features
 
 - 🔒 **Secure by Default** - HTTPS/SSL streaming enabled out of the box
+- 🆕 **ICY-META v2.1+ Protocol** - Extended metadata with podcast, video, and social media support ([spec](ICY2_PROTOCOL_SPEC.md))
+- 📝 **YAML Configuration** - Modern YAML config alongside traditional XML ([guide](YAML_IMPLEMENTATION.md))
 - 🎵 **Multi-Format Audio** - MP3, AAC, Ogg Vorbis, Opus, FLAC, Speex, and Theora
 - 🚀 **High Performance** - Optimized for low latency and high concurrent listener capacity
 - 💻 **Modern Web Interface** - Beautiful, responsive HTML5/CSS3 admin and public interfaces
@@ -39,7 +44,7 @@
 - 💡 **Interactive Help** - Contextual tooltips explaining streaming concepts
 - 🔐 **Advanced Authentication** - User management and stream protection
 - 🔄 **Relay Support** - Distribute streams across multiple servers
-- 📈 **Comprehensive Logging** - Detailed access, error, and playlist logs
+- 📈 **Comprehensive Logging** - Detailed access, error, playlist, and YP connection logs
 
 ---
 
@@ -188,16 +193,172 @@ After starting the server, access the web interfaces:
 
 ---
 
+## 🎯 ICY-META v2.1+ Protocol
+
+Mcaster1DNAS v2.6.0+ introduces the **ICY-META v2.1+ extended metadata protocol**, providing rich metadata support beyond legacy ICY 1.x.
+
+### 🌟 Features
+
+- **Auto-Detection** - Automatically detects ICY2-compliant encoders via `icy-metadata-version: 2.1` header
+- **Backward Compatible** - Seamlessly falls back to ICY 1.x for legacy encoders
+- **Zero Configuration** - No server config changes needed, works automatically
+- **29+ Metadata Fields** - Comprehensive metadata across 6 categories:
+  - **Core**: station-id, name, url, genre, bitrate, public
+  - **Podcast**: host, rss, episode, duration, language
+  - **Video**: type, link, title, platform, resolution
+  - **Social Media**: dj-handle, twitter, instagram, tiktok, emoji, hashtags
+  - **Access Control**: nsfw, ai-generated, geo-region, auth-token
+  - **Verification**: certificate-verify, verification-status
+
+### 📡 Example ICY2 Request
+
+```http
+PUT /my-stream.mp3 HTTP/1.1
+Host: server.example.com:9443
+Authorization: Basic c291cmNlOnBhc3N3b3Jk
+Content-Type: audio/mpeg
+
+icy-metadata-version: 2.1
+icy-station-id: unique-station-id
+icy-name: My Radio Station
+icy-genre: Electronic/House
+icy-url: https://myradio.com
+icy-br: 320
+icy-pub: 1
+
+icy-podcast-host: DJ Name
+icy-podcast-rss: https://myradio.com/podcast.rss
+icy-video-type: live
+icy-video-platform: youtube
+icy-dj-handle: @mydj
+icy-social-twitter: @myradio
+icy-emoji: 🎵🔥
+icy-hashtags: #electronic #house #live
+```
+
+### 🧪 Test with cURL
+
+```bash
+curl -k -X PUT \
+  -H "icy-metadata-version: 2.1" \
+  -H "icy-station-id: test-001" \
+  -H "icy-name: Test Station" \
+  -H "icy-genre: Test" \
+  -H "icy-url: https://example.com" \
+  -H "icy-br: 128" \
+  -H "Authorization: Basic c291cmNlOmhhY2ttZQ==" \
+  -H "Content-Type: audio/mpeg" \
+  --data-binary @audio.mp3 \
+  https://your-server:9443/test.mp3
+```
+
+### 📖 Full Specification
+
+See **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** for the complete protocol specification, including:
+- All metadata field definitions
+- Client/server implementation guidelines
+- Security considerations
+- Future protocol versions (2.2, 2.3)
+
+---
+
+## 📝 YAML Configuration Support
+
+Mcaster1DNAS v2.5.0+ supports **YAML configuration** alongside traditional XML, providing a modern, human-readable alternative.
+
+### ✨ YAML Features
+
+- **Full Feature Parity** - 100% of XML features available in YAML
+- **Auto-Detection** - Automatically detects YAML vs XML format
+- **Easy to Read** - Clean, indented structure without angle brackets
+- **Comments** - Native support for inline comments
+- **Four Templates Included**:
+  - `mcaster1.yaml.in` - Full-featured template with examples
+  - `mcaster1_minimal.yaml.in` - Bare minimum configuration
+  - `mcaster1_shoutcast_compat.yaml.in` - Shoutcast compatibility
+  - `mcaster1_advanced.yaml.in` - All advanced features
+
+### 📋 YAML Example
+
+```yaml
+# Mcaster1DNAS Configuration
+server:
+  location: "Earth"
+  admin: "admin@example.com"
+  hostname: "stream.example.com"
+
+  limits:
+    clients: 100
+    sources: 10
+    workers: 2
+
+listen-sockets:
+  - port: 9330
+    bind-address: "0.0.0.0"
+
+  - port: 9443
+    bind-address: "0.0.0.0"
+    ssl: true
+
+authentication:
+  source-password: "hackme"
+  admin-username: "admin"
+  admin-password: "hackme"
+
+paths:
+  basedir: "/usr/local/mcaster1dnas"
+  logdir: "/var/log/mcaster1dnas"
+  webroot: "/usr/local/mcaster1dnas/web"
+  adminroot: "/usr/local/mcaster1dnas/admin"
+  ssl-certificate: "/etc/ssl/mcaster1dnas.pem"
+
+mounts:
+  - mount-name: "/stream.mp3"
+    max-listeners: 100
+    public: true
+```
+
+### 🔧 Using YAML Configuration
+
+```bash
+# Build with YAML support
+./configure --with-yaml --prefix=/usr/local/mcaster1dnas
+make && sudo make install
+
+# Use YAML config file
+./mcaster1 -c mcaster1-production.yaml
+```
+
+### 📚 YAML Documentation
+
+See **[YAML_IMPLEMENTATION.md](YAML_IMPLEMENTATION.md)** for complete YAML usage guide, including:
+- All configuration options
+- Migration from XML to YAML
+- Advanced features and examples
+- Troubleshooting
+
+---
+
 ## 📚 Documentation
 
 Comprehensive documentation is available:
 
+### Core Documentation
 - **[BUILD_AND_RUN.md](BUILD_AND_RUN.md)** - Complete build and deployment guide
+- **[ChangeLog](ChangeLog)** - Version history and changes
+- **[COPYING](COPYING)** - GNU GPL v2 license text
+- **[FORK.md](FORK.md)** - Fork information and lineage
+
+### Feature Documentation
+- **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** - ⭐ ICY-META v2.1+ complete specification
+- **[YAML_IMPLEMENTATION.md](YAML_IMPLEMENTATION.md)** - ⭐ YAML configuration guide
+- **[YP_LOGGING_FEATURE.md](YP_LOGGING_FEATURE.md)** - YP directory logging implementation
 - **[ENTERPRISE_UI_ENHANCEMENTS.md](ENTERPRISE_UI_ENHANCEMENTS.md)** - UI modernization details
 - **[CLOCK_AND_LOADTIME.md](CLOCK_AND_LOADTIME.md)** - Live clock and performance metrics
-- **[FORK.md](FORK.md)** - Fork information and lineage
-- **[COPYING](COPYING)** - GNU GPL v2 license text
-- **[ChangeLog](ChangeLog)** - Version history and changes
+
+### Implementation Plans
+- **[ICY2_SIMPLIFIED_PLAN.md](ICY2_SIMPLIFIED_PLAN.md)** - ICY2 implementation architecture
+- **[TODO.md](TODO.md)** - Future features and roadmap
 
 ### Online Documentation
 

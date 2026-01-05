@@ -28,6 +28,9 @@
 #include "thread/thread.h"
 #include "timing/timing.h"
 #include "cfgfile.h"
+#ifdef HAVE_YAML
+#include "cfgfile_yaml.h"
+#endif
 #include "refbuf.h"
 #include "client.h"
 #include "params.h"
@@ -110,7 +113,6 @@ typedef struct
 
 
 static int  _parse_root (cfg_xml *cfg, void *p);
-static aliases* config_clear_alias (aliases *alias);
 
 /*
  */
@@ -715,11 +717,73 @@ void config_clear(mc_config_t *c)
     while (i < c->num_yp_directories)
     {
         if (c->yp_url[i]) xmlFree (c->yp_url[i]);
+        if (c->yp_logfile[i]) xmlFree (c->yp_logfile[i]);
         i++;
     }
 #endif
 
     memset(c, 0, sizeof(mc_config_t));
+}
+
+/* Config file format detection */
+typedef enum {
+    CONFIG_FORMAT_XML,
+    CONFIG_FORMAT_YAML,
+    CONFIG_FORMAT_UNKNOWN
+} config_format_t;
+
+static config_format_t detect_config_format(const char *filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if (!fp) return CONFIG_FORMAT_UNKNOWN;
+
+    char buf[512];
+    config_format_t format = CONFIG_FORMAT_XML; /* default */
+
+    /* Read first few lines to detect format */
+    while (fgets(buf, sizeof(buf), fp)) {
+        char *p = buf;
+
+        /* Skip whitespace */
+        while (*p && (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r'))
+            p++;
+
+        if (*p == '\0' || *p == '#')
+            continue; /* Skip blank lines and comments */
+
+        /* YAML indicators */
+        if (strncmp(p, "---", 3) == 0) {
+            format = CONFIG_FORMAT_YAML;
+            break;
+        }
+
+        /* Check for YAML key: value pattern (common at start of config) */
+        if (strchr(p, ':') && !strchr(p, '<')) {
+            /* Likely YAML if we have : but no < */
+            char *colon = strchr(p, ':');
+            if (colon && (colon[1] == ' ' || colon[1] == '\n' || colon[1] == '\r')) {
+                format = CONFIG_FORMAT_YAML;
+                break;
+            }
+        }
+
+        /* XML indicators */
+        if (*p == '<') {
+            if (strncmp(p+1, "?xml", 4) == 0 ||
+                strncmp(p+1, "mcaster1", 8) == 0 ||
+                strncmp(p+1, "icecast", 7) == 0) {
+                format = CONFIG_FORMAT_XML;
+                break;
+            }
+        }
+
+        /* If we found non-comment, non-whitespace content, break */
+        if (*p)
+            break;
+    }
+
+    fclose(fp);
+    return format;
 }
 
 int config_initial_parse_file(const char *filename)
@@ -734,6 +798,25 @@ int config_parse_file(const char *filename, mc_config_t *configuration)
     xmlNodePtr node;
 
     if (filename == NULL || strcmp(filename, "") == 0) return CONFIG_EINSANE;
+
+    /* Detect config file format */
+    config_format_t format = detect_config_format(filename);
+
+#ifdef HAVE_YAML
+    if (format == CONFIG_FORMAT_YAML) {
+        INFO1("Detected YAML configuration format: %s", filename);
+        return config_parse_yaml_file(filename, configuration);
+    }
+#else
+    if (format == CONFIG_FORMAT_YAML) {
+        ERROR0("YAML configuration file detected but YAML support not compiled in");
+        ERROR0("Recompile with --with-yaml or convert config to XML format");
+        return CONFIG_EPARSE;
+    }
+#endif
+
+    /* Parse as XML */
+    INFO1("Parsing XML configuration file: %s", filename);
 
     xmlSetGenericErrorFunc ("conf/file", log_parse_failure);
     xmlSetStructuredErrorFunc ("conf/file", config_xml_parse_failure);
@@ -1220,6 +1303,7 @@ static int _parse_directory (cfg_xml *cfg, void *arg)
         { "yp-url",         config_get_str, &config->yp_url [config->num_yp_directories]},
         { "yp-url-timeout", config_get_int, &config->yp_url_timeout [config->num_yp_directories]},
         { "touch-interval", config_get_int, &config->yp_touch_interval [config->num_yp_directories]},
+        { "yp-logfile",     config_get_str, &config->yp_logfile [config->num_yp_directories]},
         { NULL, NULL, NULL }
     };
 

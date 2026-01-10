@@ -1,5 +1,5 @@
 # Configure paths for libvorbis
-# Jack Moffitt <jack@icecast.org> 10-21-2000
+# Jack Moffitt <jack@mcaster1.org> 10-21-2000
 # updated by Karl Heyes 31-Mar-2003
 # Shamelessly stolen from Owen Taylor and Manish Singh
 

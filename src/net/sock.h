@@ -1,7 +1,7 @@
 /* sock.h
  * - General Socket Function Headers
  *
- * Copyright (c) 1999 the icecast team
+ * Copyright (c) 1999 the mcaster1 team
  * Copyright (c) 2010-2023 Karl Heyes <karl@kheyes.plus.com>
  *
  * This program is free software; you can redistribute it and/or

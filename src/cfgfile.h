@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -24,7 +24,7 @@
 #define XMLSTR		(xmlChar *)
 
 struct _mount_proxy;
-struct ice_config_tag;
+struct mc_config_tag;
 struct _config_options;
 typedef struct _listener_t listener_t;
 
@@ -86,12 +86,12 @@ typedef struct playlist_log
 typedef struct error_log preroll_log;
 
 
-typedef struct ice_config_dir_tag
+typedef struct mc_config_dir_tag
 {
     char *host;
     int touch_interval;
-    struct ice_config_dir_tag *next;
-} ice_config_dir_t;
+    struct mc_config_dir_tag *next;
+} mc_config_dir_t;
 
 typedef struct _config_options {
     char *name;
@@ -117,7 +117,7 @@ typedef struct _config_http_header_tag {
         void *callback;
     } hdr;
 
-} ice_config_http_header_t;
+} mc_config_http_header_t;
 
 
 typedef struct _fbinfo
@@ -185,7 +185,7 @@ typedef struct _mount_proxy {
     /* duration (secs) for mountpoint to be kept reserved after source client exits */
     int wait_time;
 
-    ice_config_http_header_t *http_headers;
+    mc_config_http_header_t *http_headers;
     char *auth_type; /* Authentication type */
     struct auth_tag *auth;
     char *listenurl;
@@ -256,7 +256,7 @@ typedef struct _relay_server_host
     char *ip;
     char *bind;
     char *mount;
-    ice_config_http_header_t *http_hdrs;
+    mc_config_http_header_t *http_hdrs;
     time_t    skip_until;
     int priority;
     int port;
@@ -276,7 +276,7 @@ typedef struct _relay_server
     unsigned char type;
     unsigned char flags;
     char *localmount;
-    ice_config_http_header_t *http_hdrs;
+    mc_config_http_header_t *http_hdrs;
     relay_server_host *hosts, *in_use;
     time_t recheck_hosts;
     char *username;
@@ -290,10 +290,10 @@ typedef struct
     int  port;
     char *username;
     char *password;
-} ice_master_details;
+} mc_master_details;
 
 
-typedef struct ice_config_tag
+typedef struct mc_config_tag
 {
     char *config_filename;
 
@@ -310,7 +310,7 @@ typedef struct ice_config_tag
     int client_timeout;
     int header_timeout;
     int source_timeout;
-    int ice_login;
+    int mc_login;
     int64_t max_bandwidth;
     int max_listeners;
     int fileserve;
@@ -325,7 +325,7 @@ typedef struct ice_config_tag
 
     int inactivity_timeout;
     int touch_interval;
-    ice_config_dir_t *dir_list;
+    mc_config_dir_t *dir_list;
 
     char *hostname;
     int port;
@@ -353,7 +353,7 @@ typedef struct ice_config_tag
 
     mount_proxy *mounts;
     avl_tree *mounts_tree;
-    ice_config_http_header_t *http_headers;
+    mc_config_http_header_t *http_headers;
 
     char *server_id;
     char *base_dir;
@@ -383,44 +383,49 @@ typedef struct ice_config_tag
     char *yp_url[MAX_YP_DIRECTORIES];
     int    yp_url_timeout[MAX_YP_DIRECTORIES];
     int    yp_touch_interval[MAX_YP_DIRECTORIES];
+    char *yp_logfile[MAX_YP_DIRECTORIES];
     int num_yp_directories;
-} ice_config_t;
+} mc_config_t;
 
 typedef struct {
     rwlock_t config_lock;
     mutex_t mount_lock;
-} ice_config_locks;
+} mc_config_locks;
 
 void config_initialize(void);
 void config_shutdown(void);
 
-int config_parse_file(const char *filename, ice_config_t *configuration);
+int config_parse_file(const char *filename, mc_config_t *configuration);
 int config_initial_parse_file(const char *filename);
 int config_parse_cmdline(int arg, char **argv);
-void config_set_config (ice_config_t *new_config, ice_config_t *old_config);
+void config_set_config (mc_config_t *new_config, mc_config_t *old_config);
+void config_init_configuration(mc_config_t *configuration);
 listener_t *config_clear_listener (listener_t *listener);
 relay_server *config_clear_relay (relay_server *relay);
-void config_clear(ice_config_t *config);
+void config_clear(mc_config_t *config);
 void config_clear_mount (mount_proxy *mountinfo, int log);
 #define config_release_mount(x) config_clear_mount(x,0)
 int config_mount_ref (mount_proxy *mountinfo, int inc);
-mount_proxy *config_lock_mount (ice_config_t *config, const char *mount);
-mount_proxy *config_find_mount (ice_config_t *config, const char *mount);
-int config_http_copy (ice_config_http_header_t *src, ice_config_http_header_t **dest);
+mount_proxy *config_lock_mount (mc_config_t *config, const char *mount);
+mount_proxy *config_find_mount (mc_config_t *config, const char *mount);
+int config_http_copy (mc_config_http_header_t *src, mc_config_http_header_t **dest);
 void config_xml_parse_failure (void*x,  xmlErrorPtr error);
 int config_qsizing_conv_a2n (const char *str, uint32_t *p);
+int config_mount_template (const char *mount);
+aliases *config_clear_alias (aliases *alias);
+config_options_t *config_clear_option (config_options_t *opt);
 
 int config_rehash(void);
 
-ice_config_locks *config_locks(void);
+mc_config_locks *config_locks(void);
 
-ice_config_t *config_get_config_c(const char *file, int line);
+mc_config_t *config_get_config_c(const char *file, int line);
 #define config_get_config()     config_get_config_c(__FILE__,__LINE__)
-ice_config_t *config_grab_config(void);
+mc_config_t *config_grab_config(void);
 void config_release_config(void);
 
 /* To be used ONLY in one-time startup code */
-ice_config_t *config_get_config_unlocked(void);
+mc_config_t *config_get_config_unlocked(void);
 
 #endif  /* __CFGFILE_H__ */
 

@@ -1,7 +1,7 @@
 /* thread.h
  * - Thread Abstraction Function Headers
  *
- * Copyright (c) 1999, 2000 the icecast team <team@icecast.org>
+ * Copyright (c) 1999, 2000 the mcaster1 team <team@mcaster1.org>
  * Copyright (c) 2019-2023 Karl Heyes <karl@kheyes.plus.com>
  *
  *  This library is free software; you can redistribute it and/or

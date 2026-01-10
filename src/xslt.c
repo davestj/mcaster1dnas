@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -507,7 +507,7 @@ static int xslt_prepare_response (xsl_req *x)
     refbuf_t            *content = NULL;
     int len, rc = -1;
 
-    ice_http_t http = ICE_HTTP_INIT;
+    mc_http_t http = MC_HTTP_INIT;
     do
     {
         if (xslt_SaveResultToBuf (&content, &len, x->doc, sheet) < 0)
@@ -519,7 +519,7 @@ static int xslt_prepare_response (xsl_req *x)
         }
         x->cache = NULL;
         rc = 0;
-        ice_http_setup_flags (&http, x->client, 200, 0, NULL);
+        mc_http_setup_flags (&http, x->client, 200, 0, NULL);
 
         x->client = NULL;
         const char *mediatype = NULL;
@@ -539,17 +539,17 @@ static int xslt_prepare_response (xsl_req *x)
                     mediatype = "text/xml";
         }
         if (sheet->encoding)
-            ice_http_printf (&http, "Content-Type", 0, "%s; charset=%s", mediatype, (char *)sheet->encoding);
+            mc_http_printf (&http, "Content-Type", 0, "%s; charset=%s", mediatype, (char *)sheet->encoding);
         else
-            ice_http_printf (&http, "Content-Type", 0, "%s", mediatype);
+            mc_http_printf (&http, "Content-Type", 0, "%s", mediatype);
         thread_rwlock_unlock (&sheet_lock);
 
-        ice_http_apply_block (&http, content);
+        mc_http_apply_block (&http, content);
         http.in_length = len;
 
         thread_mutex_lock (&cache_lock);
         if (cached->disposition)
-            ice_http_printf (&http, "Content-Disposition", 0, "attachment; filename=\"%s\"", cached->disposition);
+            mc_http_printf (&http, "Content-Disposition", 0, "attachment; filename=\"%s\"", cached->disposition);
     } while (0);
 
     if (cached->refc > 0) cached->refc--;
@@ -557,7 +557,7 @@ static int xslt_prepare_response (xsl_req *x)
     // DEBUG3 ("Tmp: %s, cache %s, ref %d", (rc?"failed":"content"), cached->filename, cached->refc);
     thread_mutex_unlock (&cache_lock);
 
-    ice_http_complete (&http);
+    mc_http_complete (&http);
     return rc;
 }
 
@@ -574,7 +574,7 @@ void *xslt_update (void *arg)
         xsl_clients = client->next_on_worker;
         xsl_count--;
         thread_mutex_unlock (&update_lock);
-        int running = global_state() == ICE_RUNNING;
+        int running = global_state() == MC_RUNNING;
 
         xsl_req *x = (xsl_req *)client->aux_data;
         client->next_on_worker = NULL;

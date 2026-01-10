@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([Icecast], [2.4.0-kh22], [karl@kheyes.plus.com])
+AC_INIT([Mcaster1DNAS], [2.5.0], [support@mcaster1.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign])
 
@@ -174,6 +174,35 @@ XIPH_PATH_OPENSSL([
     [ AC_MSG_NOTICE([SSL disabled!])
     ])
 
+dnl -- YAML configuration support --
+AC_ARG_WITH([yaml],
+    [AS_HELP_STRING([--with-yaml],
+        [Enable YAML configuration file support (requires libyaml)])],
+    [with_yaml=$withval],
+    [with_yaml=check])
+
+if test "x$with_yaml" != "xno"; then
+    PKG_CHECK_MODULES([YAML], [yaml-0.1 >= 0.1.7],
+        [
+            AC_DEFINE([HAVE_YAML], [1], [Define if libyaml is available])
+            XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$YAML_CFLAGS])
+            XIPH_VAR_PREPEND([XIPH_LIBS],[$YAML_LIBS])
+            have_yaml=yes
+            AC_MSG_NOTICE([YAML configuration support enabled])
+        ],
+        [
+            if test "x$with_yaml" = "xyes"; then
+                AC_MSG_ERROR([libyaml development files not found. Install libyaml-dev or yaml-devel, or use --without-yaml])
+            fi
+            have_yaml=no
+            AC_MSG_NOTICE([YAML configuration support disabled])
+        ])
+else
+    have_yaml=no
+    AC_MSG_NOTICE([YAML configuration support disabled])
+fi
+AM_CONDITIONAL([HAVE_YAML], [test "x$have_yaml" = "xyes"])
+
 AM_CONDITIONAL([BUILD_AUTHCMD], [ test "x$ac_cv_func_fork" = "xyes"])
 
 dnl Make substitutions
@@ -209,5 +238,5 @@ AC_CONFIG_FILES([
    admin/Makefile
    windows/Makefile
 ])
-AM_COND_IF([WINDOWS], [AC_CONFIG_FILES([icecast.nsis:conf/$host.nsis.in])])
+AM_COND_IF([WINDOWS], [AC_CONFIG_FILES([mcaster1.nsis:conf/$host.nsis.in])])
 AC_OUTPUT

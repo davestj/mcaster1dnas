@@ -110,15 +110,15 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libiceavl_la_LIBADD =
-am_libiceavl_la_OBJECTS = libiceavl_la-avl.lo
-libiceavl_la_OBJECTS = $(am_libiceavl_la_OBJECTS)
+libmcavl_la_LIBADD =
+am_libmcavl_la_OBJECTS = libmcavl_la-avl.lo
+libmcavl_la_OBJECTS = $(am_libmcavl_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libiceavl_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libiceavl_la_CFLAGS) \
+libmcavl_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmcavl_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -135,7 +135,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libiceavl_la-avl.Plo
+am__depfiles_remade = ./$(DEPDIR)/libmcavl_la-avl.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -155,8 +155,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libiceavl_la_SOURCES)
-DIST_SOURCES = $(libiceavl_la_SOURCES)
+SOURCES = $(libmcavl_la_SOURCES)
+DIST_SOURCES = $(libmcavl_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -261,6 +261,9 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKGCONFIG = @PKGCONFIG@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
@@ -291,6 +294,8 @@ XIPH_CPPFLAGS = @XIPH_CPPFLAGS@
 XIPH_LDFLAGS = @XIPH_LDFLAGS@
 XIPH_LIBS = @XIPH_LIBS@
 XSLTCONFIG = @XSLTCONFIG@
+YAML_CFLAGS = @YAML_CFLAGS@
+YAML_LIBS = @YAML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -348,10 +353,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = BUILDING COPYING README TODO avl.dsp test.c
-noinst_LTLIBRARIES = libiceavl.la
+noinst_LTLIBRARIES = libmcavl.la
 noinst_HEADERS = avl.h
-libiceavl_la_SOURCES = avl.c
-libiceavl_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmcavl_la_SOURCES = avl.c
+libmcavl_la_CFLAGS = @XIPH_CFLAGS@ -static
 AM_CPPFLAGS = -I$(top_srcdir)/src
 all: all-am
 
@@ -398,8 +403,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libiceavl.la: $(libiceavl_la_OBJECTS) $(libiceavl_la_DEPENDENCIES) $(EXTRA_libiceavl_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libiceavl_la_LINK)  $(libiceavl_la_OBJECTS) $(libiceavl_la_LIBADD) $(LIBS)
+libmcavl.la: $(libmcavl_la_OBJECTS) $(libmcavl_la_DEPENDENCIES) $(EXTRA_libmcavl_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libmcavl_la_LINK)  $(libmcavl_la_OBJECTS) $(libmcavl_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -407,7 +412,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libiceavl_la-avl.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcavl_la-avl.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -436,12 +441,12 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libiceavl_la-avl.lo: avl.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libiceavl_la_CFLAGS) $(CFLAGS) -MT libiceavl_la-avl.lo -MD -MP -MF $(DEPDIR)/libiceavl_la-avl.Tpo -c -o libiceavl_la-avl.lo `test -f 'avl.c' || echo '$(srcdir)/'`avl.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libiceavl_la-avl.Tpo $(DEPDIR)/libiceavl_la-avl.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='avl.c' object='libiceavl_la-avl.lo' libtool=yes @AMDEPBACKSLASH@
+libmcavl_la-avl.lo: avl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcavl_la_CFLAGS) $(CFLAGS) -MT libmcavl_la-avl.lo -MD -MP -MF $(DEPDIR)/libmcavl_la-avl.Tpo -c -o libmcavl_la-avl.lo `test -f 'avl.c' || echo '$(srcdir)/'`avl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcavl_la-avl.Tpo $(DEPDIR)/libmcavl_la-avl.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='avl.c' object='libmcavl_la-avl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libiceavl_la_CFLAGS) $(CFLAGS) -c -o libiceavl_la-avl.lo `test -f 'avl.c' || echo '$(srcdir)/'`avl.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcavl_la_CFLAGS) $(CFLAGS) -c -o libmcavl_la-avl.lo `test -f 'avl.c' || echo '$(srcdir)/'`avl.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -573,7 +578,7 @@ clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/libiceavl_la-avl.Plo
+		-rm -f ./$(DEPDIR)/libmcavl_la-avl.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -619,7 +624,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/libiceavl_la-avl.Plo
+		-rm -f ./$(DEPDIR)/libmcavl_la-avl.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

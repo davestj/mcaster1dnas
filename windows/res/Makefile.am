@@ -2,5 +2,5 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = Icecast2win.rc2
+EXTRA_DIST = Mcaster1Win.rc2
 

@@ -29,6 +29,27 @@ Features, improvements, and tasks planned for future releases.
 - [x] ICY2 module integrated into Makefile.am
 - [x] Successful compilation and installation
 
+### ✅ Completed in 2.5.1-rc1 (February 15, 2026)
+
+**Web Player Feature:**
+- [x] Full-featured browser-based audio player
+- [x] Real-time metadata polling (updates every 5 seconds)
+- [x] VU meters with Web Audio API visualization
+- [x] Volume control with localStorage persistence
+- [x] Responsive design for desktop and mobile
+- [x] Keyboard shortcuts (Space = play/pause, Esc = stop)
+- [x] Bookmarkable player windows for easy station access
+- [x] Player buttons integrated into stats.xsl, listmounts.xsl, status.xsl
+- [x] Admin player at `/admin/webplayer.xsl?mount=/stream.mp3`
+- [x] Public player at `/webplayer.xsl?mount=/stream.mp3`
+- [x] Complete documentation (WEBPLAYER_FEATURE.md)
+- [x] XSLT endpoint registration in src/admin.c
+
+**Metadata Display Fix:**
+- [x] Fixed listmounts.xsl showing "No metadata available"
+- [x] Changed command_list_mounts to use stats_get_xml(STATS_ALL)
+- [x] Now displays all 30+ metadata fields correctly
+
 ### ✅ Completed in 2.5.0 (February 14, 2026)
 
 **YAML Configuration:**
@@ -62,9 +83,140 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 📅 Version 2.6.1 - Security & Authentication (Next Release)
+## 📅 Version 2.6.1 - Podcast Features (Next Release)
 
 **Target:** Q2 2026
+**Focus:** Empowering podcasters and podcast hosting companies
+
+### Phase 1: Basic RSS Generation (Week 1-2)
+- [ ] **Podcast Directory Scanning** - Auto-detect audio files in configured directory
+  - Support for .mp3, .ogg, .m4a file formats
+  - Recursive directory scanning
+  - Modification date sorting (newest first)
+  - File change detection and auto-refresh
+
+- [ ] **Audio Metadata Parsing** - Extract ID3/Vorbis tags from audio files
+  - ID3v2 tag parsing for MP3 files (libid3tag)
+  - Vorbis comment parsing for .ogg files (libvorbisfile)
+  - AAC metadata for .m4a files (libavformat optional)
+  - Extract: title, artist, album, duration, cover art
+  - Duration detection for all formats
+
+- [ ] **RSS 2.0 Feed Generation** - Auto-generate podcast feeds
+  - Valid RSS 2.0 format with iTunes podcast tags
+  - Episode-level metadata (enclosure, duration, description)
+  - Show-level metadata (title, description, author, category)
+  - Auto-calculate file sizes and URLs
+  - W3C Feed Validator compliance
+
+- [ ] **Podcast Configuration Block** - YAML and XML config support
+  - `<podcasting>` block in XML config
+  - `podcasting:` block in YAML config
+  - Configure: media directory, RSS path, show metadata
+  - Auto-generate RSS option
+  - Show title, description, author, category, language, cover art
+
+- [ ] **Core Podcast Module** - New source files
+  - `src/podcasting.c` - Core podcast management
+  - `src/podcasting.h` - Public API and structures
+  - `src/id3_parser.c` - Audio metadata parser
+  - `src/id3_parser.h` - Parser interface
+  - Integration into Makefile.am build system
+  - Unit tests for metadata parsing
+
+### Phase 2: Web UI for Podcast Management (Week 3-4)
+- [ ] **Admin Podcast Page** - Episode management interface
+  - `admin/podcasts.xsl` - Podcast admin page
+  - Table view of all episodes (title, duration, size, format, date)
+  - Download links for each episode
+  - Play buttons (integrate with webplayer.xsl)
+  - RSS feed link with copy-to-clipboard
+  - Statistics: total episodes, storage used, latest episode
+
+- [ ] **Public Podcast Page** - Public-facing episode listing
+  - `web/podcasts.xsl` - Public podcast page
+  - Episode listing with embedded players
+  - Subscribe buttons (Apple Podcasts, Spotify, RSS)
+  - Show notes display (from .txt sidecar files)
+  - Responsive mobile design
+
+- [ ] **Episode Details Modal** - Full metadata display
+  - All ID3/Vorbis tags shown
+  - Cover art preview
+  - Technical info (bitrate, sample rate, channels)
+  - Download counter (optional)
+  - File path and size
+
+- [ ] **Admin Command Registration** - Register podcasts.xsl endpoint
+  - Add `command_podcast_list()` to src/admin.c
+  - XML response format: `<mcaster1podcasts>`
+  - Episode data structure in XML
+  - RSS validation status
+
+### Phase 3: Live Stream Recording (Week 5-6)
+- [ ] **Recording Engine** - Capture live streams to files
+  - Hook into format.c stream handlers
+  - Write stream data to file while broadcasting
+  - Handle source disconnects gracefully
+  - Atomic file writes (temp → rename on complete)
+  - Support for MP3 and Ogg Vorbis recording
+
+- [ ] **Per-Mount Recording Config** - Configure recording per mount point
+  - `podcast-recording:` config block in mount settings
+  - Enable/disable recording per mount
+  - Auto-publish to podcast directory option
+  - Output directory and filename pattern
+  - Episode title and description templates
+  - Max/min duration settings
+
+- [ ] **Auto-Publishing Workflow** - Publish recorded streams as episodes
+  - Validate recorded file after completion
+  - Extract metadata using id3_parser
+  - Move to podcast directory
+  - Update RSS feed automatically
+  - Notification system (log entry or webhook)
+
+- [ ] **Metadata Injection** - Embed metadata in recorded files
+  - Capture ICY metadata during recording
+  - Embed as ID3 tags in MP3 files
+  - Create show notes from metadata log
+  - Extract chapter markers from metadata changes
+
+- [ ] **Recording Controls** - Admin UI for manual recording
+  - Start/Stop recording buttons in stats.xsl
+  - Recording status indicator (red dot when active)
+  - Recording duration counter
+  - Estimated file size display
+  - Link to recorded episode once published
+
+- [ ] **Hybrid Mount Points (KILLER FEATURE!)** - Live + on-demand fallback
+  - New mount type: `hybrid`
+  - Stream live source when connected
+  - Fallback to podcast episode when disconnected
+  - Play modes: latest, random, sequential
+  - Loop option for continuous playback
+  - Seamless transitions between live and on-demand
+
+### Documentation
+- [ ] **PODCAST_QUICKSTART.md** - 5-minute setup guide
+- [ ] **PODCAST_WEB_UI.md** - Admin interface walkthrough
+- [ ] **PODCAST_RECORDING.md** - Live recording setup guide
+- [ ] **PODCAST_API.md** - Developer API reference
+- [ ] Update main README.md with podcast features
+
+### Testing
+- [ ] Test RSS feed in Apple Podcasts, Spotify, Pocket Casts
+- [ ] W3C Feed Validator compliance
+- [ ] Test recording with various stream formats
+- [ ] Test hybrid mode transitions (live ↔ podcast)
+- [ ] Load testing with 100+ episodes
+- [ ] Mobile browser compatibility
+
+---
+
+## 📅 Version 2.6.2 - Security & Authentication
+
+**Target:** Q3 2026
 **Focus:** Enhanced security and authentication methods
 
 ### High Priority
@@ -112,7 +264,7 @@ Features, improvements, and tasks planned for future releases.
 
 ## 📅 Version 2.7.0 - UI/UX Enhancements
 
-**Target:** Q3 2026
+**Target:** Q4 2026
 **Focus:** User experience and interface improvements
 
 ### High Priority
@@ -161,9 +313,9 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 📅 Version 2.7.0 - Feature Enhancements
+## 📅 Version 2.7.5 - Feature Enhancements
 
-**Target:** Q3 2026
+**Target:** Q4 2026
 **Focus:** New functionality and capabilities
 
 ### High Priority
@@ -216,7 +368,7 @@ Features, improvements, and tasks planned for future releases.
 
 ## 📅 Version 2.8.0 - Performance & Scalability
 
-**Target:** Q4 2026
+**Target:** Q1 2027
 **Focus:** Speed, efficiency, and scale
 
 ### High Priority
@@ -567,4 +719,5 @@ Have ideas for features? Contact us:
 
 **Last Updated:** February 15, 2026
 **Current Version:** 2.5.1-rc1 (Pre-Release)
-**Next Release:** 2.6.0 (Q2 2026 - pending encoder/client testing)
+**Next Release:** 2.6.1 (Q2 2026 - Podcast Features)
+**Following Release:** 2.6.2 (Q3 2026 - Security & Authentication)

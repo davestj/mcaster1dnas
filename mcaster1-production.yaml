@@ -43,7 +43,7 @@ paths:
   logdir: "/var/www/mcaster1.com/mcaster1dnas/build/logs"
   webroot: "/var/www/mcaster1.com/mcaster1dnas/web"
   adminroot: "/var/www/mcaster1.com/mcaster1dnas/admin"
-  ssl-certificate: "/var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem"
+  ssl-certificate: "/etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem"
   pidfile: "/var/www/mcaster1.com/mcaster1dnas/build/mcaster1.pid"
 
   # Aliases

@@ -1,24 +1,86 @@
 #!/bin/sh
+# Mcaster1DNAS Git Version Generator
+# Generates version string based on branch type and git state
+#
+# Branch-based release detection:
+#   - main/master → Production release (2.5.1)
+#   - rc/* → Release candidate (2.5.1-rc1)
+#   - development → Beta release (2.5.1-beta.YYYYMMDD.HHMMSS)
+#   - feature/* → Alpha release (2.5.1-alpha.YYYYMMDD.HHMMSS)
 
 GVF=git_hash.h
+VERSION_FILE=VERSION
 DEF_VER=$(date "+%Y%m%d%H%M%S")
 
-# First see if there is a version file (included in release tarballs),
-# then try git-describe, then default.
-if test -f version
-then
-	VN=$(cat version) || VN="$DEF_VER"
+# Read base version from VERSION file
+if test -f $VERSION_FILE; then
+	BASE_VER=$(cat $VERSION_FILE | tr -d '\n' | tr -d '\r')
 else
-	VN=$(git describe --match mcaster1\* --long --dirty=-modified 2>/dev/null | cut -d - -f 4-)
+	BASE_VER="2.5.1"
+	echo "Warning: VERSION file not found, using default: $BASE_VER" >&2
 fi
-test -z "$VN" && VN="$DEF_VER"
-if test -r $GVF
-then
+
+# Detect current branch
+if git rev-parse --git-dir >/dev/null 2>&1; then
+	BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+	SHORT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "")
+	IS_DIRTY=$(git diff-index --quiet HEAD -- 2>/dev/null || echo "-modified")
+else
+	BRANCH="unknown"
+	SHORT_HASH=""
+	IS_DIRTY=""
+fi
+
+# Generate version string based on branch
+case "$BRANCH" in
+	main|master)
+		# Production release - use base version only
+		VN="$BASE_VER"
+		;;
+	rc/*)
+		# Release candidate - find latest RC number
+		RC_NUM=$(git tag -l "${BASE_VER}-rc*" 2>/dev/null | \
+		         sed 's/.*-rc//' | \
+		         sort -n | \
+		         tail -1)
+		if test -z "$RC_NUM"; then
+			RC_NUM="1"
+		fi
+		VN="${BASE_VER}-rc${RC_NUM}"
+		;;
+	development)
+		# Beta release - append beta + timestamp
+		TIMESTAMP=$(date -u "+%Y%m%d.%H%M%S")
+		VN="${BASE_VER}-beta.${TIMESTAMP}"
+		;;
+	feature/*|hotfix/*|bugfix/*)
+		# Alpha release - append alpha + timestamp
+		TIMESTAMP=$(date -u "+%Y%m%d.%H%M%S")
+		VN="${BASE_VER}-alpha.${TIMESTAMP}"
+		;;
+	*)
+		# Unknown/detached - use git describe or timestamp
+		if test -n "$SHORT_HASH"; then
+			VN="${BASE_VER}-dev.${SHORT_HASH}"
+		else
+			VN="${BASE_VER}-dev.${DEF_VER}"
+		fi
+		;;
+esac
+
+# Append -modified if git tree is dirty
+VN="${VN}${IS_DIRTY}"
+
+# Check if version changed and update git_hash.h
+if test -r $GVF; then
 	VC=$(cut -d\" -f 2 <$GVF)
 else
 	VC=unset
 fi
+
 test "$VN" = "$VC" || {
 	echo "#define GIT_VERSION    \"$VN\"" >$GVF
+	echo "Generated: $GVF with version $VN" >&2
 }
+
 echo >&2 "GIT_VERSION=$VN"

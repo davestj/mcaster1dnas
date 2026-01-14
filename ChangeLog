@@ -1,0 +1,131 @@
+# Mcaster1DNAS - Change Log
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [Unreleased]
+
+### Added
+- **Web Player Feature** - Full-featured browser-based audio player (February 15, 2026)
+  - Real-time metadata polling (updates every 5 seconds)
+  - VU meters with Web Audio API visualization
+  - Volume control with localStorage persistence
+  - Responsive design for desktop and mobile
+  - Keyboard shortcuts (Space = play/pause, Esc = stop)
+  - Bookmarkable player windows for easy station access
+  - Player buttons integrated into stats.xsl, listmounts.xsl, and status.xsl
+  - Admin player: `/admin/webplayer.xsl?mount=/stream.mp3`
+  - Public player: `/webplayer.xsl?mount=/stream.mp3`
+  - Full documentation in WEBPLAYER_FEATURE.md
+
+- **Podcast Planning** - Comprehensive podcast feature roadmap (February 15, 2026)
+  - 6-week implementation plan for podcast hosting capabilities
+  - RSS auto-generation from audio file metadata
+  - Live stream recording with auto-publishing
+  - Hybrid mount points (live + on-demand fallback)
+  - Full planning document in PODCAST_PLANNING.md
+
+---
+
+## [2.5.1-rc1] - 2026-02-15
+
+### Fixed
+- **Metadata Display** - Fixed listmounts.xsl showing "No metadata available"
+  - Changed command_list_mounts to use stats_get_xml(STATS_ALL) instead of admin_build_sourcelist()
+  - Now displays all 30+ metadata fields (title, bitrate, samplerate, channels, etc.)
+  - Applied to stats.xsl, listmounts.xsl, and all admin endpoints
+
+### Changed
+- **XSLT Registration** - Improved endpoint registration pattern
+  - All XSL admin pages now properly registered in src/admin.c
+  - Server returns transformed HTML instead of raw XML
+
+---
+
+## [2.5.0] - 2026-02-14
+
+### Added
+- **YAML Configuration Support**
+  - Full YAML configuration file support with automatic format detection
+  - 100% feature parity with XML configuration
+  - Four comprehensive YAML templates provided
+  - Complete documentation in YAML_IMPLEMENTATION.md
+
+- **ICY-META v2.1+ Protocol**
+  - Complete ICY-META v2.1+ protocol implementation
+  - 29+ metadata fields (core, podcast, video, social, access control, verification)
+  - Auto-detection via icy-metadata-version header
+  - Seamless failover to ICY 1.x legacy support
+  - Dedicated icy2_meta.c/h module
+  - Complete protocol specification (ICY2_PROTOCOL_SPEC.md)
+
+- **HTTPS Source Support**
+  - SSL/TLS auto-detection for source encoders
+  - HTTPS source connections on any port
+  - Compatible with FFmpeg, Liquidsoap, Butt, OBS plugins
+
+- **YP Connection Logging**
+  - Per-YP-server logging capability
+  - Timestamped transaction logs (add/remove/touch)
+  - Optional yp-logfile parameter
+  - Admin interface YP log display tab
+
+- **Enhanced Admin Interface**
+  - Tabbed logs interface (4 tabs: Access, Error, Playlist, YP)
+  - Session persistence for active tab selection
+  - Live clock on all admin pages
+  - Fixed XML parsing errors in admin pages
+  - Enhanced navigation system
+  - Interactive help tooltip system
+
+- **Complete Rebranding**
+  - Rebranded from Icecast-KH to Mcaster1DNAS
+  - Modern HTML5/CSS3 web interface
+  - FontAwesome 6.4.0 icon integration
+  - Professional design system with CSS variables
+  - HTTPS/SSL by default (ports 9330 HTTP, 9443 HTTPS)
+  - Comprehensive documentation overhaul
+
+---
+
+## [2.4.0.kh22] - Icecast-KH (Pre-Fork)
+
+### Changed
+- Enhanced authentication processing
+- Worker thread improvements
+- Range handling updates
+- FLV metadata resize support
+
+---
+
+## [2.4.0.kh21] - Icecast-KH (Pre-Fork)
+
+### Added
+- Dual queue worker implementation
+- Fast/slow queue processing
+
+---
+
+*For complete Icecast-KH history, see NEWS.archive*
+
+---
+
+## Version History Key
+
+- **[Unreleased]** - Changes in development branch not yet released
+- **[2.5.1-rc1]** - Release Candidate 1 for version 2.5.1
+- **[2.5.0]** - First major release of Mcaster1DNAS (forked from Icecast-KH)
+- **[2.4.0.khXX]** - Previous Icecast-KH versions (pre-fork)
+
+---
+
+**Project:** Mcaster1DNAS - Digital Network Audio Server
+**Repository:** https://github.com/davestj/mcaster1dnas
+**Website:** https://mcaster1.com
+**Maintained by:** Dave St. John (davestj@gmail.com)
+
+Last Updated: February 15, 2026

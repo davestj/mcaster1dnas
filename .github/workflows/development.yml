@@ -213,7 +213,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mcaster1dnas-${{ steps.get_version.outputs.full_version }}-debian12
+          name: mcaster1dnas-debian12-build
           path: |
             mcaster1dnas-*.tar.gz
             build-version.txt
@@ -250,7 +250,12 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: mcaster1dnas-debian12-binary
+          name: mcaster1dnas-debian12-build
+
+      - name: Display version info
+        run: |
+          echo "=== Build Version Information ==="
+          cat build-version.txt || echo "Version info not available"
 
       - name: Setup test environment
         run: |
@@ -484,15 +489,26 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: mcaster1dnas-${{ needs.build-debian-12.outputs.full_version }}-debian12
+          name: mcaster1dnas-debian12-build
 
       - name: Test YAML config loading
         run: |
           echo "=== Testing YAML configuration parsing ==="
 
-          mkdir -p /tmp/yaml-test/{logs,web,admin}
-          cp -r web/* /tmp/yaml-test/web/
-          cp -r admin/* /tmp/yaml-test/admin/
+          # Create test directories
+          mkdir -p /tmp/yaml-test/logs
+          mkdir -p /tmp/yaml-test/web
+          mkdir -p /tmp/yaml-test/admin
+
+          # Copy web and admin files from source checkout
+          if [ -d "web" ]; then
+            cp -r web/* /tmp/yaml-test/web/ || echo "No web files to copy"
+          fi
+          if [ -d "admin" ]; then
+            cp -r admin/* /tmp/yaml-test/admin/ || echo "No admin files to copy"
+          fi
+
+          # Make binary executable
           chmod +x ${{ env.INSTALL_PREFIX }}/bin/mcaster1
 
           # Test minimal YAML config

@@ -382,11 +382,34 @@ jobs:
           echo "Port: ${{ env.TEST_PORT }}"
           echo "User: mcaster1"
 
-          # Start server as non-root user in background and capture output
-          su -s /bin/sh mcaster1 -c "${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml" > /tmp/mcaster1-stdout.log 2>&1 &
-          SERVER_PID=$!
-          echo "Server PID: $SERVER_PID"
-          echo $SERVER_PID > /tmp/server.pid
+          # Create a startup script that runs as mcaster1 user
+          cat > /tmp/start-server.sh << 'SCRIPT_EOF'
+#!/bin/sh
+exec /opt/mcaster1dnas/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml
+SCRIPT_EOF
+
+          chmod +x /tmp/start-server.sh
+          chown mcaster1:mcaster1 /tmp/start-server.sh
+
+          # Start server as non-root user in background
+          su -s /bin/sh mcaster1 -c "/tmp/start-server.sh > /tmp/mcaster1-stdout.log 2>&1 &"
+
+          # Give it a moment to start
+          sleep 3
+
+          # Find the actual mcaster1 process PID
+          SERVER_PID=$(pgrep -u mcaster1 mcaster1 || echo "")
+          if [ -n "$SERVER_PID" ]; then
+            echo "Server PID: $SERVER_PID"
+            echo $SERVER_PID > /tmp/server.pid
+          else
+            echo "✗ Could not find server process"
+            echo "=== Process list ==="
+            ps aux | grep mcaster1 | grep -v grep || echo "No mcaster1 processes"
+            echo "=== Startup script output ==="
+            cat /tmp/mcaster1-stdout.log || true
+            exit 1
+          fi
 
           # Wait a moment for initial startup
           sleep 2
@@ -442,6 +465,43 @@ jobs:
           fi
 
           echo "✓ Server is healthy and ready for tests"
+
+      - name: Verify server is running
+        run: |
+          echo "=== Verifying server status before tests ==="
+
+          # Check if PID file exists
+          if [ -f /tmp/server.pid ]; then
+            SERVER_PID=$(cat /tmp/server.pid)
+            echo "Server PID from file: $SERVER_PID"
+
+            # Check if process is running
+            if ps -p $SERVER_PID > /dev/null 2>&1; then
+              echo "✓ Server process is running (PID: $SERVER_PID)"
+              ps aux | grep mcaster1 | grep -v grep
+            else
+              echo "✗ Server process is NOT running (PID: $SERVER_PID)"
+              echo "=== Process list ==="
+              ps aux | grep mcaster1 | grep -v grep || echo "No mcaster1 processes found"
+            fi
+          else
+            echo "✗ No PID file found at /tmp/server.pid"
+          fi
+
+          # Check if port is listening
+          echo ""
+          echo "=== Checking port 8000 ==="
+          netstat -tlnp 2>/dev/null | grep 8000 || echo "Port 8000 not listening"
+
+          # Show recent server output
+          echo ""
+          echo "=== Server stdout/stderr (last 50 lines) ==="
+          tail -50 /tmp/mcaster1-stdout.log 2>/dev/null || echo "No stdout log found"
+
+          # Show error log
+          echo ""
+          echo "=== Server error log (last 20 lines) ==="
+          tail -20 /tmp/mcaster1-test/logs/error.log 2>/dev/null || echo "No error log found"
 
       - name: Test HTTP endpoints
         run: |

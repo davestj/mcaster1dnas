@@ -382,32 +382,25 @@ jobs:
           echo "Port: ${{ env.TEST_PORT }}"
           echo "User: mcaster1"
 
-          # Create a startup script that runs as mcaster1 user
-          cat > /tmp/start-server.sh << 'SCRIPT_EOF'
-#!/bin/sh
-exec /opt/mcaster1dnas/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml
-SCRIPT_EOF
+          # Start server as mcaster1 user in background
+          # Use nohup to ensure it stays running after su exits
+          su mcaster1 -s /bin/sh -c "nohup ${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml > /tmp/mcaster1-stdout.log 2>&1 &"
 
-          chmod +x /tmp/start-server.sh
-          chown mcaster1:mcaster1 /tmp/start-server.sh
-
-          # Start server as non-root user in background
-          su -s /bin/sh mcaster1 -c "/tmp/start-server.sh > /tmp/mcaster1-stdout.log 2>&1 &"
-
-          # Give it a moment to start
+          # Give it time to start
           sleep 3
 
-          # Find the actual mcaster1 process PID
-          SERVER_PID=$(pgrep -u mcaster1 mcaster1 || echo "")
+          # Find the mcaster1 process PID
+          SERVER_PID=$(pgrep -u mcaster1 mcaster1 2>/dev/null || echo "")
+
           if [ -n "$SERVER_PID" ]; then
-            echo "Server PID: $SERVER_PID"
-            echo $SERVER_PID > /tmp/server.pid
+            echo "✓ Server started with PID: $SERVER_PID"
+            echo "$SERVER_PID" > /tmp/server.pid
           else
-            echo "✗ Could not find server process"
+            echo "✗ Server process not found"
             echo "=== Process list ==="
             ps aux | grep mcaster1 | grep -v grep || echo "No mcaster1 processes"
-            echo "=== Startup script output ==="
-            cat /tmp/mcaster1-stdout.log || true
+            echo "=== Server output ==="
+            cat /tmp/mcaster1-stdout.log 2>/dev/null || echo "No output log"
             exit 1
           fi
 

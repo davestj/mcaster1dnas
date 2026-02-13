@@ -1,5 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="html" indent="yes" encoding="UTF-8" doctype-system="about:legacy-compat"/>
+<xsl:include href="header.xsl"/>
+<xsl:include href="footer.xsl"/>
 
 <xsl:template match="/mcaster1stats">
 <html lang="en">
@@ -14,37 +16,17 @@
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
     <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
     <script src="/mcaster-utils.js"></script>
 </head>
 <body>
-    <div class="mcaster-header">
-        <div class="mcaster-container">
-            <div class="mcaster-header-top">
-                <div class="mcaster-brand">
-                    <div class="brand-icon">M1</div>
-                    <div class="brand-text">
-                        <h1 style="margin: 0; font-size: 1.75rem;">
-                            <span class="brand-mcaster">Mcaster1</span>
-                            <span class="brand-dnas">DNAS</span>
-                        </h1>
-                    </div>
-                </div>
-                <div class="mcaster-clock">
-                    <div class="mcaster-clock-time">
-                        <i class="fas fa-clock mcaster-clock-icon"></i>
-                        <span id="live-time">Loading...</span>
-                    </div>
-                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
-                </div>
-            </div>
-            <div class="mcaster-nav">
-                <a href="status.xsl"><i class="fas fa-home"></i> Status</a>
-                <a href="server_version.xsl"><i class="fas fa-info-circle"></i> Server Info</a>
-                <a href="credits.xsl" class="active"><i class="fas fa-award"></i> Credits</a>
-                <a href="/admin/stats.xsl"><i class="fas fa-shield-alt"></i> Admin</a>
-            </div>
-        </div>
-    </div>
+    <xsl:call-template name="web-header">
+        <xsl:with-param name="active-page" select="'credits'"/>
+        <xsl:with-param name="title" select="'Credits &amp; About - Mcaster1DNAS'"/>
+    </xsl:call-template>
 
     <div class="mcaster-main">
         <div class="mcaster-container">
@@ -189,11 +171,7 @@
         </div>
     </div>
 
-    <div class="mcaster-footer">
-        <div class="mcaster-container">
-            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server | <a href="credits.xsl">Credits</a> | GNU GPL v2</p>
-        </div>
-    </div>
+    <xsl:call-template name="web-footer"/>
 </body>
 </html>
 </xsl:template>

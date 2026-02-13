@@ -366,21 +366,101 @@
 
         /* Mobile Responsive */
         @media (max-width: 640px) {
+            body {
+                padding: 0;
+            }
+
             .player-window {
                 margin: 0;
                 border-radius: 0;
+                min-height: 100vh;
             }
 
-            .player-body {
+            .player-header {
                 padding: 1rem;
             }
 
-            .stream-info {
-                grid-template-columns: repeat(2, 1fr);
+            .player-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .player-body {
+                padding: 0.75rem;
+            }
+
+            .now-playing {
+                padding: 1rem;
+                margin-bottom: 1rem;
             }
 
             .current-title {
                 font-size: 1rem;
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            .audio-controls {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                padding: 0.75rem;
+            }
+
+            .control-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 1.4rem;
+            }
+
+            .volume-control {
+                width: 100%;
+                flex-basis: 100%;
+            }
+
+            .volume-slider {
+                height: 10px;
+            }
+
+            .volume-slider::-webkit-slider-thumb {
+                width: 26px;
+                height: 26px;
+            }
+
+            .volume-slider::-moz-range-thumb {
+                width: 26px;
+                height: 26px;
+            }
+
+            .stream-info {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .info-card {
+                padding: 0.6rem;
+            }
+
+            .info-value {
+                font-size: 0.875rem;
+            }
+
+            .vu-meter {
+                height: 24px;
+            }
+
+            .bookmark-hint {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .stream-info {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .control-btn {
+                width: 50px;
+                height: 50px;
             }
         }
 
@@ -524,11 +604,17 @@
                     <div class="info-value">
                         <i class="fas fa-file-audio"></i>
                         <xsl:choose>
-                            <xsl:when test="contains(source/server_type, 'mpeg')">MP3</xsl:when>
-                            <xsl:when test="contains(source/server_type, 'ogg')">Vorbis</xsl:when>
+                            <xsl:when test="source/server_type = 'audio/mpeg'">MP3</xsl:when>
+                            <xsl:when test="source/server_type = 'audio/aacp'">AAC+</xsl:when>
                             <xsl:when test="contains(source/server_type, 'aac')">AAC</xsl:when>
-                            <xsl:when test="contains(source/server_type, 'opus')">Opus</xsl:when>
-                            <xsl:otherwise>Unknown</xsl:otherwise>
+                            <xsl:when test="contains(source/server_type, 'ogg')">
+                                <xsl:choose>
+                                    <xsl:when test="source/subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
+                                    <xsl:when test="source/subtype">Ogg <xsl:value-of select="source/subtype"/></xsl:when>
+                                    <xsl:otherwise>Opus</xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:when>
+                            <xsl:otherwise><xsl:value-of select="source/server_type"/></xsl:otherwise>
                         </xsl:choose>
                     </div>
                 </div>
@@ -554,11 +640,11 @@
                     <div class="info-value">
                         <i class="fas fa-wave-square"></i>
                         <xsl:choose>
-                            <xsl:when test="source/samplerate">
-                                <xsl:value-of select="source/samplerate"/> Hz
+                            <xsl:when test="source/mpeg_samplerate">
+                                <xsl:value-of select="source/mpeg_samplerate"/> Hz
                             </xsl:when>
-                            <xsl:when test="source/ice-samplerate">
-                                <xsl:value-of select="source/ice-samplerate"/> Hz
+                            <xsl:when test="source/audio_samplerate">
+                                <xsl:value-of select="source/audio_samplerate"/> Hz
                             </xsl:when>
                             <xsl:otherwise>N/A</xsl:otherwise>
                         </xsl:choose>
@@ -570,10 +656,10 @@
                     <div class="info-value">
                         <i class="fas fa-volume-up"></i>
                         <xsl:choose>
-                            <xsl:when test="source/channels = 2">Stereo</xsl:when>
-                            <xsl:when test="source/channels = 1">Mono</xsl:when>
-                            <xsl:when test="source/ice-channels = 2">Stereo</xsl:when>
-                            <xsl:when test="source/ice-channels = 1">Mono</xsl:when>
+                            <xsl:when test="source/mpeg_channels = '2' or source/audio_channels = '2'">Stereo</xsl:when>
+                            <xsl:when test="source/mpeg_channels = '1' or source/audio_channels = '1'">Mono</xsl:when>
+                            <xsl:when test="source/mpeg_channels"><xsl:value-of select="source/mpeg_channels"/> ch</xsl:when>
+                            <xsl:when test="source/audio_channels"><xsl:value-of select="source/audio_channels"/> ch</xsl:when>
                             <xsl:otherwise>N/A</xsl:otherwise>
                         </xsl:choose>
                     </div>
@@ -581,7 +667,7 @@
 
                 <div class="info-card">
                     <div class="info-label">Listeners</div>
-                    <div class="info-value">
+                    <div class="info-value" id="listenersValue">
                         <i class="fas fa-users"></i>
                         <xsl:choose>
                             <xsl:when test="source/listeners">
@@ -594,7 +680,7 @@
 
                 <div class="info-card">
                     <div class="info-label">Peak</div>
-                    <div class="info-value">
+                    <div class="info-value" id="peakListenersValue">
                         <i class="fas fa-chart-line"></i>
                         <xsl:choose>
                             <xsl:when test="source/listener_peak">
@@ -606,21 +692,25 @@
                 </div>
             </div>
 
-            <!-- Hidden Audio Element -->
-            <audio id="streamAudio" preload="none" style="display: none;">
+            <!-- Hidden Audio Element (crossorigin required for Web Audio API CORS on mobile) -->
+            <audio id="streamAudio" preload="none" crossorigin="anonymous" style="display: none;">
                 <source src="{source/@mount}" type="{source/server_type}"/>
                 Your browser does not support the audio element.
             </audio>
         </div>
     </div>
 
+    <!-- XSLT config vars: outside CDATA so expressions are evaluated by XSLT processor -->
+    <script>
+        var streamUrl  = '<xsl:value-of select="source/@mount"/>';
+        var streamType = '<xsl:value-of select="source/server_type"/>';
+    </script>
     <script>
     //<![CDATA[
-        // Stream configuration from XSLT
-        const streamUrl = '<xsl:value-of select="source/@mount"/>';
-        const streamTitle = '<xsl:value-of select="source/title"/>';
-        const stationName = '<xsl:value-of select="source/server_name"/>';
-        const streamType = '<xsl:value-of select="source/server_type"/>';
+        // streamUrl and streamType defined above (outside CDATA)
+        // Title/station read from DOM to avoid JS string-escaping issues with apostrophes
+        let streamTitle = '';
+        let stationName = '';
 
         // Player state
         let audioElement = document.getElementById('streamAudio');
@@ -632,6 +722,12 @@
 
         // Initialize volume from localStorage or default to 80%
         window.addEventListener('load', function() {
+            // Read initial values from DOM
+            const titleEl = document.getElementById('currentTitle');
+            const stationEl = document.querySelector('.station-name');
+            streamTitle = titleEl ? titleEl.textContent.trim() : '';
+            stationName = stationEl ? stationEl.textContent.trim() : 'Mcaster1DNAS';
+
             const savedVolume = localStorage.getItem('mcaster1_volume');
             if (savedVolume) {
                 document.getElementById('volumeSlider').value = savedVolume;
@@ -643,7 +739,8 @@
             // Set up audio event listeners
             setupAudioEvents();
 
-            // Update title every 5 seconds
+            // Poll metadata immediately then every 5 seconds
+            updateMetadata();
             setInterval(updateMetadata, 5000);
         });
 
@@ -683,6 +780,10 @@
 
         function playStream() {
             showBuffering();
+            // Resume AudioContext on user gesture — mobile browsers start it suspended
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
             audioElement.load();
             audioElement.play().catch(function(error) {
                 hideBuffering();
@@ -737,44 +838,65 @@
         }
 
         function updateDocumentTitle() {
-            if (isPlaying) {
-                document.title = '▶ ' + streamTitle + ' - ' + stationName;
+            if (streamTitle) {
+                document.title = (isPlaying ? '▶ ' : '') + streamTitle + ' — ' + stationName;
             } else {
-                document.title = 'Mcaster1DNAS Player - ' + stationName;
+                document.title = 'Mcaster1DNAS Player — ' + stationName;
             }
         }
 
         function updateMetadata() {
-            // Poll the stats endpoint for updated metadata
-            if (!isPlaying) return;
-
-            fetch('../status-json.xsl')
+            // Poll the JSON stats endpoint for updated metadata
+            fetch('/status-json.xsl')
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.icestats && data.icestats.source) {
-                        const sources = Array.isArray(data.icestats.source)
-                            ? data.icestats.source
-                            : [data.icestats.source];
+                    // Support both mcaster1stats and icestats root keys
+                    const stats = (data && (data.mcaster1stats || data.icestats)) || null;
+                    if (!stats || !stats.source) return;
 
-                        const currentSource = sources.find(s => s.listenurl && s.listenurl.includes(streamUrl));
-                        if (currentSource && currentSource.title) {
-                            const titleElement = document.getElementById('currentTitle');
-                            if (titleElement.textContent !== currentSource.title) {
-                                titleElement.textContent = currentSource.title;
-                                updateDocumentTitle();
-                            }
-                        }
+                    const sources = Array.isArray(stats.source) ? stats.source : [stats.source];
+                    const currentSource = sources.find(s => s.mount === streamUrl);
+                    if (!currentSource) return;
+
+                    // Update song title
+                    const newTitle = currentSource.title || currentSource.yp_currently_playing || '';
+                    const titleElement = document.getElementById('currentTitle');
+                    if (titleElement && newTitle && titleElement.textContent !== newTitle) {
+                        titleElement.textContent = newTitle;
+                        streamTitle = newTitle;
+                    }
+                    if (newTitle && !streamTitle) streamTitle = newTitle;
+                    updateDocumentTitle();
+
+                    // Update live listener count
+                    const listenersEl = document.getElementById('listenersValue');
+                    if (listenersEl && currentSource.listeners !== undefined) {
+                        listenersEl.innerHTML = '<i class="fas fa-users"></i> ' + (currentSource.listeners || 0);
+                    }
+
+                    // Update peak listeners
+                    const peakEl = document.getElementById('peakListenersValue');
+                    if (peakEl && currentSource.listener_peak !== undefined) {
+                        peakEl.innerHTML = '<i class="fas fa-chart-line"></i> ' + (currentSource.listener_peak || 0);
                     }
                 })
-                .catch(err => console.error('Metadata update failed:', err));
+                .catch(err => console.warn('Metadata poll failed:', err));
         }
+
+        // Peak hold state for VU meters
+        let peakLeft = 0, peakRight = 0;
+        let peakHoldLeft = 0, peakHoldRight = 0;
+        const PEAK_DECAY = 0.92;
+        const PEAK_HOLD_FRAMES = 20;
+        let peakHoldCountLeft = 0, peakHoldCountRight = 0;
 
         function startVUMeters() {
             if (!audioContext) {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 256;
+                    analyser.fftSize = 2048;
+                    analyser.smoothingTimeConstant = 0.4;
 
                     if (!source) {
                         source = audioContext.createMediaElementSource(audioElement);
@@ -787,31 +909,53 @@
                 }
             }
 
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+            // Mobile browsers start AudioContext in suspended state — resume it on user gesture
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().catch(function(e) {
+                    console.warn('AudioContext resume failed:', e);
+                });
+            }
+
+            const bufferLength = analyser.fftSize;
+            const timeData = new Float32Array(bufferLength);
+
+            peakLeft = 0; peakRight = 0;
 
             vuMeterInterval = setInterval(function() {
-                analyser.getByteFrequencyData(dataArray);
+                // Use time-domain RMS for accurate volume metering
+                analyser.getFloatTimeDomainData(timeData);
 
-                // Calculate average amplitude
-                let sum = 0;
-                for (let i = 0; i < bufferLength; i++) {
-                    sum += dataArray[i];
+                let sumSqL = 0, sumSqR = 0;
+                const half = bufferLength / 2;
+                for (let i = 0; i < half; i++) {
+                    sumSqL += timeData[i] * timeData[i];
+                    sumSqR += timeData[i + half] * timeData[i + half];
                 }
-                const average = sum / bufferLength;
-                const percentage = (average / 255) * 100;
+                // RMS, boosted 3x for visual impact and clamped to 100%
+                const rmsL = Math.min(1.0, Math.sqrt(sumSqL / half) * 3.0);
+                const rmsR = Math.min(1.0, Math.sqrt(sumSqR / half) * 3.0);
+                const pctL = rmsL * 100;
+                const pctR = rmsR * 100;
 
-                // Update both channels with slight variation
-                const leftPercentage = Math.min(100, percentage + (Math.random() * 5 - 2.5));
-                const rightPercentage = Math.min(100, percentage + (Math.random() * 5 - 2.5));
+                // Smooth bar decay
+                peakLeft  = Math.max(pctL, peakLeft  * PEAK_DECAY);
+                peakRight = Math.max(pctR, peakRight * PEAK_DECAY);
 
-                document.getElementById('vuMeterLeft').style.width = leftPercentage + '%';
-                document.getElementById('vuMeterRight').style.width = rightPercentage + '%';
+                document.getElementById('vuMeterLeft').style.width  = peakLeft  + '%';
+                document.getElementById('vuMeterRight').style.width = peakRight + '%';
 
-                // Update peaks
-                document.getElementById('vuPeakLeft').style.left = leftPercentage + '%';
-                document.getElementById('vuPeakRight').style.left = rightPercentage + '%';
-            }, 100);
+                // Peak hold logic
+                if (pctL >= peakHoldLeft)  { peakHoldLeft  = pctL;  peakHoldCountLeft  = PEAK_HOLD_FRAMES; }
+                else if (peakHoldCountLeft  > 0) peakHoldCountLeft--;
+                else peakHoldLeft  = Math.max(0, peakHoldLeft  - 1.5);
+
+                if (pctR >= peakHoldRight) { peakHoldRight = pctR;  peakHoldCountRight = PEAK_HOLD_FRAMES; }
+                else if (peakHoldCountRight > 0) peakHoldCountRight--;
+                else peakHoldRight = Math.max(0, peakHoldRight - 1.5);
+
+                document.getElementById('vuPeakLeft').style.left  = Math.min(98, peakHoldLeft)  + '%';
+                document.getElementById('vuPeakRight').style.left = Math.min(98, peakHoldRight) + '%';
+            }, 60);
         }
 
         function stopVUMeters() {
@@ -819,8 +963,12 @@
                 clearInterval(vuMeterInterval);
                 vuMeterInterval = null;
             }
+            peakLeft = 0; peakRight = 0;
+            peakHoldLeft = 0; peakHoldRight = 0;
             document.getElementById('vuMeterLeft').style.width = '0%';
             document.getElementById('vuMeterRight').style.width = '0%';
+            document.getElementById('vuPeakLeft').style.left = '0%';
+            document.getElementById('vuPeakRight').style.left = '0%';
         }
 
         function showBookmarkHint() {

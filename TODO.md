@@ -4,9 +4,9 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 🎯 Current Version: 2.6.0
+## 🎯 Current Version: 2.5.1-rc1 (Pre-Release)
 
-### ✅ Completed in 2.6.0 (February 15, 2026)
+### 🧪 In Testing - v2.6.0 Features (Alpha/RC1)
 
 **ICY-META v2.1+ Protocol:**
 - [x] Complete ICY-META v2.1+ protocol implementation
@@ -17,11 +17,13 @@ Features, improvements, and tasks planned for future releases.
 - [x] Stats system integration for admin interface display
 - [x] Complete protocol specification (ICY2_PROTOCOL_SPEC.md)
 - [x] curl testing and validation
+- [ ] **Needs testing with Mcaster1Encoder and TagStack clients**
 
 **HTTPS Source Support:**
 - [x] SSL/TLS auto-detection for source encoders
 - [x] HTTPS source connections on any port
 - [x] Compatible with FFmpeg, Liquidsoap, Butt, OBS plugins
+- [ ] **Needs production testing**
 
 **Build System:**
 - [x] ICY2 module integrated into Makefile.am
@@ -256,6 +258,120 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
+## 🌐 Mcaster1 Ecosystem Development
+
+### 🎙️ Mcaster1Encoder (DSP Encoder Platform)
+
+**Status:** Alpha Development - Q1-Q4 2026
+**Repository:** https://github.com/davestj/mcaster1encoder
+
+#### Phase 1: Core Architecture (Q1 2026)
+- [ ] Basic DSP encoder functionality
+- [ ] Live audio capture from sound cards
+- [ ] File source support (MP3, Ogg Vorbis, WAV)
+- [ ] Initial integration with Mcaster1DNAS using ICY protocol
+- [ ] Integration with SAM Broadcaster, Winamp, Liquidsoap
+
+#### Phase 2: Podcast Automation (Q2 2026)
+- [ ] Podcast show creation interface
+- [ ] Folder-based content management
+- [ ] Automated playlist generation
+- [ ] Integration with Mcaster1 TagStack for metadata management
+- [ ] Episode scheduling and rotation
+
+#### Phase 3: Twitch Integration (Q3 2026)
+- [ ] **Twitch stream rebroadcasting**
+- [ ] **Relay Twitch streams to Mcaster1DNAS**
+- [ ] Multi-platform streaming (Twitch + Mcaster1DNAS simultaneously)
+- [ ] Real-time chat integration
+- [ ] Twitch API integration for stream metadata
+
+#### Phase 4: Video Support (Q4 2026)
+- [ ] Full video encoding support (MP4, Ogg Theora, WebM)
+- [ ] Video podcast automation
+- [ ] Live video capture
+- [ ] Multi-bitrate adaptive streaming
+- [ ] Video blog (vlog) support
+
+#### Phase 5: Influencer Platform (2027)
+- [ ] Integration with OnlyFans, Patreon
+- [ ] Social media platform connections
+- [ ] E-commerce for branded merchandise
+- [ ] Subscription management
+- [ ] Fan engagement tools
+- [ ] In-stream promos and callouts middleware
+- [ ] Shoutout and sponsorship management
+
+### 🏷️ Mcaster1 TagStack (ICY 2.0 Metadata Manager)
+
+**Status:** Beta Development - Q2-Q3 2026
+**Repository:** https://github.com/davestj/mcaster1-tagstack
+
+#### Core Features (Q2 2026)
+- [ ] ICY 2.0 protocol compliance (29+ fields)
+- [ ] Hashtag composer with auto-suggestions
+- [ ] Emoji indicator support
+- [ ] Social media header integration (Twitter, Twitch, YouTube, Instagram, TikTok)
+- [ ] Real-time metadata preview
+- [ ] Field validation and character counting
+
+#### Podcast & Playlist Management (Q2 2026)
+- [ ] Podcast show manager
+- [ ] Episode metadata editor
+- [ ] Show notes and chapter markers
+- [ ] Playlist generation for Mcaster1Encoder
+- [ ] Drag-and-drop playlist interface
+- [ ] Smart shuffle and crossfade settings
+- [ ] Automated rotation schedules
+
+#### Influencer Tools (Q3 2026)
+- [ ] Promo and callout scheduling
+- [ ] Sponsored content manager
+- [ ] In-stream advertisement insertion points
+- [ ] Merchandise link embedding
+- [ ] Subscription platform integration (OnlyFans, Patreon, Ko-fi)
+- [ ] Supporter shoutout automation
+
+#### Analytics & Integration (Q3 2026)
+- [ ] Hashtag performance tracking
+- [ ] Social media engagement metrics
+- [ ] Listener demographics
+- [ ] Export reports for sponsors
+- [ ] Live sync with Mcaster1DNAS server
+- [ ] Real-time metadata updates during broadcasts
+
+### 📡 YP Directory Modernization (yp.mcaster1.com)
+
+**Status:** Planning - Q3-Q4 2026
+**Repository:** https://github.com/davestj/mcaster1-yp
+
+#### Core Features
+- [ ] Modern web interface for stream directory
+- [ ] Search and discovery engine
+- [ ] Genre categorization and filtering
+- [ ] ICY 2.0 metadata display (hashtags, social links)
+- [ ] Podcast directory integration
+- [ ] Video stream support
+- [ ] Geographic search
+- [ ] Language filtering
+
+#### Server Integration
+- [ ] Automatic stream registration from Mcaster1DNAS
+- [ ] Health check and monitoring
+- [ ] Stream quality scoring
+- [ ] Uptime statistics
+- [ ] Listener count aggregation
+
+#### User Features
+- [ ] User accounts for broadcasters
+- [ ] Stream ownership verification
+- [ ] Custom stream pages
+- [ ] Analytics dashboard for broadcasters
+- [ ] Featured streams and promotion
+- [ ] Community ratings and reviews
+
+---
+
 ## 📅 Future Versions (2.9.0+)
 
 ### Advanced Features
@@ -449,6 +565,6 @@ Have ideas for features? Contact us:
 
 ---
 
-**Last Updated:** February 14, 2026
-**Current Version:** 2.5.0
-**Next Release:** 2.6.0 (Q2 2026)
+**Last Updated:** February 15, 2026
+**Current Version:** 2.5.1-rc1 (Pre-Release)
+**Next Release:** 2.6.0 (Q2 2026 - pending encoder/client testing)

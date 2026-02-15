@@ -1195,6 +1195,58 @@ static int command_list_log (client_t *client, int response)
         log = config->access_log.logid;
     else if (strcmp (logname, "playlistlog") == 0)
         log = config->playlist_log.logid;
+    else if (strcmp (logname, "yplog") == 0)
+    {
+        /* YP log is written to disk, read it directly from file */
+        char yp_log_path[512];
+        FILE *fp;
+        long file_size;
+
+        snprintf (yp_log_path, sizeof(yp_log_path), "%s/yp-health.log", config->log_dir ? config->log_dir : "./logs");
+        fp = fopen (yp_log_path, "rb");
+        if (fp == NULL)
+        {
+            config_release_config();
+            WARN1 ("YP log file not found: %s", yp_log_path);
+            return client_send_400 (client, "YP log not available");
+        }
+
+        /* Get file size */
+        fseek (fp, 0, SEEK_END);
+        file_size = ftell (fp);
+        fseek (fp, 0, SEEK_SET);
+
+        /* Read entire file into buffer */
+        content = refbuf_new (file_size + 1);
+        content->len = fread (content->data, 1, file_size, fp);
+        content->data[content->len] = '\0';
+        fclose (fp);
+
+        config_release_config();
+
+        if (response == XSLT)
+        {
+            xmlNodePtr xmlnode;
+            xmlDocPtr doc;
+
+            doc = xmlNewDoc(XMLSTR("1.0"));
+            xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
+            xmlDocSetRootElement(doc, xmlnode);
+            xmlNewTextChild (xmlnode, NULL, XMLSTR("log"), XMLSTR(content->data));
+            refbuf_release (content);
+
+            return admin_send_response (doc, client, XSLT, "showlog.xsl");
+        }
+        else
+        {
+            mc_http_t http = MC_HTTP_INIT;
+            if (mc_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
+            mc_http_apply_block (&http, content);
+            http.in_length = content->len;
+            mc_http_printf (&http, "Content-Type", 0, "text/plain");
+            return client_http_send (&http);
+        }
+    }
 
     if (log_contents (log, level, NULL, &len) < 0)
     {
@@ -1204,6 +1256,7 @@ static int command_list_log (client_t *client, int response)
     }
     content = refbuf_new (len+1);
     log_contents (log, level, &content->data, &content->len);
+
     config_release_config();
 
     if (response == XSLT)

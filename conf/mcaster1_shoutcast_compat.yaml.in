@@ -1,0 +1,52 @@
+---
+# Mcaster1DNAS Shoutcast Compatibility Configuration (YAML)
+# Optimized for legacy Shoutcast DSP and sources
+
+location: "Earth"
+admin: "admin@localhost"
+hostname: "localhost"
+shoutcast-mount: "/stream"
+
+authentication:
+  source-password: "hackme"
+  admin-user: "admin"
+  admin-password: "hackme"
+
+limits:
+  clients: 100
+  sources: 10
+  queue-size: 524288
+  burst-size: 65536
+
+listen-sockets:
+  # HTTP port
+  - port: 8000
+    bind-address: "0.0.0.0"
+
+  # Shoutcast DSP compatibility port
+  - port: 8001
+    bind-address: "0.0.0.0"
+    shoutcast-compat: true
+
+paths:
+  basedir: "@prefix@"
+  logdir: "@LOGDIR@"
+  webroot: "@WEBROOT@"
+  adminroot: "@ADMINROOT@"
+
+logging:
+  accesslog:
+    name: "access.log"
+  errorlog:
+    name: "error.log"
+    level: "warn"
+
+mounts:
+  - mount-name: "/stream"
+    max-listeners: 100
+    burst-size: 65536
+    public: true
+    stream-name: "My Shoutcast Stream"
+    stream-description: "Powered by Mcaster1DNAS"
+    genre: "Various"
+    bitrate: "128"

@@ -1,0 +1,327 @@
+---
+# Mcaster1DNAS Advanced Configuration (YAML)
+# All features from Karl Heyes' Icecast-KH implementation
+# Including: multi-port, auth, relays, fallbacks, bandwidth limits, etc.
+
+location: "Earth"
+admin: "admin@mcaster1.com"
+server-id: "Mcaster1DNAS Advanced @VERSION@"
+hostname: "localhost"
+fileserve: true
+relays-on-demand: false
+
+# Authentication
+authentication:
+  source-password: "source_password_here"
+  admin-user: "admin"
+  admin-password: "admin_password_here"
+  relay-user: "relay"
+  relay-password: "relay_password_here"
+
+# Advanced Limits
+limits:
+  clients: 1000                 # Total clients
+  sources: 50                   # Max sources
+  workers: 4                    # Worker threads (for high traffic)
+  queue-size: 1048576          # 1MB per client
+  burst-size: 131072           # 128KB burst
+  min-queue-size: 65536        # 64KB minimum
+  client-timeout: 30
+  header-timeout: 15
+  source-timeout: 10
+  inactivity-timeout: 30       # Disconnect inactive clients
+  max-listeners: 500           # Global listener limit
+  max-bandwidth: 100000000     # 100 Mbps total bandwidth
+
+# Multi-Port Configuration
+listen-sockets:
+  # Primary HTTP
+  - port: 8000
+    bind-address: "0.0.0.0"
+    queue-len: 10
+    so-sndbuf: 262144           # 256KB TCP send buffer
+
+  # HTTPS/SSL
+  - port: 8443
+    bind-address: "0.0.0.0"
+    so-sndbuf: 262144
+
+  # Shoutcast compatibility
+  - port: 8001
+    shoutcast-compat: true
+
+  # Shoutcast with custom mount
+  - port: 8010
+    shoutcast-mount: "/sc_stream"
+
+  # IPv6 support
+  - port: 8000
+    bind-address: "::"
+
+  # Additional ports for different services
+  - port: 8080
+    bind-address: "0.0.0.0"
+
+  - port: 8888
+    bind-address: "0.0.0.0"
+
+# Paths
+paths:
+  basedir: "@prefix@"
+  logdir: "@LOGDIR@"
+  webroot: "@WEBROOT@"
+  adminroot: "@ADMINROOT@"
+  pidfile: "@LOGDIR@/mcaster1.pid"
+  ssl-certificate: "@prefix@/etc/mcaster1.pem"
+  ssl-private-key: "@prefix@/etc/mcaster1.key"
+  ssl-cafile: "@prefix@/etc/ca-bundle.crt"
+  ssl-allowed-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+  ban-file: "@prefix@/etc/banned_ips.txt"
+  allow-ip: "@prefix@/etc/allowed_ips.txt"
+
+  aliases:
+    - source: "/"
+      destination: "/status.xsl"
+    - source: "/stream"
+      destination: "/live.mp3"
+
+# Logging with rotation
+logging:
+  accesslog:
+    name: "access.log"
+    ip: true
+    archive: true
+    display: 200
+    size: 20971520              # 20MB rotation
+    duration: 86400             # Daily rotation
+    exclude-ext: ".jpg,.png,.gif,.css,.js,.ico"
+    querystr: true
+    type: "CLF"
+
+  errorlog:
+    name: "error.log"
+    level: "info"
+    archive: true
+    display: 200
+    size: 10485760
+    duration: 86400
+
+  playlistlog:
+    name: "playlist.log"
+    archive: true
+    display: 50
+    size: 5242880
+
+  preroll-log:
+    name: "preroll.log"
+    level: "debug"
+    display: 100
+
+# Security
+security:
+  chroot: false
+  changeowner:
+    user: "mcaster1"
+    group: "mcaster1"
+
+# Global HTTP Headers
+http-headers:
+  - name: "Access-Control-Allow-Origin"
+    value: "*"
+  - name: "Access-Control-Allow-Methods"
+    value: "GET, OPTIONS"
+  - name: "Access-Control-Allow-Headers"
+    value: "Origin, Accept, Content-Type, Range"
+  - name: "X-Powered-By"
+    value: "Mcaster1DNAS"
+
+# Advanced Mount Points
+mounts:
+  # High-quality stream with authentication
+  - mount-name: "/premium.mp3"
+    priority: 1
+    username: "premium_source"
+    password: "premium_pass"
+    max-listeners: 100
+    max-bandwidth: 320000
+    burst-size: 131072
+    queue-size: 1048576
+    authentication:
+      type: "htpasswd"
+      options:
+        - name: "filename"
+          value: "@prefix@/etc/premium.htpasswd"
+        - name: "allow_duplicate_users"
+          value: "false"
+    fallback:
+      mount: "/backup.mp3"
+      rate: 128000
+    fallback-override: true
+    fallback-when-full: true
+    public: true
+    stream-name: "Premium HD Stream"
+    stream-description: "High-quality audio"
+    stream-url: "https://example.com"
+    genre: "Various"
+    bitrate: "320"
+    type: "audio/mpeg"
+    on-connect: "/usr/local/bin/notify_premium_connect.sh"
+    on-disconnect: "/usr/local/bin/notify_premium_disconnect.sh"
+    max-stream-duration: 28800  # 8 hours
+    max-listener-duration: 14400 # 4 hours
+    accesslog:
+      name: "premium-access.log"
+      ip: true
+
+  # Standard stream with URL auth
+  - mount-name: "/live.mp3"
+    priority: 10
+    max-listeners: 500
+    burst-size: 65536
+    authentication:
+      type: "url"
+      options:
+        - name: "listener_add"
+          value: "http://auth.example.com/add.php"
+        - name: "listener_remove"
+          value: "http://auth.example.com/remove.php"
+        - name: "auth_header"
+          value: "icecast-auth-user: 1"
+        - name: "timelimit_header"
+          value: "icecast-auth-timelimit:"
+        - name: "headers"
+          value: "x-custom-header,authorization"
+        - name: "header_prefix"
+          value: "ClientHeader."
+    intro: "@prefix@/share/intro.mp3"
+    intro-skip-replay: 600
+    dump-file: "@LOGDIR@/archive-%Y%m%d-%H%M%S.mp3"
+    public: true
+    stream-name: "Live Stream"
+    genre: "Music"
+    bitrate: "128"
+
+  # Wildcard mount for files
+  - mount-name: "/podcasts/*.mp3"
+    priority: 100
+    file-seekable: true
+    skip-accesslog: true
+    max-send-size: 131072
+    charset: "UTF-8"
+
+  # Ogg Vorbis stream
+  - mount-name: "/station.ogg"
+    max-listeners: 200
+    ogg-passthrough: false
+    allow-url-ogg-metadata: true
+    admin-comments-only: false
+    metadata-interval: 8192
+    filter-theora: false
+    public: true
+    stream-name: "Ogg Station"
+    type: "application/ogg"
+
+  # Mobile optimized (low bitrate)
+  - mount-name: "/mobile.mp3"
+    max-listeners: 200
+    limit-rate: 64000           # Throttle to 64kbps
+    burst-size: 32768
+    so-sndbuf: 65536
+    public: true
+    stream-name: "Mobile Stream"
+    bitrate: "64"
+
+  # Event stream with time limits
+  - mount-name: "/event.mp3"
+    max-stream-duration: 10800  # 3 hours max
+    wait-time: 600              # Keep reserved 10 min
+    ban-client: 3600            # Ban client for 1 hour on kick
+    linger-for: 300             # Keep source lingering 5 min
+
+  # Hidden admin-only mount
+  - mount-name: "/internal.mp3"
+    hidden: true
+    no-mount: true
+    public: false
+
+# Advanced Relays with Failover
+relays:
+  # Multi-host relay with priorities
+  - local-mount: "/relay-failover.mp3"
+    on-demand: true
+    relay-icy-metadata: true
+    retry-delay: 15
+    run-on: 30
+    masters:
+      - ip: "primary.upstream.com"
+        port: 8000
+        mount: "/live.mp3"
+        priority: 1
+        timeout: 10
+        bind: "192.168.1.100"
+
+      - ip: "secondary.upstream.com"
+        port: 8000
+        mount: "/live.mp3"
+        ssl: true
+        priority: 2
+        timeout: 10
+
+      - ip: "tertiary.upstream.com"
+        port: 8000
+        mount: "/backup.mp3"
+        priority: 3
+        timeout: 5
+
+    username: "relay_user"
+    password: "relay_pass"
+    http-headers:
+      - name: "User-Agent"
+        value: "Mcaster1DNAS-Relay/2.5"
+      - name: "X-Forwarded-For"
+        value: "192.168.1.100"
+
+  # Simple always-on relay
+  - server: "upstream.example.com"
+    port: 8000
+    mount: "/source.mp3"
+    local-mount: "/relayed.mp3"
+    on-demand: false
+    username: "relay"
+    password: "relaypass"
+
+# Master Server (Slave Mode)
+master:
+  server: "master.example.com"
+  port: 8000
+  ssl-port: 8443
+  username: "slave_user"
+  password: "slave_pass"
+  interval: 120
+  retry-delay: 60
+  relay-auth: true
+  redirect: true
+  run-on: 60
+  on-demand: false
+  bind: "192.168.1.100"
+
+# Redirect Hosts (for overflow)
+redirects:
+  - host: "overflow1.example.com"
+    port: 8000
+  - host: "overflow2.example.com"
+    port: 8000
+  - host: "overflow3.example.com"
+    port: 8080
+
+# YP Directory Listings
+directories:
+  - yp-url: "http://dir.xiph.org/cgi-bin/yp-cgi"
+    yp-url-timeout: 15
+    touch-interval: 600
+    yp-logfile: "/var/www/mcaster1.com/mcaster1dnas/build/logs/yp-xiph.log"  # Optional: Debug YP issues
+
+  - yp-url: "http://dir.example.com/yp"
+    yp-url-timeout: 10
+    touch-interval: 300
+    # yp-logfile not specified - will not log separately

@@ -4,28 +4,113 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 🎯 Current Version: 2.5.0
+## 🎯 Current Version: 2.6.0
 
-### ✅ Completed in 2.5.0
+### ✅ Completed in 2.6.0 (February 15, 2026)
 
+**ICY-META v2.1+ Protocol:**
+- [x] Complete ICY-META v2.1+ protocol implementation
+- [x] Auto-detection via icy-metadata-version header
+- [x] Seamless failover to ICY 1.x legacy support
+- [x] 29+ metadata fields (core, podcast, video, social, access control, verification)
+- [x] Dedicated icy2_meta.c/h module for clean integration
+- [x] Stats system integration for admin interface display
+- [x] Complete protocol specification (ICY2_PROTOCOL_SPEC.md)
+- [x] curl testing and validation
+
+**HTTPS Source Support:**
+- [x] SSL/TLS auto-detection for source encoders
+- [x] HTTPS source connections on any port
+- [x] Compatible with FFmpeg, Liquidsoap, Butt, OBS plugins
+
+**Build System:**
+- [x] ICY2 module integrated into Makefile.am
+- [x] Successful compilation and installation
+
+### ✅ Completed in 2.5.0 (February 14, 2026)
+
+**YAML Configuration:**
+- [x] Full YAML configuration file support
+- [x] Automatic format detection (XML vs YAML)
+- [x] 100% feature parity with XML
+- [x] Four comprehensive YAML templates
+- [x] Complete documentation (YAML_IMPLEMENTATION.md)
+
+**YP Connection Logging:**
+- [x] Per-YP-server logging capability
+- [x] Timestamped transaction logs (add/remove/touch)
+- [x] Optional yp-logfile parameter
+- [x] Admin interface YP log display tab
+
+**UI/UX Enhancements:**
+- [x] Tabbed logs interface (4 tabs: Access, Error, Playlist, YP)
+- [x] Session persistence for active tab
+- [x] Fixed admin page XML parsing errors
+- [x] Live clock on all admin pages
+
+**Core Features:**
 - [x] Complete rebrand from Icecast-KH to Mcaster1DNAS
 - [x] Modern HTML5/CSS3 web interface
 - [x] FontAwesome 6.4.0 icon integration
 - [x] Interactive help tooltip system
-- [x] Live clock and page load metrics
 - [x] HTTPS/SSL by default (ports 9330 HTTP, 9443 HTTPS)
 - [x] Enhanced admin dashboard with real-time stats
-- [x] Credits and fork attribution pages
-- [x] Comprehensive documentation (README.md, FORK.md, etc.)
-- [x] Responsive mobile-friendly design
 - [x] Professional navigation system
-- [x] Build automation scripts (build.sh, mcaster1-control.sh)
+- [x] Comprehensive documentation
 
 ---
 
-## 📅 Version 2.6.0 - UI/UX Enhancements (Next Release)
+## 📅 Version 2.6.1 - Security & Authentication (Next Release)
 
 **Target:** Q2 2026
+**Focus:** Enhanced security and authentication methods
+
+### High Priority
+- [ ] **SSH Key Authentication for ICY2** - Public/private key auth for HTTPS
+  - Client-side key pair generation
+  - Server-side public key configuration
+  - Works alongside username/password
+  - Specifically for ICY2 client authentication
+  - OpenSSL integration for key verification
+
+- [ ] **ICY2 Metadata Validation** - Input validation and sanitization
+  - URL format validation
+  - Language code validation (ISO 639-1)
+  - Bitrate range checking
+  - Field length limits
+  - XSS prevention for emoji/hashtags
+
+- [ ] **ICY2 Admin UI Display** - Show ICY2 metadata in web interface
+  - Enhanced mount point cards with ICY2 fields
+  - Podcast metadata display
+  - Video stream indicators
+  - Social media links
+  - Content flags (NSFW, AI-generated)
+
+### Medium Priority
+- [ ] **ICY2 Config Overrides** - Optional config-based metadata defaults
+  - Global ICY2 field defaults in config
+  - Per-mount ICY2 overrides
+  - Encoder values take precedence
+  - Useful for managed hosting environments
+
+- [ ] **ICY2 Rate Limiting** - Prevent metadata update abuse
+  - Limit metadata update frequency
+  - Per-mount and global limits
+  - Configurable thresholds
+
+### Low Priority
+- [ ] **Dynamic Metadata Updates (ICY 2.2)** - Update metadata during stream
+  - Send metadata updates without reconnecting
+  - HTTP POST endpoint for metadata changes
+  - Authentication required for updates
+  - Backward compatible with ICY 2.1
+
+---
+
+## 📅 Version 2.7.0 - UI/UX Enhancements
+
+**Target:** Q3 2026
 **Focus:** User experience and interface improvements
 
 ### High Priority

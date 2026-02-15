@@ -96,6 +96,7 @@ am__append_3 = format_vorbis.c
 am__append_4 = format_speex.c
 am__append_5 = format_theora.c
 am__append_6 = auth_cmd.c
+am__append_7 = cfgfile_yaml.c
 bin_PROGRAMS = mcaster1$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -122,38 +123,39 @@ PROGRAMS = $(bin_PROGRAMS)
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__libmcaster1_la_SOURCES_DIST = cfgfile.c main.c logging.c \
 	sighandler.c connection.c global.c util.c slave.c source.c \
-	stats.c refbuf.c client.c params.c xslt.c fserve.c event.c \
-	admin.c md5.c format.c format_ogg.c format_mp3.c format_midi.c \
-	format_flac.c format_ebml.c format_opus.c auth.c \
+	stats.c refbuf.c client.c params.c icy2_meta.c xslt.c fserve.c \
+	event.c admin.c md5.c format.c format_ogg.c format_mp3.c \
+	format_midi.c format_flac.c format_ebml.c format_opus.c auth.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
 	mpeg.c flv.c fnmatch.c yp.c format_vorbis.c format_speex.c \
-	format_theora.c auth_cmd.c
+	format_theora.c auth_cmd.c cfgfile_yaml.c
 #am__objects_1 = libmcaster1_la-fnmatch.lo
 am__objects_2 = libmcaster1_la-yp.lo
 am__objects_3 = libmcaster1_la-format_vorbis.lo
 am__objects_4 = libmcaster1_la-format_speex.lo
 am__objects_5 = libmcaster1_la-format_theora.lo
 am__objects_6 = libmcaster1_la-auth_cmd.lo
-am__objects_7 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
+am__objects_7 = libmcaster1_la-cfgfile_yaml.lo
+am__objects_8 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
 	libmcaster1_la-logging.lo libmcaster1_la-sighandler.lo \
 	libmcaster1_la-connection.lo libmcaster1_la-global.lo \
 	libmcaster1_la-util.lo libmcaster1_la-slave.lo \
 	libmcaster1_la-source.lo libmcaster1_la-stats.lo \
 	libmcaster1_la-refbuf.lo libmcaster1_la-client.lo \
-	libmcaster1_la-params.lo libmcaster1_la-xslt.lo \
-	libmcaster1_la-fserve.lo libmcaster1_la-event.lo \
-	libmcaster1_la-admin.lo libmcaster1_la-md5.lo \
-	libmcaster1_la-format.lo libmcaster1_la-format_ogg.lo \
-	libmcaster1_la-format_mp3.lo libmcaster1_la-format_midi.lo \
-	libmcaster1_la-format_flac.lo libmcaster1_la-format_ebml.lo \
-	libmcaster1_la-format_opus.lo libmcaster1_la-auth.lo \
-	libmcaster1_la-auth_htpasswd.lo libmcaster1_la-auth_url.lo \
-	libmcaster1_la-format_kate.lo \
+	libmcaster1_la-params.lo libmcaster1_la-icy2_meta.lo \
+	libmcaster1_la-xslt.lo libmcaster1_la-fserve.lo \
+	libmcaster1_la-event.lo libmcaster1_la-admin.lo \
+	libmcaster1_la-md5.lo libmcaster1_la-format.lo \
+	libmcaster1_la-format_ogg.lo libmcaster1_la-format_mp3.lo \
+	libmcaster1_la-format_midi.lo libmcaster1_la-format_flac.lo \
+	libmcaster1_la-format_ebml.lo libmcaster1_la-format_opus.lo \
+	libmcaster1_la-auth.lo libmcaster1_la-auth_htpasswd.lo \
+	libmcaster1_la-auth_url.lo libmcaster1_la-format_kate.lo \
 	libmcaster1_la-format_skeleton.lo libmcaster1_la-mpeg.lo \
 	libmcaster1_la-flv.lo $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6)
-#am_libmcaster1_la_OBJECTS = $(am__objects_7)
+	$(am__objects_6) $(am__objects_7)
+#am_libmcaster1_la_OBJECTS = $(am__objects_8)
 libmcaster1_la_OBJECTS = $(am_libmcaster1_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -166,31 +168,34 @@ libmcaster1_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 #am_libmcaster1_la_rpath =
 am__mcaster1_SOURCES_DIST = cfgfile.c main.c logging.c sighandler.c \
 	connection.c global.c util.c slave.c source.c stats.c refbuf.c \
-	client.c params.c xslt.c fserve.c event.c admin.c md5.c \
-	format.c format_ogg.c format_mp3.c format_midi.c format_flac.c \
-	format_ebml.c format_opus.c auth.c auth_htpasswd.c auth_url.c \
-	format_kate.c format_skeleton.c mpeg.c flv.c fnmatch.c yp.c \
-	format_vorbis.c format_speex.c format_theora.c auth_cmd.c
-#am__objects_8 = fnmatch.$(OBJEXT)
-am__objects_9 = yp.$(OBJEXT)
-am__objects_10 = format_vorbis.$(OBJEXT)
-am__objects_11 = format_speex.$(OBJEXT)
-am__objects_12 = format_theora.$(OBJEXT)
-am__objects_13 = auth_cmd.$(OBJEXT)
+	client.c params.c icy2_meta.c xslt.c fserve.c event.c admin.c \
+	md5.c format.c format_ogg.c format_mp3.c format_midi.c \
+	format_flac.c format_ebml.c format_opus.c auth.c \
+	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
+	mpeg.c flv.c fnmatch.c yp.c format_vorbis.c format_speex.c \
+	format_theora.c auth_cmd.c cfgfile_yaml.c
+#am__objects_9 = fnmatch.$(OBJEXT)
+am__objects_10 = yp.$(OBJEXT)
+am__objects_11 = format_vorbis.$(OBJEXT)
+am__objects_12 = format_speex.$(OBJEXT)
+am__objects_13 = format_theora.$(OBJEXT)
+am__objects_14 = auth_cmd.$(OBJEXT)
+am__objects_15 = cfgfile_yaml.$(OBJEXT)
 am_mcaster1_OBJECTS = cfgfile.$(OBJEXT) main.$(OBJEXT) \
 	logging.$(OBJEXT) sighandler.$(OBJEXT) connection.$(OBJEXT) \
 	global.$(OBJEXT) util.$(OBJEXT) slave.$(OBJEXT) \
 	source.$(OBJEXT) stats.$(OBJEXT) refbuf.$(OBJEXT) \
-	client.$(OBJEXT) params.$(OBJEXT) xslt.$(OBJEXT) \
-	fserve.$(OBJEXT) event.$(OBJEXT) admin.$(OBJEXT) md5.$(OBJEXT) \
-	format.$(OBJEXT) format_ogg.$(OBJEXT) format_mp3.$(OBJEXT) \
+	client.$(OBJEXT) params.$(OBJEXT) icy2_meta.$(OBJEXT) \
+	xslt.$(OBJEXT) fserve.$(OBJEXT) event.$(OBJEXT) \
+	admin.$(OBJEXT) md5.$(OBJEXT) format.$(OBJEXT) \
+	format_ogg.$(OBJEXT) format_mp3.$(OBJEXT) \
 	format_midi.$(OBJEXT) format_flac.$(OBJEXT) \
 	format_ebml.$(OBJEXT) format_opus.$(OBJEXT) auth.$(OBJEXT) \
 	auth_htpasswd.$(OBJEXT) auth_url.$(OBJEXT) \
 	format_kate.$(OBJEXT) format_skeleton.$(OBJEXT) mpeg.$(OBJEXT) \
-	flv.$(OBJEXT) $(am__objects_8) $(am__objects_9) \
-	$(am__objects_10) $(am__objects_11) $(am__objects_12) \
-	$(am__objects_13)
+	flv.$(OBJEXT) $(am__objects_9) $(am__objects_10) \
+	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
+	$(am__objects_14) $(am__objects_15)
 mcaster1_OBJECTS = $(am_mcaster1_OBJECTS)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
@@ -210,8 +215,9 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/auth_cmd.Po ./$(DEPDIR)/auth_htpasswd.Po \
 	./$(DEPDIR)/auth_url.Po ./$(DEPDIR)/cfgfile.Po \
-	./$(DEPDIR)/client.Po ./$(DEPDIR)/connection.Po \
-	./$(DEPDIR)/event.Po ./$(DEPDIR)/flv.Po ./$(DEPDIR)/fnmatch.Po \
+	./$(DEPDIR)/cfgfile_yaml.Po ./$(DEPDIR)/client.Po \
+	./$(DEPDIR)/connection.Po ./$(DEPDIR)/event.Po \
+	./$(DEPDIR)/flv.Po ./$(DEPDIR)/fnmatch.Po \
 	./$(DEPDIR)/format.Po ./$(DEPDIR)/format_ebml.Po \
 	./$(DEPDIR)/format_flac.Po ./$(DEPDIR)/format_kate.Po \
 	./$(DEPDIR)/format_midi.Po ./$(DEPDIR)/format_mp3.Po \
@@ -219,12 +225,13 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/format_skeleton.Po ./$(DEPDIR)/format_speex.Po \
 	./$(DEPDIR)/format_theora.Po ./$(DEPDIR)/format_vorbis.Po \
 	./$(DEPDIR)/fserve.Po ./$(DEPDIR)/global.Po \
-	./$(DEPDIR)/libmcaster1_la-admin.Plo \
+	./$(DEPDIR)/icy2_meta.Po ./$(DEPDIR)/libmcaster1_la-admin.Plo \
 	./$(DEPDIR)/libmcaster1_la-auth.Plo \
 	./$(DEPDIR)/libmcaster1_la-auth_cmd.Plo \
 	./$(DEPDIR)/libmcaster1_la-auth_htpasswd.Plo \
 	./$(DEPDIR)/libmcaster1_la-auth_url.Plo \
 	./$(DEPDIR)/libmcaster1_la-cfgfile.Plo \
+	./$(DEPDIR)/libmcaster1_la-cfgfile_yaml.Plo \
 	./$(DEPDIR)/libmcaster1_la-client.Plo \
 	./$(DEPDIR)/libmcaster1_la-connection.Plo \
 	./$(DEPDIR)/libmcaster1_la-event.Plo \
@@ -244,6 +251,7 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/libmcaster1_la-format_vorbis.Plo \
 	./$(DEPDIR)/libmcaster1_la-fserve.Plo \
 	./$(DEPDIR)/libmcaster1_la-global.Plo \
+	./$(DEPDIR)/libmcaster1_la-icy2_meta.Plo \
 	./$(DEPDIR)/libmcaster1_la-logging.Plo \
 	./$(DEPDIR)/libmcaster1_la-main.Plo \
 	./$(DEPDIR)/libmcaster1_la-md5.Plo \
@@ -430,6 +438,9 @@ PACKAGE_URL =
 PACKAGE_VERSION = 2.5.0
 PATH_SEPARATOR = :
 PKGCONFIG = /usr/bin/pkg-config
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 PROFILE = -pg -g
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = 
@@ -458,8 +469,10 @@ VORBIS_PREFIX =
 XIPH_CFLAGS = 
 XIPH_CPPFLAGS = -Wall -ffast-math -fsigned-char -I/usr/include/libxml2 -I/var/www/mcaster1.com/mcaster1dnas/build/include
 XIPH_LDFLAGS =  -L/var/www/mcaster1.com/mcaster1dnas/build/lib
-XIPH_LIBS =  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
+XIPH_LIBS =  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2 
 XSLTCONFIG = /usr/bin/xslt-config
+YAML_CFLAGS = 
+YAML_LIBS = -lyaml 
 abs_builddir = /var/www/mcaster1.com/mcaster1dnas/src
 abs_srcdir = /var/www/mcaster1.com/mcaster1dnas/src
 abs_top_builddir = /var/www/mcaster1.com/mcaster1dnas
@@ -516,9 +529,9 @@ top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
 SUBDIRS = avl thread httpp net log timing
-noinst_HEADERS = admin.h cfgfile.h logging.h sighandler.h connection.h \
+noinst_HEADERS = admin.h cfgfile.h cfgfile_yaml.h logging.h sighandler.h connection.h \
     global.h util.h slave.h source.h stats.h refbuf.h client.h \
-    compat.h fserve.h xslt.h yp.h event.h md5.h params.h \
+    compat.h fserve.h xslt.h yp.h event.h md5.h params.h icy2_meta.h \
     auth.h auth_htpasswd.h auth_cmd.h auth_url.h \
     fnmatch_loop.c fnmatch.h \
     format.h format_ogg.h format_mp3.h format_ebml.h \
@@ -527,12 +540,13 @@ noinst_HEADERS = admin.h cfgfile.h logging.h sighandler.h connection.h \
 
 mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c \
 	connection.c global.c util.c slave.c source.c stats.c refbuf.c \
-	client.c params.c xslt.c fserve.c event.c admin.c md5.c \
-	format.c format_ogg.c format_mp3.c format_midi.c format_flac.c \
-	format_ebml.c format_opus.c auth.c auth_htpasswd.c auth_url.c \
-	format_kate.c format_skeleton.c mpeg.c flv.c $(am__append_1) \
-	$(am__append_2) $(am__append_3) $(am__append_4) \
-	$(am__append_5) $(am__append_6)
+	client.c params.c icy2_meta.c xslt.c fserve.c event.c admin.c \
+	md5.c format.c format_ogg.c format_mp3.c format_midi.c \
+	format_flac.c format_ebml.c format_opus.c auth.c \
+	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
+	mpeg.c flv.c $(am__append_1) $(am__append_2) $(am__append_3) \
+	$(am__append_4) $(am__append_5) $(am__append_6) \
+	$(am__append_7)
 mcaster1_DEPENDENCIES = \
     net/libmcnet.la \
     thread/libmcthread.la \
@@ -544,9 +558,9 @@ mcaster1_DEPENDENCIES = \
 #noinst_LTLIBRARIES = libmcaster1.la
 #libmcaster1_la_SOURCES = $(mcaster1_SOURCES)
 #libmcaster1_la_CFLAGS = -static
-#libmcaster1_la_LIBADD = $(mcaster1_DEPENDENCIES)  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
+#libmcaster1_la_LIBADD = $(mcaster1_DEPENDENCIES)  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
 #libmcaster1_la_DEPENDENCIES = $(mcaster1_DEPENDENCIES)
-mcaster1_LDADD = $(mcaster1_DEPENDENCIES)  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
+mcaster1_LDADD = $(mcaster1_DEPENDENCIES)  -lyaml  -lssl -lcrypto  -lcurl   -lspeex  -ltheora  -lvorbis -logg -lm  -lxslt -lxml2  
 AM_CFLAGS = 
 AM_CPPFLAGS = -Wall -ffast-math -fsigned-char -I/usr/include/libxml2 -I/var/www/mcaster1.com/mcaster1dnas/build/include
 AM_LDFLAGS =  -L/var/www/mcaster1.com/mcaster1dnas/build/lib 
@@ -663,6 +677,7 @@ include ./$(DEPDIR)/auth_cmd.Po # am--include-marker
 include ./$(DEPDIR)/auth_htpasswd.Po # am--include-marker
 include ./$(DEPDIR)/auth_url.Po # am--include-marker
 include ./$(DEPDIR)/cfgfile.Po # am--include-marker
+include ./$(DEPDIR)/cfgfile_yaml.Po # am--include-marker
 include ./$(DEPDIR)/client.Po # am--include-marker
 include ./$(DEPDIR)/connection.Po # am--include-marker
 include ./$(DEPDIR)/event.Po # am--include-marker
@@ -682,12 +697,14 @@ include ./$(DEPDIR)/format_theora.Po # am--include-marker
 include ./$(DEPDIR)/format_vorbis.Po # am--include-marker
 include ./$(DEPDIR)/fserve.Po # am--include-marker
 include ./$(DEPDIR)/global.Po # am--include-marker
+include ./$(DEPDIR)/icy2_meta.Po # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-admin.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-auth.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-auth_cmd.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-auth_htpasswd.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-auth_url.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-cfgfile.Plo # am--include-marker
+include ./$(DEPDIR)/libmcaster1_la-cfgfile_yaml.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-client.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-connection.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-event.Plo # am--include-marker
@@ -707,6 +724,7 @@ include ./$(DEPDIR)/libmcaster1_la-format_theora.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-format_vorbis.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-fserve.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-global.Plo # am--include-marker
+include ./$(DEPDIR)/libmcaster1_la-icy2_meta.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-logging.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-main.Plo # am--include-marker
 include ./$(DEPDIR)/libmcaster1_la-md5.Plo # am--include-marker
@@ -851,6 +869,13 @@ libmcaster1_la-params.lo: params.c
 #	$(AM_V_CC)source='params.c' object='libmcaster1_la-params.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-params.lo `test -f 'params.c' || echo '$(srcdir)/'`params.c
+
+libmcaster1_la-icy2_meta.lo: icy2_meta.c
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-icy2_meta.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-icy2_meta.Tpo -c -o libmcaster1_la-icy2_meta.lo `test -f 'icy2_meta.c' || echo '$(srcdir)/'`icy2_meta.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcaster1_la-icy2_meta.Tpo $(DEPDIR)/libmcaster1_la-icy2_meta.Plo
+#	$(AM_V_CC)source='icy2_meta.c' object='libmcaster1_la-icy2_meta.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-icy2_meta.lo `test -f 'icy2_meta.c' || echo '$(srcdir)/'`icy2_meta.c
 
 libmcaster1_la-xslt.lo: xslt.c
 	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-xslt.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-xslt.Tpo -c -o libmcaster1_la-xslt.lo `test -f 'xslt.c' || echo '$(srcdir)/'`xslt.c
@@ -1026,6 +1051,13 @@ libmcaster1_la-auth_cmd.lo: auth_cmd.c
 #	$(AM_V_CC)source='auth_cmd.c' object='libmcaster1_la-auth_cmd.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-auth_cmd.lo `test -f 'auth_cmd.c' || echo '$(srcdir)/'`auth_cmd.c
+
+libmcaster1_la-cfgfile_yaml.lo: cfgfile_yaml.c
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-cfgfile_yaml.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-cfgfile_yaml.Tpo -c -o libmcaster1_la-cfgfile_yaml.lo `test -f 'cfgfile_yaml.c' || echo '$(srcdir)/'`cfgfile_yaml.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcaster1_la-cfgfile_yaml.Tpo $(DEPDIR)/libmcaster1_la-cfgfile_yaml.Plo
+#	$(AM_V_CC)source='cfgfile_yaml.c' object='libmcaster1_la-cfgfile_yaml.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-cfgfile_yaml.lo `test -f 'cfgfile_yaml.c' || echo '$(srcdir)/'`cfgfile_yaml.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1239,6 +1271,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/auth_htpasswd.Po
 	-rm -f ./$(DEPDIR)/auth_url.Po
 	-rm -f ./$(DEPDIR)/cfgfile.Po
+	-rm -f ./$(DEPDIR)/cfgfile_yaml.Po
 	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/connection.Po
 	-rm -f ./$(DEPDIR)/event.Po
@@ -1258,12 +1291,14 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/format_vorbis.Po
 	-rm -f ./$(DEPDIR)/fserve.Po
 	-rm -f ./$(DEPDIR)/global.Po
+	-rm -f ./$(DEPDIR)/icy2_meta.Po
 	-rm -f ./$(DEPDIR)/libmcaster1_la-admin.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_cmd.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_htpasswd.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_url.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-cfgfile.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-cfgfile_yaml.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-client.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-connection.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-event.Plo
@@ -1283,6 +1318,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-format_vorbis.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-fserve.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-global.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-icy2_meta.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-logging.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-main.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-md5.Plo
@@ -1360,6 +1396,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/auth_htpasswd.Po
 	-rm -f ./$(DEPDIR)/auth_url.Po
 	-rm -f ./$(DEPDIR)/cfgfile.Po
+	-rm -f ./$(DEPDIR)/cfgfile_yaml.Po
 	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/connection.Po
 	-rm -f ./$(DEPDIR)/event.Po
@@ -1379,12 +1416,14 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/format_vorbis.Po
 	-rm -f ./$(DEPDIR)/fserve.Po
 	-rm -f ./$(DEPDIR)/global.Po
+	-rm -f ./$(DEPDIR)/icy2_meta.Po
 	-rm -f ./$(DEPDIR)/libmcaster1_la-admin.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_cmd.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_htpasswd.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-auth_url.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-cfgfile.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-cfgfile_yaml.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-client.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-connection.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-event.Plo
@@ -1404,6 +1443,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-format_vorbis.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-fserve.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-global.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-icy2_meta.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-logging.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-main.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-md5.Plo

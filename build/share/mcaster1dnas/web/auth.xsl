@@ -13,23 +13,34 @@
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
-    <link rel="stylesheet" type="text/css" href="mcaster1-modern.css"/>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <script src="/mcaster-utils.js"></script>
 </head>
 <body>
     <div class="mcaster-header">
         <div class="mcaster-container">
-            <div class="mcaster-brand">
-                <div class="brand-icon">M1</div>
-                <div class="brand-text">
-                    <h1 style="margin: 0; font-size: 1.75rem;">
-                        <span class="brand-mcaster">Mcaster1</span>
-                        <span class="brand-dnas">DNAS</span>
-                    </h1>
+            <div class="mcaster-header-top">
+                <div class="mcaster-brand">
+                    <div class="brand-icon">M1</div>
+                    <div class="brand-text">
+                        <h1 style="margin: 0; font-size: 1.75rem;">
+                            <span class="brand-mcaster">Mcaster1</span>
+                            <span class="brand-dnas">DNAS</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="mcaster-clock">
+                    <div class="mcaster-clock-time">
+                        <i class="fas fa-clock mcaster-clock-icon"></i>
+                        <span id="live-time">Loading...</span>
+                    </div>
+                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
                 </div>
             </div>
             <div class="mcaster-nav">
                 <a href="status.xsl"><i class="fas fa-home"></i> Status</a>
                 <a href="server_version.xsl"><i class="fas fa-info-circle"></i> Server Info</a>
+                <a href="/admin/stats.xsl"><i class="fas fa-shield-alt"></i> Admin</a>
             </div>
         </div>
     </div>
@@ -95,7 +106,11 @@
 
     <div class="mcaster-footer">
         <div class="mcaster-container">
-            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server</p>
+            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
+                <span class="page-load-time" id="page-load-time">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </span>
+            </p>
         </div>
     </div>
 </body>

@@ -13,31 +13,60 @@
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
-    <link rel="stylesheet" type="text/css" href="mcaster1-modern.css"/>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <script src="/mcaster-utils.js"></script>
 </head>
 <body>
     <div class="mcaster-header">
         <div class="mcaster-container">
-            <div class="mcaster-brand">
-                <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
-                <div class="brand-text">
-                    <h1 style="margin: 0; font-size: 1.75rem;">
-                        <span class="brand-mcaster">Mcaster1</span>
-                        <span class="brand-dnas">DNAS Admin</span>
-                    </h1>
+            <div class="mcaster-header-top">
+                <div class="mcaster-brand">
+                    <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
+                    <div class="brand-text">
+                        <h1 style="margin: 0; font-size: 1.75rem;">
+                            <span class="brand-mcaster">Mcaster1</span>
+                            <span class="brand-dnas">DNAS Admin</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="mcaster-clock">
+                    <div class="mcaster-clock-time">
+                        <i class="fas fa-clock mcaster-clock-icon"></i>
+                        <span id="live-time">Loading...</span>
+                    </div>
+                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
                 </div>
             </div>
             <div class="mcaster-nav">
-                <a href="stats.xsl"><i class="fas fa-chart-line"></i> Statistics</a>
-                <a href="listmounts.xsl" class="active"><i class="fas fa-list"></i> Mounts</a>
+                <a href="stats.xsl"><i class="fas fa-chart-line"></i> Stats</a>
+                <a href="listmounts.xsl" class="active"><i class="fas fa-stream"></i> Mounts</a>
+                <a href="managerelays.xsl"><i class="fas fa-project-diagram"></i> Relays</a>
                 <a href="logs.xsl"><i class="fas fa-file-alt"></i> Logs</a>
-                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public Page</a>
+                <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
+                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>
             </div>
         </div>
     </div>
 
     <div class="mcaster-main">
         <div class="mcaster-container">
+
+            <!-- Mount Points Explanation -->
+            <div class="info-box">
+                <div class="info-box-title">
+                    <i class="fas fa-lightbulb"></i> Understanding Mount Points
+                </div>
+                <div class="info-box-content">
+                    <strong>What are Mount Points?</strong> Each mount point is a unique URL endpoint where a broadcast stream is available. Think of them as individual "radio stations" on your server.
+                    <br/><br/>
+                    <strong>Common Uses:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>Multiple quality levels (e.g., /live-high.mp3, /live-low.mp3)</li>
+                        <li>Different audio formats (e.g., /stream.mp3, /stream.aac, /stream.ogg)</li>
+                        <li>Separate shows or channels (e.g., /jazz, /rock, /talk)</li>
+                    </ul>
+                </div>
+            </div>
 
             <xsl:for-each select="source">
                 <div class="mcaster-card">
@@ -154,7 +183,11 @@
 
     <div class="mcaster-footer">
         <div class="mcaster-container">
-            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server</p>
+            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
+                <span class="page-load-time" id="page-load-time">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </span>
+            </p>
         </div>
     </div>
 </body>

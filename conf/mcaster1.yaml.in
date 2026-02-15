@@ -1,0 +1,410 @@
+---
+# ==============================================================================
+# Mcaster1DNAS Configuration File (YAML Format)
+# Version: @VERSION@
+# ==============================================================================
+# This is the primary configuration file for Mcaster1DNAS server.
+# Based on Icecast-KH by Karl Heyes, enhanced with modern YAML syntax.
+#
+# Documentation: See doc/index.html or visit https://mcaster1.com
+# ==============================================================================
+
+# Server Identification
+location: "Earth"
+admin: "admin@mcaster1.com"
+server-id: "Mcaster1DNAS @VERSION@"
+hostname: "localhost"
+
+# File Serving (serve static files from webroot)
+fileserve: true
+
+# ==============================================================================
+# AUTHENTICATION
+# ==============================================================================
+# Global authentication settings for source clients and admin access
+
+authentication:
+  source-password: "hackme"      # Password for source clients (change this!)
+  admin-user: "admin"            # Admin username
+  admin-password: "hackme"       # Admin password (change this!)
+  relay-user: "relay"            # Relay username
+  relay-password: "hackme"       # Relay password (change this!)
+
+# ==============================================================================
+# LIMITS
+# ==============================================================================
+# Global server limits and resource management
+
+limits:
+  clients: 100                   # Maximum total clients (listeners + sources)
+  sources: 2                     # Maximum source connections
+  workers: 1                     # Worker threads (1-400, typically 1-4)
+  queue-size: 524288            # Queue size per client (512KB)
+  burst-size: 65536             # Burst-on-connect size (64KB)
+  min-queue-size: 0             # Minimum queue before sending
+  client-timeout: 30            # Timeout for clients (seconds)
+  header-timeout: 15            # Timeout for HTTP headers (seconds)
+  source-timeout: 10            # Timeout for sources (seconds)
+  max-listeners: -1             # Global max listeners (-1 = unlimited)
+  max-bandwidth: -1             # Global max bandwidth in bps (-1 = unlimited)
+
+# ==============================================================================
+# LISTEN SOCKETS
+# ==============================================================================
+# Define ports and IP addresses the server listens on.
+# You can have multiple listen sockets for different purposes.
+
+listen-sockets:
+  # Primary HTTP port
+  - port: 8000
+    bind-address: "0.0.0.0"     # Listen on all interfaces
+    queue-len: 5                # TCP listen queue length
+    so-sndbuf: 0                # TCP send buffer (0 = system default)
+
+  # HTTPS/SSL port (if SSL is configured in paths section)
+  - port: 8443
+    bind-address: "0.0.0.0"
+
+  # Shoutcast compatibility port (DSP mode)
+  # This enables legacy Shoutcast source support
+  - port: 8001
+    bind-address: "0.0.0.0"
+    shoutcast-compat: true
+
+  # Shoutcast-mount mode (recommended for Shoutcast sources)
+  # This creates TWO ports: 8010 (normal) and 8011 (shoutcast-compat auto)
+  - port: 8010
+    bind-address: "0.0.0.0"
+    shoutcast-mount: "/live.mp3"
+
+  # IPv6 support example
+  - port: 8000
+    bind-address: "::"          # IPv6 all interfaces
+
+# ==============================================================================
+# PATHS
+# ==============================================================================
+# Filesystem paths for server operation
+
+paths:
+  basedir: "@prefix@"
+  logdir: "@LOGDIR@"
+  webroot: "@WEBROOT@"
+  adminroot: "@ADMINROOT@"
+  pidfile: "@LOGDIR@/mcaster1.pid"
+
+  # SSL/TLS Certificate Configuration
+  ssl-certificate: "@prefix@/share/mcaster1/admin/server.crt"
+  ssl-private-key: "@prefix@/share/mcaster1/admin/server.key"
+  # ssl-cafile: "@prefix@/share/mcaster1/admin/ca.crt"  # Optional CA bundle
+  ssl-allowed-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256"
+
+  # MIME types file
+  mime-types: "@prefix@/etc/mime.types"
+
+  # Access Control
+  # ban-file: "@prefix@/etc/ban_ips.txt"       # Banned IP addresses
+  # allow-ip: "@prefix@/etc/allowed_ips.txt"   # Allowed IP whitelist
+  # deny-agents: "@prefix@/etc/agents.txt"     # Banned user agents
+
+  # URL Aliases (map URLs to different paths)
+  aliases:
+    - source: "/stream"
+      destination: "/live"
+      port: -1                  # -1 = all ports
+
+    - source: "/radio.mp3"
+      destination: "/stream.mp3"
+
+# ==============================================================================
+# LOGGING
+# ==============================================================================
+# Configure logging for access, errors, and playlists
+
+logging:
+  # Access Log - tracks all listener connections
+  accesslog:
+    name: "access.log"
+    ip: true                    # Log IP addresses
+    archive: true               # Archive old logs
+    display: 100                # Lines to display in admin
+    size: 10485760              # Rotate at 10MB
+    duration: 86400             # Rotate daily (seconds)
+    exclude-ext: ".jpg,.png,.css,.js"  # Don't log static files
+    querystr: true              # Log query strings
+    type: "CLF"                 # Common Log Format (or "CLF-ESC" for escaped)
+
+  # Error Log - server errors and warnings
+  errorlog:
+    name: "error.log"
+    level: "info"               # debug, info, warn, error
+    archive: true
+    display: 100
+    size: 5242880               # 5MB
+    duration: 86400
+
+  # Playlist Log - track what's playing on each mount
+  playlistlog:
+    name: "playlist.log"
+    archive: true
+    display: 10
+    size: 5242880
+
+  # Preroll Log - debugging for intro files
+  preroll-log:
+    name: "preroll.log"
+    level: "info"
+    archive: false
+    display: 50
+
+# ==============================================================================
+# SECURITY
+# ==============================================================================
+# Security and privilege management
+
+security:
+  chroot: false                 # Run in chroot jail (requires root)
+
+  # Change process owner (requires starting as root)
+  changeowner:
+    user: "mcaster1"
+    group: "mcaster1"
+
+# ==============================================================================
+# HTTP HEADERS
+# ==============================================================================
+# Custom HTTP response headers sent to clients
+
+http-headers:
+  - name: "Access-Control-Allow-Origin"
+    value: "*"
+    status: "*"                 # Apply to all HTTP status codes
+
+  - name: "X-Frame-Options"
+    value: "SAMEORIGIN"
+    status: "*"
+
+  - name: "Content-Security-Policy"
+    value: "default-src 'self'"
+    status: "*"
+
+# ==============================================================================
+# MOUNT POINTS
+# ==============================================================================
+# Individual stream configurations (mount points)
+
+mounts:
+  # Example 1: Basic MP3 Stream
+  - mount-name: "/stream.mp3"
+    username: "source"
+    password: "hackme123"
+    max-listeners: 100
+    burst-size: 65536
+    fallback:
+      mount: "/backup.mp3"      # Fallback to this mount
+      rate: 128000              # Only if client can handle 128kbps
+    fallback-override: true     # Take listeners back when live
+    public: true                # List in YP directory
+    stream-name: "My Radio Station"
+    stream-description: "24/7 Music"
+    stream-url: "https://myradio.com"
+    genre: "Various"
+    bitrate: "128"
+    type: "audio/mpeg"
+
+  # Example 2: AAC Stream with Authentication
+  - mount-name: "/premium.aac"
+    username: "premium-source"
+    password: "premium123"
+    max-listeners: 50
+    max-bandwidth: 256000       # 256 kbps max
+    authentication:
+      type: "htpasswd"
+      options:
+        - name: "filename"
+          value: "@prefix@/etc/premium.htpasswd"
+        - name: "allow_duplicate_users"
+          value: "false"
+    hidden: true                # Don't show on public status page
+    stream-name: "Premium Channel"
+    type: "audio/aac"
+
+  # Example 3: Ogg Vorbis with URL Authentication
+  - mount-name: "/station.ogg"
+    username: "ogguser"
+    password: "hackme"
+    max-listeners: -1           # Unlimited
+    authentication:
+      type: "url"
+      options:
+        - name: "listener_add"
+          value: "https://auth.example.com/listener_add.php"
+        - name: "listener_remove"
+          value: "https://auth.example.com/listener_remove.php"
+        - name: "auth_header"
+          value: "icecast-auth-user: 1"
+        - name: "timelimit_header"
+          value: "icecast-auth-timelimit:"
+    on-connect: "/usr/local/bin/notify_connect.sh"
+    on-disconnect: "/usr/local/bin/notify_disconnect.sh"
+    public: true
+    stream-name: "Ogg Vorbis Stream"
+    genre: "Electronic"
+
+  # Example 4: File Serving Mount (serve audio files)
+  - mount-name: "/podcasts/*"   # Wildcard mount
+    file-seekable: true          # Allow HTTP range requests
+    skip-accesslog: true         # Don't clutter access log
+    max-listener-duration: 7200  # 2 hours max
+
+  # Example 5: Stream with Intro File
+  - mount-name: "/intro-stream.mp3"
+    username: "source"
+    password: "hackme"
+    intro: "@prefix@/share/intro.mp3"  # Play intro to new listeners
+    intro-skip-replay: 300       # Don't replay intro if client reconnects within 5 min
+    burst-size: 131072           # 128KB burst for smooth intro
+    queue-size: 1048576          # 1MB queue
+
+  # Example 6: Time-Limited Stream
+  - mount-name: "/event-stream.mp3"
+    max-stream-duration: 14400   # Disconnect source after 4 hours
+    max-listener-duration: 7200  # Disconnect listeners after 2 hours
+    wait-time: 300               # Keep mount reserved for 5 min after source disconnect
+
+  # Example 7: Dump-to-File Stream (recording)
+  - mount-name: "/archive.mp3"
+    dump-file: "@LOGDIR@/archive-%Y%m%d-%H%M%S.mp3"  # strftime format
+    public: false
+
+  # Example 8: Relay-Only Mount (no direct source)
+  - mount-name: "/relay-only.mp3"
+    no-mount: true               # Block direct source connections
+    fallback: "/live.mp3"
+
+  # Example 9: Bandwidth-Limited Stream
+  - mount-name: "/limited.mp3"
+    limit-rate: 128000           # Throttle to 128 kbps
+    max-send-size: 65536         # Max packet size
+
+  # Example 10: Custom HTTP Headers for Stream
+  - mount-name: "/custom-headers.mp3"
+    http-headers:
+      - name: "X-Custom-Header"
+        value: "MyValue"
+        status: "200"
+      - name: "icy-name"
+        value: "Custom Station Name"
+
+  # Example 11: Mount with Custom Access Log
+  - mount-name: "/logged.mp3"
+    accesslog:
+      name: "logged-stream.log"
+      ip: true
+      type: "CLF"
+
+  # Example 12: Metadata Control
+  - mount-name: "/metadata.mp3"
+    metadata-interval: 16000     # ICY metadata interval
+    admin-comments-only: true    # Only admin can update metadata
+    ogg-passthrough: false       # Don't pass through Ogg metadata
+
+# ==============================================================================
+# RELAYS
+# ==============================================================================
+# Pull streams from other Icecast/Shoutcast servers
+
+relays:
+  # Example 1: Basic Relay
+  - server: "source.example.com"
+    port: 8000
+    mount: "/live.mp3"
+    local-mount: "/relay.mp3"
+    username: "relay"
+    password: "relaypass"
+    on-demand: false             # Always connected
+    relay-icy-metadata: true     # Relay Shoutcast/ICY metadata
+    retry-delay: 10              # Retry every 10 seconds if disconnected
+
+  # Example 2: Multi-Host Relay with Failover
+  - local-mount: "/failover.mp3"
+    on-demand: true              # Connect only when listeners present
+    masters:
+      - ip: "primary.example.com"
+        port: 8000
+        mount: "/stream.mp3"
+        priority: 1              # Try this first
+        timeout: 5
+
+      - ip: "secondary.example.com"
+        port: 8000
+        mount: "/stream.mp3"
+        priority: 2              # Fallback
+        timeout: 5
+
+      - ip: "tertiary.example.com"
+        port: 8000
+        mount: "/stream.mp3"
+        ssl: true                # Use HTTPS
+        priority: 3
+        timeout: 5
+
+    username: "relay"
+    password: "relaypass"
+    relay-icy-metadata: true
+
+  # Example 3: Relay with Custom HTTP Headers
+  - server: "upstream.example.com"
+    port: 8000
+    mount: "/source.mp3"
+    local-mount: "/custom-relay.mp3"
+    http-headers:
+      - name: "User-Agent"
+        value: "Mcaster1DNAS-Relay"
+      - name: "X-Custom"
+        value: "RelayValue"
+    enable: true                 # Enable/disable relay
+    run-on: 30                   # Start relay 30 seconds after server start
+
+# ==============================================================================
+# MASTER SERVER
+# ==============================================================================
+# Relay configuration for slave mode (pull from master)
+
+# master:
+#   server: "master.example.com"
+#   port: 8000
+#   username: "relay"
+#   password: "relaypass"
+#   interval: 120              # Update interval (seconds)
+#   retry-delay: 60            # Retry delay on failure
+#   relay-auth: true           # Use relay authentication
+#   redirect: false            # Don't redirect listeners on max
+#   on-demand: false           # Always relay from master
+
+# ==============================================================================
+# REDIRECT HOSTS
+# ==============================================================================
+# Redirect listeners to other servers when this one is full
+
+# redirects:
+#   - host: "overflow1.example.com"
+#     port: 8000
+#
+#   - host: "overflow2.example.com"
+#     port: 8000
+
+# ==============================================================================
+# YP DIRECTORIES
+# ==============================================================================
+# Yellow Pages (stream directory) submission settings
+
+# directories:
+#   - yp-url: "http://dir.xiph.org/cgi-bin/yp-cgi"
+#     yp-url-timeout: 15
+#     touch-interval: 600      # Update every 10 minutes
+#     yp-logfile: "/path/to/yp.log"  # Optional: Log all YP transactions to file
+
+# ==============================================================================
+# END OF CONFIGURATION
+# ==============================================================================

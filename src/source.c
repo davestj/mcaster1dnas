@@ -58,6 +58,7 @@
 #include "format.h"
 #include "fserve.h"
 #include "auth.h"
+#include "icy2_meta.h"
 #include "slave.h"
 
 #undef CATMODULE
@@ -2015,6 +2016,34 @@ static void source_apply_mount (source_t *source, mc_config_t *config, mount_pro
     /* to be done before possible non-utf8 stats */
     if (source->format && source->format->apply_settings)
         source->format->apply_settings (source->format, mountinfo);
+
+    /* Check for ICY-META v2.1+ protocol */
+    if (parser && icy2_meta_is_icy2(parser))
+    {
+        icy2_metadata *icy2 = icy2_meta_new();
+        if (icy2)
+        {
+            if (icy2_meta_parse_headers(icy2, parser) == 0)
+            {
+                /* Copy ICY2 metadata to stats for admin interface */
+                icy2_meta_copy_to_stats(icy2, source->stats);
+                INFO1("ICY2 metadata applied to mount %s", source->mount);
+            }
+            else
+            {
+                WARN1("Failed to parse ICY2 headers for mount %s", source->mount);
+            }
+            icy2_meta_free(icy2);
+        }
+        else
+        {
+            ERROR1("Failed to allocate ICY2 metadata for mount %s", source->mount);
+        }
+    }
+    else
+    {
+        DEBUG1("ICY2 not detected for mount %s, using legacy ICY 1.x parsing", source->mount);
+    }
 
     /* public */
     if (mountinfo && mountinfo->yp_public >= 0)

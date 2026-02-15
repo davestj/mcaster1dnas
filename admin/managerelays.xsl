@@ -20,19 +20,27 @@
     <div class="mcaster-header">
         <div class="mcaster-container">
             <div class="mcaster-header-top">
-            <div class="mcaster-brand">
-                <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
-                <div class="brand-text">
-                    <h1 style="margin: 0; font-size: 1.75rem;">
-                        <span class="brand-mcaster">Mcaster1</span>
-                        <span class="brand-dnas">DNAS Admin</span>
-                    </h1>
+                <div class="mcaster-brand">
+                    <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
+                    <div class="brand-text">
+                        <h1 style="margin: 0; font-size: 1.75rem;">
+                            <span class="brand-mcaster">Mcaster1</span>
+                            <span class="brand-dnas">DNAS Admin</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="mcaster-clock">
+                    <div class="mcaster-clock-time">
+                        <i class="fas fa-clock mcaster-clock-icon"></i>
+                        <span id="live-time">Loading...</span>
+                    </div>
+                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
                 </div>
             </div>
             <div class="mcaster-nav">
                 <a href="stats.xsl"><i class="fas fa-chart-line"></i> Stats</a>
                 <a href="listmounts.xsl"><i class="fas fa-stream"></i> Mounts</a>
-                <a href="managerelays.xsl"><i class="fas fa-project-diagram"></i> Relays</a>
+                <a href="managerelays.xsl" class="active"><i class="fas fa-project-diagram"></i> Relays</a>
                 <a href="logs.xsl"><i class="fas fa-file-alt"></i> Logs</a>
                 <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
                 <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>

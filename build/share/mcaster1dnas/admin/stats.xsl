@@ -13,7 +13,8 @@
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
-    <link rel="stylesheet" type="text/css" href="mcaster1-modern.css"/>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <script src="/mcaster-utils.js"></script>
     <style>
         .admin-action-btn {
             display: inline-flex;
@@ -45,20 +46,31 @@
 <body>
     <div class="mcaster-header">
         <div class="mcaster-container">
-            <div class="mcaster-brand">
-                <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
-                <div class="brand-text">
-                    <h1 style="margin: 0; font-size: 1.75rem;">
-                        <span class="brand-mcaster">Mcaster1</span>
-                        <span class="brand-dnas">DNAS Admin</span>
-                    </h1>
+            <div class="mcaster-header-top">
+                <div class="mcaster-brand">
+                    <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
+                    <div class="brand-text">
+                        <h1 style="margin: 0; font-size: 1.75rem;">
+                            <span class="brand-mcaster">Mcaster1</span>
+                            <span class="brand-dnas">DNAS Admin</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="mcaster-clock">
+                    <div class="mcaster-clock-time">
+                        <i class="fas fa-clock mcaster-clock-icon"></i>
+                        <span id="live-time">Loading...</span>
+                    </div>
+                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
                 </div>
             </div>
             <div class="mcaster-nav">
-                <a href="stats.xsl"><i class="fas fa-chart-line"></i> Statistics</a>
-                <a href="listmounts.xsl"><i class="fas fa-list"></i> Mounts</a>
+                <a href="stats.xsl" class="active"><i class="fas fa-chart-line"></i> Stats</a>
+                <a href="listmounts.xsl"><i class="fas fa-stream"></i> Mounts</a>
+                <a href="managerelays.xsl"><i class="fas fa-project-diagram"></i> Relays</a>
                 <a href="logs.xsl"><i class="fas fa-file-alt"></i> Logs</a>
-                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public Page</a>
+                <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
+                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>
             </div>
         </div>
     </div>
@@ -68,24 +80,64 @@
 
             <!-- Global Server Stats -->
             <div class="mcaster-card">
-                <h2><i class="fas fa-server"></i> Global Server Statistics</h2>
+                <h2>
+                    <i class="fas fa-server"></i> Global Server Statistics
+                    <span class="tooltip">
+                        <span class="help-icon">?</span>
+                        <span class="tooltiptext">
+                            Real-time server metrics showing current activity. These numbers update automatically as listeners connect and disconnect from your streams.
+                        </span>
+                    </span>
+                </h2>
 
                 <div class="stat-grid">
                     <div class="stat-box">
                         <span class="stat-value"><xsl:value-of select="listeners"/></span>
-                        <span class="stat-label"><i class="fas fa-headphones"></i> Listeners</span>
+                        <span class="stat-label">
+                            <i class="fas fa-headphones"></i> Listeners
+                            <span class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    Total number of active listeners currently connected and streaming audio from all mount points.
+                                </span>
+                            </span>
+                        </span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value"><xsl:value-of select="sources"/></span>
-                        <span class="stat-label"><i class="fas fa-microphone"></i> Sources</span>
+                        <span class="stat-label">
+                            <i class="fas fa-microphone"></i> Sources
+                            <span class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    Number of broadcast sources currently streaming to the server (e.g., OBS, SAM Broadcaster, Mixxx, etc.).
+                                </span>
+                            </span>
+                        </span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value"><xsl:value-of select="clients"/></span>
-                        <span class="stat-label"><i class="fas fa-users"></i> Clients</span>
+                        <span class="stat-label">
+                            <i class="fas fa-users"></i> Clients
+                            <span class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    Total connected clients including listeners, sources, and web interface users.
+                                </span>
+                            </span>
+                        </span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value"><xsl:value-of select="outgoing_kbitrate"/> kbps</span>
-                        <span class="stat-label"><i class="fas fa-tachometer-alt"></i> Bandwidth</span>
+                        <span class="stat-label">
+                            <i class="fas fa-tachometer-alt"></i> Bandwidth
+                            <span class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    Current outgoing bandwidth in kilobits per second. This is the total data being streamed to all listeners.
+                                </span>
+                            </span>
+                        </span>
                     </div>
                 </div>
 
@@ -265,7 +317,12 @@
 
     <div class="mcaster-footer">
         <div class="mcaster-container">
-            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server</p>
+            <p>
+                <i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
+                <span class="page-load-time" id="page-load-time">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </span>
+            </p>
         </div>
     </div>
 </body>

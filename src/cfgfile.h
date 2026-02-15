@@ -383,6 +383,7 @@ typedef struct mc_config_tag
     char *yp_url[MAX_YP_DIRECTORIES];
     int    yp_url_timeout[MAX_YP_DIRECTORIES];
     int    yp_touch_interval[MAX_YP_DIRECTORIES];
+    char *yp_logfile[MAX_YP_DIRECTORIES];
     int num_yp_directories;
 } mc_config_t;
 
@@ -398,6 +399,7 @@ int config_parse_file(const char *filename, mc_config_t *configuration);
 int config_initial_parse_file(const char *filename);
 int config_parse_cmdline(int arg, char **argv);
 void config_set_config (mc_config_t *new_config, mc_config_t *old_config);
+void config_init_configuration(mc_config_t *configuration);
 listener_t *config_clear_listener (listener_t *listener);
 relay_server *config_clear_relay (relay_server *relay);
 void config_clear(mc_config_t *config);
@@ -409,6 +411,9 @@ mount_proxy *config_find_mount (mc_config_t *config, const char *mount);
 int config_http_copy (mc_config_http_header_t *src, mc_config_http_header_t **dest);
 void config_xml_parse_failure (void*x,  xmlErrorPtr error);
 int config_qsizing_conv_a2n (const char *str, uint32_t *p);
+int config_mount_template (const char *mount);
+aliases *config_clear_alias (aliases *alias);
+config_options_t *config_clear_option (config_options_t *opt);
 
 int config_rehash(void);
 

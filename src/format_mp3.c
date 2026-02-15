@@ -891,11 +891,11 @@ static int validate_mpeg (source_t *source, refbuf_t *refbuf)
         }
         stats_lock (source->stats, NULL);
         snprintf (buf, sizeof buf, "%d", mpeg_get_type (mpeg_sync) == FORMAT_TYPE_AAC ? 10 : 2);
-        stats_set_flags (source->stats, "audio_codecid", buf, STATS_HIDDEN);
+        stats_set_flags (source->stats, "audio_codecid", buf, STATS_COUNTERS);
         snprintf (buf, sizeof buf, "%d", rate);
-        stats_set_flags (source->stats, "mpeg_samplerate", buf, STATS_HIDDEN);
+        stats_set_flags (source->stats, "mpeg_samplerate", buf, STATS_COUNTERS);
         snprintf (buf, sizeof buf, "%d", mpeg_get_channels (mpeg_sync));
-        stats_set_flags (source->stats, "mpeg_channels", buf, STATS_HIDDEN);
+        stats_set_flags (source->stats, "mpeg_channels", buf, STATS_COUNTERS);
         stats_release (source->stats);
     }
     if (unprocessed > 0)

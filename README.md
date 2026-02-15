@@ -1,0 +1,463 @@
+# Mcaster1DNAS - Digital Network Audio Server
+
+[![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![Version](https://img.shields.io/badge/version-2.5.0-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
+[![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://github.com/davestj/mcaster1dnas)
+[![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
+[![Language](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20BSD%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/davestj/mcaster1dnas)
+
+### Audio Format Support
+[![MP3](https://img.shields.io/badge/codec-MP3-red.svg)](https://en.wikipedia.org/wiki/MP3)
+[![AAC](https://img.shields.io/badge/codec-AAC-blue.svg)](https://en.wikipedia.org/wiki/Advanced_Audio_Coding)
+[![Ogg Vorbis](https://img.shields.io/badge/codec-Ogg_Vorbis-orange.svg)](https://xiph.org/vorbis/)
+[![Opus](https://img.shields.io/badge/codec-Opus-purple.svg)](https://opus-codec.org/)
+[![FLAC](https://img.shields.io/badge/codec-FLAC-green.svg)](https://xiph.org/flac/)
+[![Speex](https://img.shields.io/badge/codec-Speex-teal.svg)](https://www.speex.org/)
+[![Theora](https://img.shields.io/badge/codec-Theora-brown.svg)](https://www.theora.org/)
+
+### Protocol Support
+[![HTTP](https://img.shields.io/badge/protocol-HTTP-blue.svg)](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol)
+[![HTTPS/SSL](https://img.shields.io/badge/protocol-HTTPS%2FSSL-green.svg)](https://en.wikipedia.org/wiki/HTTPS)
+[![Icecast](https://img.shields.io/badge/protocol-Icecast-orange.svg)](https://icecast.org/)
+[![Shoutcast](https://img.shields.io/badge/protocol-Shoutcast-red.svg)](https://en.wikipedia.org/wiki/Shoutcast)
+
+---
+
+## 📻 Overview
+
+**Mcaster1DNAS** (Digital Network Audio Server) is a powerful, enterprise-grade streaming media server designed for professional audio broadcasting. Built on the proven foundation of Icecast-KH and Icecast2, Mcaster1DNAS provides high-quality audio streaming with low latency, modern web interface, and excellent reliability.
+
+### 🎯 Key Features
+
+- 🔒 **Secure by Default** - HTTPS/SSL streaming enabled out of the box
+- 🎵 **Multi-Format Audio** - MP3, AAC, Ogg Vorbis, Opus, FLAC, Speex, and Theora
+- 🚀 **High Performance** - Optimized for low latency and high concurrent listener capacity
+- 💻 **Modern Web Interface** - Beautiful, responsive HTML5/CSS3 admin and public interfaces
+- 📊 **Real-Time Statistics** - Live dashboard with updating metrics
+- ⏰ **Live System Clock** - Real-time clock display on all pages
+- 💡 **Interactive Help** - Contextual tooltips explaining streaming concepts
+- 🔐 **Advanced Authentication** - User management and stream protection
+- 🔄 **Relay Support** - Distribute streams across multiple servers
+- 📈 **Comprehensive Logging** - Detailed access, error, and playlist logs
+
+---
+
+## 🌳 Project Lineage
+
+Mcaster1DNAS is a fork of the excellent streaming server projects that came before it:
+
+```
+Icecast2 (Xiph.Org Foundation)
+    ↓
+Icecast-KH (Karl Heyes)
+    ↓
+Mcaster1DNAS (MediaCast1)
+```
+
+### Credits to Upstream Projects
+
+- **[Icecast2](https://icecast.org/)** by Xiph.Org Foundation - The original streaming media server
+- **[Icecast-KH](https://github.com/karlheyes/icecast-kh)** by Karl Heyes - Performance enhancements and advanced features
+
+We maintain all original credits, licensing (GNU GPL v2), and acknowledgments while establishing our own identity within the MediaCast1 ecosystem.
+
+---
+
+## ✨ What Makes Mcaster1DNAS Different?
+
+### Modern UI Enhancements
+
+- **🎨 Professional Web Interface** - Complete HTML5/CSS3 redesign with FontAwesome 6.4.0 icons
+- **📱 Responsive Design** - Mobile-friendly interface that works on all devices
+- **💡 Interactive Help System** - Hover-activated tooltips explaining every feature
+- **⏰ Live Clock** - Real-time clock and date display in header (updates every second)
+- **⚡ Page Load Metrics** - Performance tracking showing page load times
+- **🎯 Intuitive Navigation** - Seamless navigation between admin and public interfaces
+- **🏆 Credits Page** - Comprehensive fork history and acknowledgments
+
+### Enhanced Features
+
+- **🔒 HTTPS/SSL by Default** - Ports 9330 (HTTP) and 9443 (HTTPS) pre-configured
+- **📊 Enhanced Statistics** - Modern dashboard with visual stats and graphs
+- **🎛️ Mount Point Management** - Easy-to-use interface for managing streams
+- **👥 User Authentication** - Advanced user and stream authentication system
+- **📝 Metadata Updates** - Simple interface for updating "Now Playing" information
+- **🔄 Listener Migration** - Move listeners between mount points seamlessly
+- **📋 Comprehensive Logging** - Real-time log viewing in the web interface
+
+### Enterprise Features
+
+- **🏢 Production-Ready** - Built for professional broadcasting environments
+- **⚡ High Concurrency** - Optimized for thousands of concurrent listeners
+- **🔧 Easy Configuration** - XML-based configuration with sensible defaults
+- **📚 Complete Documentation** - Comprehensive guides and help system
+- **🛠️ Admin Tools** - Full-featured admin interface for server management
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+Mcaster1DNAS requires the following packages:
+
+- **libxml2** - XML parsing library ([download](http://xmlsoft.org/downloads.html))
+- **libxslt** - XSLT transformation library ([download](http://xmlsoft.org/XSLT/downloads.html))
+- **libcurl** - HTTP client library - version 7.10+ ([download](http://curl.haxx.se/download.html))
+- **OpenSSL** - SSL/TLS library for HTTPS support ([download](https://www.openssl.org/source/))
+- **Ogg/Vorbis** - Ogg Vorbis codec support - version 1.0+ ([download](http://www.vorbis.com/files))
+
+**Optional codecs:**
+- **Speex** - Voice codec support
+- **Theora** - Video codec support
+- **FLAC** - Lossless audio codec
+
+### Installation (Linux/Unix/macOS)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/davestj/mcaster1dnas.git
+cd mcaster1dnas
+
+# 2. Generate build system
+./autogen.sh
+
+# 3. Configure with all features
+./configure \
+  --prefix=/usr/local/mcaster1dnas \
+  --with-openssl \
+  --with-ogg \
+  --with-vorbis \
+  --with-theora \
+  --with-speex \
+  --with-curl
+
+# 4. Compile
+make -j$(nproc)
+
+# 5. Install
+sudo make install
+
+# 6. Create log directory
+mkdir -p /usr/local/mcaster1dnas/logs
+
+# 7. Copy and edit configuration
+cp mcaster1-production.xml /usr/local/mcaster1dnas/etc/mcaster1.xml
+nano /usr/local/mcaster1dnas/etc/mcaster1.xml
+
+# IMPORTANT: Change default passwords in the config file!
+```
+
+### Quick Build Script
+
+For convenience, use the automated build script:
+
+```bash
+./build.sh
+```
+
+This script handles all build steps automatically and provides detailed progress feedback.
+
+### Running the Server
+
+```bash
+# Start in foreground (for testing)
+/usr/local/mcaster1dnas/bin/mcaster1 -c /usr/local/mcaster1dnas/etc/mcaster1.xml
+
+# Start as background daemon
+/usr/local/mcaster1dnas/bin/mcaster1 -c /usr/local/mcaster1dnas/etc/mcaster1.xml -b
+
+# Using the control script
+./mcaster1-control.sh start   # Start server
+./mcaster1-control.sh stop    # Stop server
+./mcaster1-control.sh restart # Restart server
+./mcaster1-control.sh status  # Check status
+./mcaster1-control.sh logs    # View logs
+```
+
+### Default Access URLs
+
+After starting the server, access the web interfaces:
+
+- **HTTP:** `http://your-server:9330/`
+- **HTTPS:** `https://your-server:9443/`
+- **Public Status:** `https://your-server:9443/status.xsl`
+- **Admin Interface:** `https://your-server:9443/admin/stats.xsl`
+  - Default credentials: `admin` / `hackme` (⚠️ **CHANGE THESE!**)
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available:
+
+- **[BUILD_AND_RUN.md](BUILD_AND_RUN.md)** - Complete build and deployment guide
+- **[ENTERPRISE_UI_ENHANCEMENTS.md](ENTERPRISE_UI_ENHANCEMENTS.md)** - UI modernization details
+- **[CLOCK_AND_LOADTIME.md](CLOCK_AND_LOADTIME.md)** - Live clock and performance metrics
+- **[FORK.md](FORK.md)** - Fork information and lineage
+- **[COPYING](COPYING)** - GNU GPL v2 license text
+- **[ChangeLog](ChangeLog)** - Version history and changes
+
+### Online Documentation
+
+Browse the full documentation by opening `doc/index.html` in your browser after installation.
+
+---
+
+## ⚙️ Configuration
+
+### Basic Configuration
+
+Edit the XML configuration file to customize your server:
+
+```xml
+<mcaster1>
+    <!-- Server identification -->
+    <hostname>your-server.com</hostname>
+    <location>Your Location</location>
+    <admin>admin@your-server.com</admin>
+
+    <!-- Authentication (CHANGE THESE!) -->
+    <authentication>
+        <source-password>YOUR_SECURE_PASSWORD</source-password>
+        <relay-password>YOUR_SECURE_PASSWORD</relay-password>
+        <admin-user>admin</admin-user>
+        <admin-password>YOUR_SECURE_ADMIN_PASSWORD</admin-password>
+    </authentication>
+
+    <!-- Listeners -->
+    <listen-socket>
+        <port>9330</port>
+        <bind-address>0.0.0.0</bind-address>
+    </listen-socket>
+
+    <!-- HTTPS/SSL Listener -->
+    <listen-socket>
+        <port>9443</port>
+        <bind-address>0.0.0.0</bind-address>
+        <ssl>1</ssl>
+    </listen-socket>
+
+    <!-- Paths -->
+    <paths>
+        <ssl-certificate>/path/to/cert.pem</ssl-certificate>
+        <webroot>/path/to/mcaster1dnas/web</webroot>
+        <adminroot>/path/to/mcaster1dnas/admin</adminroot>
+        <logdir>/var/log/mcaster1dnas</logdir>
+    </paths>
+</mcaster1>
+```
+
+### SSL Certificate
+
+Generate a self-signed certificate for testing:
+
+```bash
+openssl req -x509 -newkey rsa:4096 -nodes \
+  -keyout mcaster1dnas.pem \
+  -out mcaster1dnas.pem \
+  -days 365 \
+  -subj "/CN=your-server.com"
+```
+
+For production, use a certificate from Let's Encrypt or a trusted CA.
+
+---
+
+## 🎵 Broadcasting to Mcaster1DNAS
+
+### Using OBS Studio
+
+1. Add an audio source
+2. Go to Settings → Stream
+3. Set Service to "Custom"
+4. Server: `icecast://source:YOUR_PASSWORD@your-server:9330/stream.mp3`
+5. Click "Start Streaming"
+
+### Using Mixxx
+
+1. Go to Preferences → Live Broadcasting
+2. Type: Icecast 2
+3. Host: `your-server`
+4. Port: `9330`
+5. Mount: `/stream.mp3`
+6. Login: `source`
+7. Password: `YOUR_PASSWORD`
+8. Click "Enable Live Broadcasting"
+
+### Using ffmpeg
+
+```bash
+# Stream an audio file
+ffmpeg -re -i input.mp3 -acodec libmp3lame -ab 128k \
+  -f mp3 icecast://source:YOUR_PASSWORD@your-server:9330/stream.mp3
+
+# Stream from microphone
+ffmpeg -f alsa -i default -acodec libmp3lame -ab 128k \
+  -f mp3 icecast://source:YOUR_PASSWORD@your-server:9330/live.mp3
+```
+
+---
+
+## 🛠️ Development
+
+### Building from Source
+
+```bash
+# Install development dependencies (Debian/Ubuntu)
+sudo apt-get install build-essential autoconf automake libtool \
+  libxml2-dev libxslt1-dev libcurl4-openssl-dev libssl-dev \
+  libvorbis-dev libogg-dev libtheora-dev libspeex-dev
+
+# Build
+./autogen.sh
+./configure --prefix=/usr/local/mcaster1dnas
+make
+sudo make install
+```
+
+### Contributing
+
+We welcome contributions! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Style
+
+- C code follows K&R style
+- Use tabs for indentation (width: 4 spaces)
+- Maximum line length: 120 characters
+- Add comments for complex logic
+
+---
+
+## 📊 System Requirements
+
+### Minimum Requirements
+
+- **CPU:** 1 GHz single-core processor
+- **RAM:** 256 MB
+- **Disk:** 50 MB for installation
+- **Network:** 100 Mbps for moderate streaming
+
+### Recommended for Production
+
+- **CPU:** 2+ GHz multi-core processor
+- **RAM:** 1 GB or more
+- **Disk:** 1 GB+ for logs and buffers
+- **Network:** 1 Gbps for high-capacity streaming
+- **OS:** Linux (Debian, Ubuntu, CentOS, RHEL), BSD, or macOS
+
+### Supported Platforms
+
+- ✅ Linux (Debian, Ubuntu, CentOS, RHEL, Fedora)
+- ✅ BSD (FreeBSD, OpenBSD, NetBSD)
+- ✅ macOS (10.13+)
+- ✅ Windows (with Cygwin or MSVC)
+
+---
+
+## 🔒 Security
+
+### Best Practices
+
+1. **Change Default Passwords** - Immediately change default admin and source passwords
+2. **Use HTTPS** - Always use SSL/TLS for admin interface
+3. **Firewall Rules** - Restrict admin port access to trusted IPs
+4. **Regular Updates** - Keep Mcaster1DNAS and dependencies up to date
+5. **Strong Passwords** - Use complex passwords for all accounts
+6. **Disable Unused Features** - Comment out unused mount points and relays
+
+### Security Advisories
+
+Check the [GitHub Issues](https://github.com/davestj/mcaster1dnas/issues) page for security advisories and updates.
+
+---
+
+## 📝 License
+
+Mcaster1DNAS is licensed under the **GNU General Public License v2.0** - see the [COPYING](COPYING) file for details.
+
+This ensures that Mcaster1DNAS remains free and open source software, compatible with all upstream projects (Icecast2 and Icecast-KH).
+
+---
+
+## 🙏 Acknowledgments
+
+Mcaster1DNAS stands on the shoulders of giants. We thank:
+
+- **[Xiph.Org Foundation](https://xiph.org/)** - Original Icecast2 development and the foundation of open source streaming
+- **[Karl Heyes](https://github.com/karlheyes)** - Icecast-KH improvements, performance enhancements, and maintenance
+- **All Icecast contributors** - For decades of development on the foundational streaming server technology
+- **[FontAwesome](https://fontawesome.com/)** - Professional icon library used in our web interface
+
+---
+
+## 🔗 Links
+
+- **Website:** [https://mcaster1.com](https://mcaster1.com)
+- **GitHub:** [https://github.com/davestj/mcaster1dnas](https://github.com/davestj/mcaster1dnas)
+- **Issues:** [https://github.com/davestj/mcaster1dnas/issues](https://github.com/davestj/mcaster1dnas/issues)
+- **Discussions:** [https://github.com/davestj/mcaster1dnas/discussions](https://github.com/davestj/mcaster1dnas/discussions)
+
+### Upstream Projects
+
+- **Icecast2:** [https://icecast.org](https://icecast.org)
+- **Icecast-KH:** [https://github.com/karlheyes/icecast-kh](https://github.com/karlheyes/icecast-kh)
+
+---
+
+## 📧 Contact
+
+- **Maintainer:** Saint John (David St John)
+- **Email:** [davestj@gmail.com](mailto:davestj@gmail.com)
+- **Website:** [https://mcaster1.com](https://mcaster1.com)
+
+---
+
+## 🌟 Features Roadmap
+
+### Current Version (2.5.0)
+✅ Modern HTML5/CSS3 web interface
+✅ Interactive help tooltips
+✅ Live clock and page load metrics
+✅ HTTPS/SSL by default
+✅ Enhanced admin dashboard
+✅ Credits and fork information pages
+
+### Upcoming Features
+- [ ] Real-time statistics dashboard (WebSocket/SSE)
+- [ ] Dark mode toggle
+- [ ] Stream health monitoring with visual indicators
+- [ ] Historical listener analytics with charts
+- [ ] Mobile app integration
+- [ ] Bulk operations for listener management
+- [ ] Stream preview with embedded audio players
+- [ ] Automated stream scheduling system
+- [ ] Interactive API documentation
+- [ ] Plugin architecture for extensibility
+
+---
+
+## 📈 Statistics
+
+![GitHub stars](https://img.shields.io/github/stars/davestj/mcaster1dnas?style=social)
+![GitHub forks](https://img.shields.io/github/forks/davestj/mcaster1dnas?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/davestj/mcaster1dnas?style=social)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the MediaCast1 Team**
+
+**GNU GPL v2 Licensed** | **Free and Open Source Forever**
+
+[⬆ Back to Top](#mcaster1dnas---digital-network-audio-server)
+
+</div>

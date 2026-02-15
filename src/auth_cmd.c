@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -90,7 +90,7 @@ static void process_header (const char *p, auth_client *auth_user)
         }
         return;
     }
-    if (strncasecmp (p, "icecast-slave:", 14) == 0)
+    if (strncasecmp (p, "mcaster1-slave:", 14) == 0)
         auth_user->flags |= CLIENT_IS_SLAVE;
     if (strncasecmp (p, "Location: ", 10) == 0)
     {
@@ -111,7 +111,7 @@ static void process_header (const char *p, auth_client *auth_user)
         }
     }
 
-    if (strncasecmp (p, "icecast-auth-user: ", 19) == 0)
+    if (strncasecmp (p, "mcaster1-auth-user: ", 19) == 0)
     {
         if (strcmp (p+19, "withintro") == 0)
             auth_user->flags |= CLIENT_AUTHENTICATED|CLIENT_HAS_INTRO_CONTENT;
@@ -119,13 +119,13 @@ static void process_header (const char *p, auth_client *auth_user)
             auth_user->flags |= CLIENT_AUTHENTICATED;
         return;
     }
-    if (strncasecmp (p, "icecast-auth-timelimit: ", 24) == 0)
+    if (strncasecmp (p, "mcaster1-auth-timelimit: ", 24) == 0)
     {
         unsigned limit;
         sscanf (p+24, "%u", &limit);
         client->connection.discon.time = time(NULL) + limit;
     }
-    if (strncasecmp (p, "icecast-auth-message: ", 22) == 0)
+    if (strncasecmp (p, "mcaster1-auth-message: ", 22) == 0)
     {
         char *eol;
         snprintf (atd->errormsg, sizeof (atd->errormsg), "%s", (char*)p+22);

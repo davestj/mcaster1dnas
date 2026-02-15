@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -35,7 +35,7 @@ typedef uintptr_t stats_handle_t;
 void stats_initialize(void);
 void stats_shutdown(void);
 
-void stats_global(ice_config_t *config);
+void stats_global(mc_config_t *config);
 void stats_get_streamlist (char *buffer, size_t remaining);
 refbuf_t *stats_get_streams (int prepend);
 void stats_purge (time_t mark);

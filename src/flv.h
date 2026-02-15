@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -39,7 +39,7 @@ struct flv
 #define FLV_CHK_META                    (1<<0)
 
 int  write_flv_buf_to_client (client_t *client);
-int  flv_create_client_data (format_plugin_t *plugin, ice_http_t *http, client_t *client);
+int  flv_create_client_data (format_plugin_t *plugin, mc_http_t *http, client_t *client);
 void free_flv_client_data (client_t *client);
 int  flv_process_buffer (struct flv *flv, refbuf_t *refbuf);
 

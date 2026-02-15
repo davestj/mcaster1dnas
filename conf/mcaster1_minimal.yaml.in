@@ -1,0 +1,32 @@
+---
+# Mcaster1DNAS Minimal Configuration (YAML)
+# Bare minimum settings to get the server running
+
+location: "Earth"
+admin: "admin@localhost"
+hostname: "localhost"
+
+authentication:
+  source-password: "hackme"
+  admin-user: "admin"
+  admin-password: "hackme"
+
+limits:
+  clients: 100
+  sources: 2
+
+listen-sockets:
+  - port: 8000
+
+paths:
+  basedir: "@prefix@"
+  logdir: "@LOGDIR@"
+  webroot: "@WEBROOT@"
+  adminroot: "@ADMINROOT@"
+
+logging:
+  accesslog:
+    name: "access.log"
+  errorlog:
+    name: "error.log"
+    level: "info"

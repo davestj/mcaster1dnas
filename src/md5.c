@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -29,7 +29,7 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-/* Modified for icecast by Mike Smith <msmith@xiph.org>, mostly changing header
+/* Modified for mcaster1 by Mike Smith <msmith@xiph.org>, mostly changing header
  * and type definitions
  */
 

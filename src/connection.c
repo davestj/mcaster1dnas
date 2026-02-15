@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -86,14 +86,14 @@
    and is a crazy version of HTTP.  It looks like :
      Source Client -> Connects to port + 1
      Source Client -> sends encoder password (plaintext)\r\n
-     Icecast -> reads encoder password, if ok, sends OK2\r\n, else disconnects
+     Mcaster1 -> reads encoder password, if ok, sends OK2\r\n, else disconnects
      Source Client -> reads OK2\r\n, then sends http-type request headers
                       that contain the stream details (icy-name, etc..)
-     Icecast -> reads headers, stores them
+     Mcaster1 -> reads headers, stores them
      Source Client -> starts sending MP3 data
      Source Client -> periodically updates metadata via admin.cgi call
 
-   Icecast auth style uses HTTP and Basic Authorization.
+   Mcaster1 auth style uses HTTP and Basic Authorization.
 */
 
 static int  shoutcast_source_client (client_t *client);
@@ -330,7 +330,7 @@ static void ssl_locking_function (int mode, int n, const char *file, int line)
 #endif
 
 
-static void get_ssl_certificate (ice_config_t *config)
+static void get_ssl_certificate (mc_config_t *config)
 {
     ssl_ok = 0;
     SSL_CTX *new_ssl_ctx = NULL;
@@ -491,7 +491,7 @@ int connection_send_ssl (connection_t *con, const void *buf, size_t len)
 #else
 
 /* SSL not compiled in, so at least log it */
-static void get_ssl_certificate (ice_config_t *config)
+static void get_ssl_certificate (mc_config_t *config)
 {
     ssl_ok = 0;
     INFO0 ("No SSL capability");
@@ -816,7 +816,7 @@ static int search_banned_ip (char *ip)
 }
 
 
-/* return 0 if the passed ip address is not to be handled by icecast, non-zero otherwise */
+/* return 0 if the passed ip address is not to be handled by mcaster1, non-zero otherwise */
 static int accept_ip_address (char *ip)
 {
     time_t t = time (NULL);
@@ -838,7 +838,7 @@ static int accept_ip_address (char *ip)
 }
 
 
-static struct xforward_entry *_find_xforward_addr (ice_config_t *config, char *ip)
+static struct xforward_entry *_find_xforward_addr (mc_config_t *config, char *ip)
 {
     struct xforward_entry *xforward = config->xforward;
     while (xforward)
@@ -1017,7 +1017,7 @@ static sock_t wait_for_serversock (void)
                     case SIGTERM:
                         DEBUG0 ("signalfd received a termination");
                         global_lock();
-                        global.running = ICE_HALTING;
+                        global.running = MC_HALTING;
                         global_unlock();
                         thread_mutex_lock (&_connection_lock);
                         connection_running = 0;
@@ -1209,7 +1209,7 @@ static int shoutcast_source_client (client_t *client)
                 break;
 
             ret = client_read_bytes (client, buf, remaining);
-            if (ret == 0 || con->error || global_state() != ICE_RUNNING)
+            if (ret == 0 || con->error || global_state() != MC_RUNNING)
                 break;
             if (ret < 0)
                 return 0;
@@ -1309,8 +1309,8 @@ int setup_source_client_callback (client_t *client)
             buf->len -= len;
             DEBUG1 ("found %d bytes of stream data after headers", len);
         }
-        ice_http_t http = ICE_HTTP_INIT;
-        if (ice_http_setup_flags (&http, client, 100, 0, NULL) == 0 && expect)
+        mc_http_t http = MC_HTTP_INIT;
+        if (mc_http_setup_flags (&http, client, 100, 0, NULL) == 0 && expect)
         {
            if (strcasecmp (expect, "100-continue") == 0)
            {
@@ -1319,7 +1319,7 @@ int setup_source_client_callback (client_t *client)
                    client->refbuf = surplus->next;
                refbuf_release (surplus);
 
-               ice_http_complete (&http);
+               mc_http_complete (&http);
 
                DEBUG0 ("client expects 100 continue");
                client->pos = 0;
@@ -1328,7 +1328,7 @@ int setup_source_client_callback (client_t *client)
            }
            INFO1 ("Received Expect header: %s", expect);
         }
-        ice_http_clear (&http);
+        mc_http_clear (&http);
     }
     buf = buf->next;
     client->refbuf->next = NULL;
@@ -1346,7 +1346,7 @@ static int http_client_request (client_t *client)
     refbuf_t *refbuf = client->shared_data;
     int remaining, ret = -1;
 
-    if (global_state() != ICE_RUNNING || client->connection.error)
+    if (global_state() != MC_RUNNING || client->connection.error)
     {
         refbuf_release (refbuf);
         client->shared_data = NULL;
@@ -1523,7 +1523,7 @@ static int http_client_request (client_t *client)
 
 static void *connection_thread (void *arg)
 {
-    ice_config_t *config;
+    mc_config_t *config;
 
 #ifdef HAVE_SIGNALFD
     sigset_t mask;
@@ -1683,7 +1683,7 @@ static int _check_pass_ice(http_parser_t *parser, const char *correctpass)
 int connection_check_admin_pass(http_parser_t *parser)
 {
     int ret;
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     char *pass = config->admin_password;
     char *user = config->admin_username;
     const char *protocol;
@@ -1705,7 +1705,7 @@ int connection_check_admin_pass(http_parser_t *parser)
 int connection_check_relay_pass(http_parser_t *parser)
 {
     int ret;
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     char *pass = config->relay_password;
     char *user = config->relay_username;
 
@@ -1740,12 +1740,12 @@ int connection_check_pass (http_parser_t *parser, const char *user, const char *
         ret = _check_pass_http(parser, user, pass);
         if (!ret)
         {
-            ice_config_t *config = config_get_config_unlocked();
-            if (config->ice_login)
+            mc_config_t *config = config_get_config_unlocked();
+            if (config->mc_login)
             {
                 ret = _check_pass_ice(parser, pass);
                 if(ret)
-                    WARN0("Source is using deprecated icecast login");
+                    WARN0("Source is using deprecated mcaster1 login");
             }
         }
     }
@@ -1796,7 +1796,7 @@ static int _handle_stats_request (client_t *client)
 }
 
 
-static void check_for_filtering (ice_config_t *config, client_t *client, char *uri)
+static void check_for_filtering (mc_config_t *config, client_t *client, char *uri)
 {
     char *pattern = config->access_log.exclude_ext;
     char *extension = strrchr (uri, '.');
@@ -1835,7 +1835,7 @@ static int _handle_get_request (client_t *client)
     char *serverhost = NULL;
     int serverport = 0, ret = 0;
     aliases *alias;
-    ice_config_t *config;
+    mc_config_t *config;
     char *uri = util_normalise_uri (httpp_getvar (client->parser, HTTPP_VAR_URI));
     int client_limit_reached = 0;
 
@@ -1904,7 +1904,7 @@ static int _handle_get_request (client_t *client)
 
 /* close any open listening sockets
  */
-void connection_listen_sockets_close (ice_config_t *config, int all_sockets)
+void connection_listen_sockets_close (mc_config_t *config, int all_sockets)
 {
     if (global.serversock)
     {
@@ -1967,7 +1967,7 @@ void connection_listen_sockets_close (ice_config_t *config, int all_sockets)
 }
 
 
-int connection_setup_sockets (ice_config_t *config)
+int connection_setup_sockets (mc_config_t *config)
 {
     static int sockets_setup = 2;
     int count = 0, socket_count = 0, socket_attempt = 0, arr_size;

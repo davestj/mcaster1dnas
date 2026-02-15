@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 webdir = $(pkgdatadir)/web/images
-dist_web_DATA = icecast.png \
+dist_web_DATA = mcaster1.png \
                 key.png \
                 tunein.png
 

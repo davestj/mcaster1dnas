@@ -1,0 +1,27 @@
+---
+location: "Test Location"
+admin: "test@test.com"
+hostname: "localhost"
+
+authentication:
+  source-password: "testpass"
+  admin-user: "admin"
+  admin-password: "testpass"
+
+limits:
+  clients: 50
+  sources: 2
+
+listen-sockets:
+  - port: 9999
+
+paths:
+  basedir: "/var/www/mcaster1.com/mcaster1dnas/build"
+  logdir: "/var/www/mcaster1.com/mcaster1dnas/build/logs"
+  webroot: "/var/www/mcaster1.com/mcaster1dnas/web"
+  adminroot: "/var/www/mcaster1.com/mcaster1dnas/admin"
+
+logging:
+  errorlog:
+    name: "error.log"
+    level: "info"

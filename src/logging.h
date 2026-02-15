@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -71,7 +71,7 @@ extern int errorlog;
 ** REFERER = the refering URL
 ** AGENT = the user agent
 **
-** for icecast, we add on extra field at the end, which will be
+** for mcaster1, we add on extra field at the end, which will be
 ** ignored by normal log parsers
 **
 ** TIME = seconds that the connection lasted
@@ -90,9 +90,9 @@ void logging_access_id (struct access_log *accesslog, client_t *client);
 void logging_access(client_t *client);
 void logging_playlist(const char *mount, const char *metadata, long listeners);
 void logging_preroll (int log_id, const char *intro_name, client_t *client);
-int  restart_logging (ice_config_t *config);
-int init_logging (ice_config_t *config);
-int  start_logging(ice_config_t *config);
+int  restart_logging (mc_config_t *config);
+int init_logging (mc_config_t *config);
+int  start_logging(mc_config_t *config);
 void stop_logging(void);
 void log_parse_failure (void *ctx, const char *fmt, ...);
 void init_log_subsys ();

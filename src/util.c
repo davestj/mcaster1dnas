@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -219,7 +219,7 @@ char *util_get_path_from_normalised_uri(const char *uri, int use_admin)
 {
     char *fullpath;
     char *root;
-    ice_config_t *config = config_get_config_unlocked();
+    mc_config_t *config = config_get_config_unlocked();
 
     if (use_admin)
         root = config->adminroot_dir;

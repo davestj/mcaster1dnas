@@ -789,3 +789,157 @@
 [2026-02-15  06:43:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
 [2026-02-15  06:53:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
 [2026-02-15  07:03:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  07:13:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  07:22:00] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  07:22:00] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  07:22:00] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  07:22:01] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  07:22:03] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-15  07:22:07] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  07:22:25] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  07:23:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  07:33:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  07:43:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  07:53:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:03:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:13:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:23:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:33:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:43:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  08:53:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:03:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:13:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:23:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:24:03] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  09:24:03] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  09:24:07] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  09:24:10] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  09:33:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:43:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:52:43] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  09:52:43] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  09:52:43] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  09:53:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  09:55:40] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.mp3"
+[2026-02-15  09:55:40] INFO format-mp3/format_mp3_get_plugin Created format details for /stream.mp3
+[2026-02-15  09:55:40] INFO source/source_client_startup sources count is now 1
+[2026-02-15  09:55:40] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  09:55:40] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  09:55:40] INFO source/source_client_response source /stream.mp3 is ready to start
+[2026-02-15  09:55:40] INFO source/source_init Source /stream.mp3 initialised
+[2026-02-15  09:55:40] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  09:55:40] INFO admin/command_metadata Metadata song on /stream.mp3 set to ""
+[2026-02-15  09:55:40] INFO mpeg/check_for_mp3 MPEG 1 Layer 3 Detected (44100 2 128 kbps) on 50.190.31.249
+[2026-02-15  09:55:41] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (1) StreamTitle='';...
+[2026-02-15  09:55:45] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  09:55:45] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  09:55:46] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  09:55:59] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  09:56:08] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  09:56:33] INFO admin/admin_handle_general_request processing file credits.xsl
+[2026-02-15  09:56:33] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/credits.xsl
+[2026-02-15  09:56:35] INFO admin/admin_handle_general_request processing file server_version.xsl
+[2026-02-15  09:56:35] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/admin/server_version.xsl": No such file or directory
+[2026-02-15  09:56:39] INFO admin/admin_handle_general_request processing file credits.xsl
+[2026-02-15  09:56:40] INFO yp/response_header touch interval for /stream.mp3 set to 200
+[2026-02-15  09:56:40] INFO yp/response_header message for /stream.mp3, Created successfully
+[2026-02-15  09:56:41] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  09:56:45] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  09:56:53] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/credits.xsl
+[2026-02-15  09:56:55] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  09:57:20] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  09:57:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  09:57:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  09:57:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  09:57:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  09:57:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  09:57:59] WARN xml/parsing error
+[2026-02-15  09:57:59] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl
+[2026-02-15  09:57:59] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl"
+[2026-02-15  09:58:07] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  09:58:07] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  09:58:07] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  09:58:07] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  09:58:07] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  09:58:07] WARN xml/parsing error
+[2026-02-15  09:58:07] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl
+[2026-02-15  09:58:07] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl"
+[2026-02-15  09:58:10] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  09:58:10] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  09:58:10] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  09:58:10] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  09:58:10] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  09:58:10] WARN xml/parsing error
+[2026-02-15  09:58:10] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl
+[2026-02-15  09:58:10] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl"
+[2026-02-15  09:58:23] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:00:05] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:00:09] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:03:25] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:03:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  10:06:45] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:08:33] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:08:33] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:08:33] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:09:15] WARN fserve/fserve_client_create req for file "/var/www/mcaster1.com/mcaster1dnas/web/robots.txt" No such file or directory
+[2026-02-15  10:09:16] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  10:09:16] INFO source/source_read listener count on /stream.mp3 now 2
+[2026-02-15  10:09:16] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  10:09:16] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  10:10:05] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:11:31] INFO admin/command_metadata Metadata song on /stream.mp3 set to " - Markus Schulz And Haliene - Tidal Wave (Daxson Extended Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  10:11:31] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (7) StreamTitle=' - Markus Schulz And Haliene - Tidal Wave (Daxson Extended Remix) (...
+[2026-02-15  10:11:31] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:11:54] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:11:54] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:11:54] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:11:55] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  10:12:05] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Will Atkinson - Rush (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  10:12:05] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Will Atkinson - Rush (Extended Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  10:12:05] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:13:18] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:13:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  10:15:25] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:18:46] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:19:20] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Gxd And Dan Thompson - Utopia (Hidden Wonderland Anthem) (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  10:19:20] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (8) StreamTitle=' Gxd And Dan Thompson - Utopia (Hidden Wonderland Anthem) (Extended...
+[2026-02-15  10:19:21] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:22:41] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:23:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  10:24:39] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:24:39] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:24:59] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/xspf.xsl
+[2026-02-15  10:25:23] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  10:25:33] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  10:25:55] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  10:26:01] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:26:35] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Van Der Karsten - Lose (PulsRadio TRANCE) - Winamp"
+[2026-02-15  10:26:35] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Van Der Karsten - Lose (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  10:26:35] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:26:44] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  10:26:53] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:26:53] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:26:53] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:26:54] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  10:27:05] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:27:26] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  10:27:30] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:28:18] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:28:48] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  10:29:23] INFO admin/command_metadata Metadata song on /stream.mp3 set to " DJ Tatana - Elements Of Culture (Radio Edit) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  10:29:23] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' DJ Tatana - Elements Of Culture (Radio Edit) (PulsRadio TRANCE) - ...
+[2026-02-15  10:29:23] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  10:29:30] INFO source/_source_read End of Stream /stream.mp3
+[2026-02-15  10:29:30] INFO source/source_shutdown Source "/stream.mp3" exiting
+[2026-02-15  10:29:30] INFO source/source_client_read no more listeners on /stream.mp3
+[2026-02-15  10:29:30] INFO source/_free_source freeing source "/stream.mp3"
+[2026-02-15  10:29:31] INFO yp/do_yp_remove clearing up YP entry for /stream.mp3
+[2026-02-15  10:29:31] INFO yp/response_header message for /stream.mp3, Successfully removed
+[2026-02-15  10:29:50] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:29:51] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  10:33:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  10:43:49] INFO yp/do_yp_add mount /test-icy2.mp3 requires stats (sn, genre, type, bitrate)
+[2026-02-15  10:44:46] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:44:46] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:44:46] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:44:47] INFO fserve/open_fh lookup of "/favicon.ico"

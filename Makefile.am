@@ -1,5 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
+AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = conf doc web admin src
@@ -17,7 +18,9 @@ EXTRA_DIST = HACKING config.h.vc6 m4/acx_pthread.m4 m4/ogg.m4 \
     m4/xiph_types.m4 m4/xiph_xml2.m4 m4/xiph_openssl.m4 mcaster1.spec
 
 docdir = $(datadir)/doc/$(PACKAGE)
-doc_DATA = README AUTHORS COPYING NEWS TODO
+doc_DATA = README.md ChangeLog TODO.md \
+	ICY2_PROTOCOL_SPEC.md YAML_IMPLEMENTATION.md YP_LOGGING_FEATURE.md \
+	FORK.md BUILD_AND_RUN.md
 
 git_hash.h: FORCE
 	@$(SHELL_PATH) $(srcdir)/GIT-VERSION-GEN

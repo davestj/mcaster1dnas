@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -238,7 +238,7 @@ source_t *source_find_mount_raw(const char *mount)
 source_t *source_find_mount (const char *mount)
 {
     source_t *source = NULL;
-    ice_config_t *config;
+    mc_config_t *config;
     mount_proxy *mountinfo;
     int depth = 0;
 
@@ -565,7 +565,7 @@ void source_add_queue_buffer (source_t *source, refbuf_t *r)
     /* append buffer to the in-flight data queue,  */
     if (source->stream_data == NULL)
     {
-        ice_config_t *config = config_get_config();
+        mc_config_t *config = config_get_config();
         mount_proxy *mountinfo = config_find_mount (config, source->mount);
         if (mountinfo)
         {
@@ -739,7 +739,7 @@ int source_read (source_t *source)
     time_t current = client->worker->current_time.tv_sec;
 
     global_lock();
-    if (global.running != ICE_RUNNING)
+    if (global.running != MC_RUNNING)
         source->flags &= ~SOURCE_RUNNING;
     global_unlock();
     if (source_running (source) == 0)
@@ -861,7 +861,7 @@ static int source_client_read (client_t *client)
     {
         if (source->limit_rate)
         {
-            if (source->limit_rate < (source->incoming_rate) && global.running == ICE_RUNNING)
+            if (source->limit_rate < (source->incoming_rate) && global.running == MC_RUNNING)
             {
                 rate_add (source->in_bitrate, 0, client->worker->current_time.tv_sec);
                 source->incoming_rate = (long)rate_avg (source->in_bitrate);
@@ -944,7 +944,7 @@ static int source_client_read (client_t *client)
         global_lock();
         global.sources--;
         stats_event_args (NULL, "sources", "%d", global.sources);
-        if (source->wait_time == 0 || global.running != ICE_RUNNING)
+        if (source->wait_time == 0 || global.running != MC_RUNNING)
         {
             global_unlock();
             INFO1 ("no more listeners on %s", source->mount);
@@ -1140,7 +1140,7 @@ static void source_preroll_logging (source_t *source, client_t *client)
         return; // content provided separately, auth or queue block copy
     if (source->preroll_log_id < 0)
     {
-        ice_config_t *config = config_get_config();
+        mc_config_t *config = config_get_config();
         if (config->preroll_log.logid >= 0)
             logging_preroll (config->preroll_log.logid, source->intro_filename, client);
         config_release_config();
@@ -1267,8 +1267,8 @@ static int http_source_listener (client_t *client)
 
     if (client->respcode == 0)
     {
-        int (*build_headers)(format_plugin_t *, ice_http_t *http, client_t *) = format_client_headers;
-        ice_http_t http = ICE_HTTP_INIT;
+        int (*build_headers)(format_plugin_t *, mc_http_t *http, client_t *) = format_client_headers;
+        mc_http_t http = MC_HTTP_INIT;
 
         if (source_running (source) == 0)
         {
@@ -1280,12 +1280,12 @@ static int http_source_listener (client_t *client)
 
         if (build_headers (source->format, &http, client) < 0)
         {
-            ice_http_clear (&http);
+            mc_http_clear (&http);
             ERROR1 ("internal problem, dropping client %" PRIu64, client->connection.id);
             return -1;
         }
-        ice_http_complete (&http);
-        ice_http_clear (&http);
+        mc_http_complete (&http);
+        mc_http_clear (&http);
         refbuf = client->refbuf;
         stats_lock (source->stats, source->mount);
         stats_set_inc (source->stats, "listener_connections");
@@ -1451,7 +1451,7 @@ int listener_waiting_on_source (source_t *source, client_t *client)
         }
         if (source->flags & SOURCE_TERMINATING)
         {
-            if ((source->flags & SOURCE_PAUSE_LISTENERS) && global.running == ICE_RUNNING)
+            if ((source->flags & SOURCE_PAUSE_LISTENERS) && global.running == MC_RUNNING)
             {
                 if (client->refbuf && (client->refbuf->flags & SOURCE_QUEUE_BLOCK))
                     client->refbuf = NULL;
@@ -1787,12 +1787,12 @@ void source_set_fallback (source_t *source, fbinfo *fallback)
 }
 
 
-int source_set_intro (source_t *source, ice_config_t *_c, const char *file_pattern)
+int source_set_intro (source_t *source, mc_config_t *_c, const char *file_pattern)
 {
     if (file_pattern == NULL || source == NULL)
         return -1;
 
-    ice_config_t *config = _c ? _c : config_get_config ();
+    mc_config_t *config = _c ? _c : config_get_config ();
     char buffer[4096];
     unsigned int len = sizeof buffer;
     int ret = snprintf (buffer, len, "%s" PATH_SEPARATOR, config->webroot_dir);
@@ -1865,7 +1865,7 @@ void source_shutdown (source_t *source, int with_fallback)
             auth_stream_end (mountinfo, source);
         }
     }
-    int running = (global_state() == ICE_RUNNING) ? 1 : 0;
+    int running = (global_state() == MC_RUNNING) ? 1 : 0;
     if (running)
     {
         if (source->fallback.limit == 0)
@@ -1956,7 +1956,7 @@ int source_apply_preroll (mount_proxy *mountinfo, source_t *source)
         if (mountinfo == NULL || mountinfo->preroll_log.name == NULL)
             break;
 
-        ice_config_t *config = config_get_config_unlocked ();
+        mc_config_t *config = config_get_config_unlocked ();
         struct error_log *preroll = &mountinfo->preroll_log;
         unsigned int len = 4096;
         int ret;
@@ -1992,7 +1992,7 @@ int source_apply_preroll (mount_proxy *mountinfo, source_t *source)
 
 
 /* Apply the mountinfo details to the source */
-static void source_apply_mount (source_t *source, ice_config_t *config, mount_proxy *mountinfo)
+static void source_apply_mount (source_t *source, mc_config_t *config, mount_proxy *mountinfo)
 {
     const char *str;
     int val;
@@ -2028,7 +2028,7 @@ static void source_apply_mount (source_t *source, ice_config_t *config, mount_pr
             if (str) break;
             str = httpp_getvar (parser, "x-audiocast-public");
             if (str) break;
-            /* handle header from icecast v2 release */
+            /* handle header from mcaster1 v2 release */
             str = httpp_getvar (parser, "icy-public");
             if (str) break;
             str = source->yp_public > 0 ? "1" : "0";
@@ -2235,9 +2235,9 @@ static void source_apply_mount (source_t *source, ice_config_t *config, mount_pr
 /* update the specified source with details from the config or mount.
  * mountinfo can be NULL in which case default settings should be taken
  */
-void source_update_settings (ice_config_t *_c, source_t *source, mount_proxy *mountinfo)
+void source_update_settings (mc_config_t *_c, source_t *source, mount_proxy *mountinfo)
 {
-    ice_config_t *config = _c ? _c : config_get_config();
+    mc_config_t *config = _c ? _c : config_get_config();
 
     /* set global settings first */
     if (mountinfo == NULL)
@@ -2433,7 +2433,7 @@ static int _get_source (const char *mount, source_t **p)
  */
 void source_recheck_mounts (int update_all)
 {
-    ice_config_t *config;
+    mc_config_t *config;
     time_t mark = time (NULL);
 
     //DEBUG1 ("run through %d", update_all);
@@ -2555,7 +2555,7 @@ int check_duplicate_logins (const char *mount, avl_tree *tree, client_t *client,
  */
 static int source_client_shutdown (client_t *client)
 {
-    if (global.running == ICE_RUNNING && client->connection.discon.time)
+    if (global.running == MC_RUNNING && client->connection.discon.time)
     {
         if (client->connection.discon.time >= client->worker->current_time.tv_sec)
         {
@@ -2643,7 +2643,7 @@ int source_add_listener (const char *mount, mount_proxy *mountinfo, client_t *cl
     const char *passed_mount = mount;
     unsigned int len;
 
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     int64_t max_bandwidth = config->max_bandwidth;
     unsigned int max_listeners = config->max_listeners;
     config_release_config();
@@ -2750,15 +2750,15 @@ int source_add_listener (const char *mount, mount_proxy *mountinfo, client_t *cl
             if ((client->flags & CLIENT_AUTHENTICATED) == 0 || httpp_getvar (client->parser, "range"))
             {
                 int ret;
-                int (*build_headers)(format_plugin_t *, ice_http_t *,client_t *) = format_client_headers;
+                int (*build_headers)(format_plugin_t *, mc_http_t *,client_t *) = format_client_headers;
 
                 if (source->format->create_client_data)
                     build_headers = source->format->create_client_data;
 
-                ice_http_t http = ICE_HTTP_INIT;
+                mc_http_t http = MC_HTTP_INIT;
                 client->connection.discon.sent -= client->connection.start_pos;
                 ret = build_headers (source->format, &http, client);
-                ice_http_complete (&http);
+                mc_http_complete (&http);
 
                 if (ret < 0)
                 {
@@ -3042,9 +3042,9 @@ static int source_client_response (client_t *client, source_t *source)
     }
     else
     {
-        ice_http_t http = ICE_HTTP_INIT;
-        ice_http_setup_flags (&http, client, 200, 0, NULL);
-        ice_http_complete (&http);
+        mc_http_t http = MC_HTTP_INIT;
+        mc_http_setup_flags (&http, client, 200, 0, NULL);
+        mc_http_complete (&http);
         client->intro_offset = client->pos;
         client->pos = 0;
         client->ops = &source_client_http_ops;
@@ -3114,7 +3114,7 @@ static int  source_client_startup (client_t *client)
                 return client_send_403 (client, "Mountpoint in use");
             }
 
-            ice_config_t *config = config_get_config();
+            mc_config_t *config = config_get_config();
             int source_limit = config->source_limit;
             config_release_config();
 

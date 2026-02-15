@@ -6,9 +6,9 @@
 *.exe
 *~
 /autom4te.cache/
-/conf/icecast.xml.dist
-/conf/icecast_minimal.xml.dist
-/conf/icecast_shoutcast_compat.xml.dist
+/conf/mcaster1.xml.dist
+/conf/mcaster1_minimal.xml.dist
+/conf/mcaster1_shoutcast_compat.xml.dist
 /config.h
 /config.h.in
 /config.log
@@ -20,5 +20,5 @@
 /m4/ltsugar.m4
 /m4/ltversion.m4
 /m4/lt~obsolete.m4
-/src/icecast
+/src/mcaster1
 /stamp-h1

@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -694,7 +694,7 @@ static int stats_listeners_send (client_t *client)
     int ret = 0;
     event_listener_t *listener = client->shared_data;
 
-    if (client->connection.error || global.running != ICE_RUNNING)
+    if (client->connection.error || global.running != MC_RUNNING)
         return -1;
     if (client->refbuf && client->refbuf->flags & STATS_BLOCK_CONNECTION)
         loop = 14;
@@ -752,7 +752,7 @@ static int stats_listeners_send (client_t *client)
         }
     }
     thread_mutex_unlock (&_stats.listeners_lock);
-    if (client->connection.error || global.running != ICE_RUNNING)
+    if (client->connection.error || global.running != MC_RUNNING)
         return -1;
     return 0;
 }
@@ -799,7 +799,7 @@ static void stats_listener_send (int mask, const char *fmt, ...)
 
 
 /* called after each xml reload */
-void stats_global (ice_config_t *config)
+void stats_global (mc_config_t *config)
 {
     stats_event_flags (NULL, "server_id", config->server_id, STATS_GENERAL);
     stats_event_flags (NULL, "host", config->hostname, STATS_GENERAL);
@@ -1166,7 +1166,7 @@ xmlDocPtr stats_get_xml (int flags, const char *show_mount)
     xmlNodePtr node;
 
     doc = xmlNewDoc (XMLSTR("1.0"));
-    node = xmlNewDocNode (doc, NULL, XMLSTR("icestats"), NULL);
+    node = xmlNewDocNode (doc, NULL, XMLSTR("mcaster1stats"), NULL);
     xmlDocSetRootElement(doc, node);
 
     node = _dump_stats_to_doc (node, show_mount, flags);

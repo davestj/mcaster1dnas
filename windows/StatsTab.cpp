@@ -2,12 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "Icecast2win.h"
+#include "Mcaster1Win.h"
 #include "StatsTab.h"
 
-#include "Icecast2winDlg.h"
+#include "Mcaster1WinDlg.h"
 
-extern CIcecast2winDlg	*g_mainDialog;
+extern CMcaster1WinDlg	*g_mainDialog;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

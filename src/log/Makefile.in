@@ -110,9 +110,9 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libicelog_la_LIBADD =
-am_libicelog_la_OBJECTS = log.lo
-libicelog_la_OBJECTS = $(am_libicelog_la_OBJECTS)
+libmclog_la_LIBADD =
+am_libmclog_la_OBJECTS = log.lo
+libmclog_la_OBJECTS = $(am_libmclog_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -152,8 +152,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libicelog_la_SOURCES)
-DIST_SOURCES = $(libicelog_la_SOURCES)
+SOURCES = $(libmclog_la_SOURCES)
+DIST_SOURCES = $(libmclog_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -345,9 +345,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = test.c
-noinst_LTLIBRARIES = libicelog.la
+noinst_LTLIBRARIES = libmclog.la
 noinst_HEADERS = log.h
-libicelog_la_SOURCES = log.c
+libmclog_la_SOURCES = log.c
 AM_CFLAGS = $(XIPH_CFLAGS) -static
 all: all-am
 
@@ -394,8 +394,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libicelog.la: $(libicelog_la_OBJECTS) $(libicelog_la_DEPENDENCIES) $(EXTRA_libicelog_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(LINK)  $(libicelog_la_OBJECTS) $(libicelog_la_LIBADD) $(LIBS)
+libmclog.la: $(libmclog_la_OBJECTS) $(libmclog_la_DEPENDENCIES) $(EXTRA_libmclog_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(LINK)  $(libmclog_la_OBJECTS) $(libmclog_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

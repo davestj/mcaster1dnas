@@ -110,16 +110,15 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libicenet_la_LIBADD =
-am_libicenet_la_OBJECTS = libicenet_la-sock.lo \
-	libicenet_la-resolver.lo
-libicenet_la_OBJECTS = $(am_libicenet_la_OBJECTS)
+libmcnet_la_LIBADD =
+am_libmcnet_la_OBJECTS = libmcnet_la-sock.lo libmcnet_la-resolver.lo
+libmcnet_la_OBJECTS = $(am_libmcnet_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libicenet_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libicenet_la_CFLAGS) \
+libmcnet_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmcnet_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -136,8 +135,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libicenet_la-resolver.Plo \
-	./$(DEPDIR)/libicenet_la-sock.Plo
+am__depfiles_remade = ./$(DEPDIR)/libmcnet_la-resolver.Plo \
+	./$(DEPDIR)/libmcnet_la-sock.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -157,8 +156,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libicenet_la_SOURCES)
-DIST_SOURCES = $(libicenet_la_SOURCES)
+SOURCES = $(libmcnet_la_SOURCES)
+DIST_SOURCES = $(libmcnet_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -350,10 +349,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = BUILDING COPYING README TODO test_resolver.c
-noinst_LTLIBRARIES = libicenet.la
+noinst_LTLIBRARIES = libmcnet.la
 noinst_HEADERS = resolver.h sock.h
-libicenet_la_SOURCES = sock.c resolver.c
-libicenet_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmcnet_la_SOURCES = sock.c resolver.c
+libmcnet_la_CFLAGS = @XIPH_CFLAGS@ -static
 AM_CPPFLAGS = @XIPH_CPPFLAGS@ -I$(top_srcdir)/src
 all: all-am
 
@@ -400,8 +399,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libicenet.la: $(libicenet_la_OBJECTS) $(libicenet_la_DEPENDENCIES) $(EXTRA_libicenet_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libicenet_la_LINK)  $(libicenet_la_OBJECTS) $(libicenet_la_LIBADD) $(LIBS)
+libmcnet.la: $(libmcnet_la_OBJECTS) $(libmcnet_la_DEPENDENCIES) $(EXTRA_libmcnet_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libmcnet_la_LINK)  $(libmcnet_la_OBJECTS) $(libmcnet_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -409,8 +408,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libicenet_la-resolver.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libicenet_la-sock.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcnet_la-resolver.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcnet_la-sock.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -439,19 +438,19 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libicenet_la-sock.lo: sock.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicenet_la_CFLAGS) $(CFLAGS) -MT libicenet_la-sock.lo -MD -MP -MF $(DEPDIR)/libicenet_la-sock.Tpo -c -o libicenet_la-sock.lo `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libicenet_la-sock.Tpo $(DEPDIR)/libicenet_la-sock.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sock.c' object='libicenet_la-sock.lo' libtool=yes @AMDEPBACKSLASH@
+libmcnet_la-sock.lo: sock.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcnet_la_CFLAGS) $(CFLAGS) -MT libmcnet_la-sock.lo -MD -MP -MF $(DEPDIR)/libmcnet_la-sock.Tpo -c -o libmcnet_la-sock.lo `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcnet_la-sock.Tpo $(DEPDIR)/libmcnet_la-sock.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sock.c' object='libmcnet_la-sock.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicenet_la_CFLAGS) $(CFLAGS) -c -o libicenet_la-sock.lo `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcnet_la_CFLAGS) $(CFLAGS) -c -o libmcnet_la-sock.lo `test -f 'sock.c' || echo '$(srcdir)/'`sock.c
 
-libicenet_la-resolver.lo: resolver.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicenet_la_CFLAGS) $(CFLAGS) -MT libicenet_la-resolver.lo -MD -MP -MF $(DEPDIR)/libicenet_la-resolver.Tpo -c -o libicenet_la-resolver.lo `test -f 'resolver.c' || echo '$(srcdir)/'`resolver.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libicenet_la-resolver.Tpo $(DEPDIR)/libicenet_la-resolver.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='resolver.c' object='libicenet_la-resolver.lo' libtool=yes @AMDEPBACKSLASH@
+libmcnet_la-resolver.lo: resolver.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcnet_la_CFLAGS) $(CFLAGS) -MT libmcnet_la-resolver.lo -MD -MP -MF $(DEPDIR)/libmcnet_la-resolver.Tpo -c -o libmcnet_la-resolver.lo `test -f 'resolver.c' || echo '$(srcdir)/'`resolver.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcnet_la-resolver.Tpo $(DEPDIR)/libmcnet_la-resolver.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='resolver.c' object='libmcnet_la-resolver.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicenet_la_CFLAGS) $(CFLAGS) -c -o libicenet_la-resolver.lo `test -f 'resolver.c' || echo '$(srcdir)/'`resolver.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcnet_la_CFLAGS) $(CFLAGS) -c -o libmcnet_la-resolver.lo `test -f 'resolver.c' || echo '$(srcdir)/'`resolver.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -583,8 +582,8 @@ clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/libicenet_la-resolver.Plo
-	-rm -f ./$(DEPDIR)/libicenet_la-sock.Plo
+		-rm -f ./$(DEPDIR)/libmcnet_la-resolver.Plo
+	-rm -f ./$(DEPDIR)/libmcnet_la-sock.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -630,8 +629,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/libicenet_la-resolver.Plo
-	-rm -f ./$(DEPDIR)/libicenet_la-sock.Plo
+		-rm -f ./$(DEPDIR)/libmcnet_la-resolver.Plo
+	-rm -f ./$(DEPDIR)/libmcnet_la-sock.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

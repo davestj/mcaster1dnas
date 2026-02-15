@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -23,7 +23,7 @@
 void _sig_die(int signo)
 {
     /* inform the server to start shutting down */
-    global.running = ICE_HALTING;
+    global.running = MC_HALTING;
 }
 
 #ifdef HAVE_SIGACTION

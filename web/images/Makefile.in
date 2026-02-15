@@ -324,7 +324,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 webdir = $(pkgdatadir)/web/images
-dist_web_DATA = icecast.png \
+dist_web_DATA = mcaster1.png \
                 key.png \
                 tunein.png
 

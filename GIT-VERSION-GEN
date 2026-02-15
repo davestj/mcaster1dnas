@@ -9,7 +9,7 @@ if test -f version
 then
 	VN=$(cat version) || VN="$DEF_VER"
 else
-	VN=$(git describe --match icecast\* --long --dirty=-modified 2>/dev/null | cut -d - -f 4-)
+	VN=$(git describe --match mcaster1\* --long --dirty=-modified 2>/dev/null | cut -d - -f 4-)
 fi
 test -z "$VN" && VN="$DEF_VER"
 if test -r $GVF

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([Icecast], [2.4.0-kh22], [karl@kheyes.plus.com])
+AC_INIT([Mcaster1DNAS], [2.5.0], [support@mcaster1.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign])
 
@@ -209,5 +209,5 @@ AC_CONFIG_FILES([
    admin/Makefile
    windows/Makefile
 ])
-AM_COND_IF([WINDOWS], [AC_CONFIG_FILES([icecast.nsis:conf/$host.nsis.in])])
+AM_COND_IF([WINDOWS], [AC_CONFIG_FILES([mcaster1.nsis:conf/$host.nsis.in])])
 AC_OUTPUT

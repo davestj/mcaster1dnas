@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -36,7 +36,7 @@
 
 #define CATMODULE "param"
 
-static int _date_hdr (ice_http_t * http, ice_param_t *curr)
+static int _date_hdr (mc_http_t * http, mc_param_t *curr)
 {
     client_t *cl = http->client;
 
@@ -55,14 +55,14 @@ static int _date_hdr (ice_http_t * http, ice_param_t *curr)
 }
 
 
-static int _server_hdr (ice_http_t *http, ice_param_t *curr)
+static int _server_hdr (mc_http_t *http, mc_param_t *curr)
 {
     curr->value = strdup (http->in_server_id);
     return 0;
 }
 
 
-static int _connection_hdr (ice_http_t *http, ice_param_t *curr)
+static int _connection_hdr (mc_http_t *http, mc_param_t *curr)
 {
     if (http->in_major == 1 && http->in_minor == 1 && http->in_length >= 0 && http->in_connection)
     {
@@ -79,9 +79,9 @@ static int _connection_hdr (ice_http_t *http, ice_param_t *curr)
 }
 
 
-static int _send_cors_hdr (ice_http_t *http, ice_param_t *curr)
+static int _send_cors_hdr (mc_http_t *http, mc_param_t *curr)
 {
-    ice_params_t *params = &http->headers;
+    mc_params_t *params = &http->headers;
     if (http->in_origin == NULL)
     {
         curr->value = NULL; // drop header but not error out
@@ -93,19 +93,19 @@ static int _send_cors_hdr (ice_http_t *http, ice_param_t *curr)
         if (strcmp (curr->value, "*") == 0)
             curr->value = strdup (http->in_origin);
         if (strcmp (curr->value, "*") == 0)
-            params->flags |= ICE_HTTP_WILDCARD_ORIGIN;
+            params->flags |= MC_HTTP_WILDCARD_ORIGIN;
         else
-            params->flags &= ~ICE_HTTP_WILDCARD_ORIGIN;
+            params->flags &= ~MC_HTTP_WILDCARD_ORIGIN;
     }
-    if (strcasecmp (curr->name, "Access-Control-Allow-Credentials") == 0 && (params->flags&ICE_HTTP_WILDCARD_ORIGIN))
+    if (strcasecmp (curr->name, "Access-Control-Allow-Credentials") == 0 && (params->flags&MC_HTTP_WILDCARD_ORIGIN))
         return -1;
     return 0;
 }
 
 
-static int _ice_params_apply (ice_params_t *params, const ice_param_t *header)
+static int _ice_params_apply (mc_params_t *params, const mc_param_t *header)
 {
-    ice_param_t **trail = &params->head, *chdr = params->head;
+    mc_param_t **trail = &params->head, *chdr = params->head;
 
     if (header->callback == NULL && header->value == NULL) return -1; // error case
 
@@ -113,7 +113,7 @@ static int _ice_params_apply (ice_params_t *params, const ice_param_t *header)
     int nlen = strlen (header->name), vlen;
     if (nlen) nlen += params->entry_div_len;
 
-    ice_param_t matched = { .name = NULL };
+    mc_param_t matched = { .name = NULL };
 
     while (chdr)
     {
@@ -185,9 +185,9 @@ static int _ice_params_apply (ice_params_t *params, const ice_param_t *header)
 }
 
 
-int ice_params_apply (ice_params_t *pm, const ice_param_t *header)
+int mc_params_apply (mc_params_t *pm, const mc_param_t *header)
 {
-    const ice_param_t *hdr = header;
+    const mc_param_t *hdr = header;
 
     while (hdr)
     {
@@ -199,7 +199,7 @@ int ice_params_apply (ice_params_t *pm, const ice_param_t *header)
 }
 
 
-int ice_http_apply (ice_http_t *http, const ice_param_t *header)
+int mc_http_apply (mc_http_t *http, const mc_param_t *header)
 {
     for (; header; header = header->next)
     {
@@ -217,12 +217,12 @@ int ice_http_apply (ice_http_t *http, const ice_param_t *header)
 }
 
 
-void ice_params_clear (ice_params_t *params)
+void mc_params_clear (mc_params_t *params)
 {
     if (params->head == NULL) return;  // means nothing set
     while (params->head)
     {
-        ice_param_t *p = params->head;
+        mc_param_t *p = params->head;
         params->head = p->next;
 
         if ((p->flags & PARAM_NOCOPY) == 0)
@@ -236,10 +236,10 @@ void ice_params_clear (ice_params_t *params)
 }
 
 
-void ice_http_clear (ice_http_t *http)
+void mc_http_clear (mc_http_t *http)
 {
     if (http->client == NULL) return; // not been through setup
-    ice_params_clear (&http->headers);
+    mc_params_clear (&http->headers);
     free (http->in_realm);
     free (http->in_server_id);
     free (http->msg);
@@ -248,7 +248,7 @@ void ice_http_clear (ice_http_t *http)
 }
 
 
-int ice_http_apply_block (ice_http_t *http, refbuf_t *ref)
+int mc_http_apply_block (mc_http_t *http, refbuf_t *ref)
 {
     if (ref)
     {
@@ -266,7 +266,7 @@ int ice_http_apply_block (ice_http_t *http, refbuf_t *ref)
 
 
 //
-int ice_params_printf (ice_params_t *pm, const char *name, int flags, const char *fmt, ...)
+int mc_params_printf (mc_params_t *pm, const char *name, int flags, const char *fmt, ...)
 {
     int ret = 1023;
     if (fmt == NULL) return -1;
@@ -279,15 +279,15 @@ int ice_params_printf (ice_params_t *pm, const char *name, int flags, const char
 
         if (ret >= 0 && ret < sizeof content)
         {
-            ice_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
-            return ice_params_apply (pm, &hdr);
+            mc_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
+            return mc_params_apply (pm, &hdr);
         }
     } while (ret < 8000);        // loop to retry with a larger size, although not silly
     return -1;
 }
 
 
-int ice_http_printf (ice_http_t *http, const char *name, int flags, const char *fmt, ...)
+int mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fmt, ...)
 {
     int ret = 1023;
     do
@@ -299,21 +299,21 @@ int ice_http_printf (ice_http_t *http, const char *name, int flags, const char *
         va_end(ap);
         if (ret >= 0 && ret < sizeof content)
         {
-            ice_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
-            return ice_http_apply (http, &hdr);
+            mc_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
+            return mc_http_apply (http, &hdr);
         }
     } while (ret < 8000);
     return -1;
 }
 
 
-int  ice_http_apply_cfg (ice_http_t *http, ice_config_http_header_t *h)
+int  mc_http_apply_cfg (mc_http_t *http, mc_config_http_header_t *h)
 {
     while (h)
     {
         if (cached_pattern_compare (http->respcode, h->hdr.status) == 0)
         {
-            ice_param_t hdr = { .name = h->hdr.name, .value = h->hdr.value, .flags = h->flags,
+            mc_param_t hdr = { .name = h->hdr.name, .value = h->hdr.value, .flags = h->flags,
                 .callback = h->hdr.callback, .callback_arg = http };
             _ice_params_apply (&http->headers, &hdr);
         }
@@ -323,9 +323,9 @@ int  ice_http_apply_cfg (ice_http_t *http, ice_config_http_header_t *h)
 }
 
 
-static int ice_http_status_lookup (int status, ice_http_status_t *s)
+static int mc_http_status_lookup (int status, mc_http_status_t *s)
 {
-#define RetX(A,B) (*s = (ice_http_status_t){.status=A, .msg=B })
+#define RetX(A,B) (*s = (mc_http_status_t){.status=A, .msg=B })
     switch (status)
     {
         case 100: RetX (100, "Continue"); break;
@@ -344,7 +344,7 @@ static int ice_http_status_lookup (int status, ice_http_status_t *s)
 }
 
 
-int  ice_params_setup (ice_params_t *params, const char *divider, const char *separator, unsigned int flags)
+int  mc_params_setup (mc_params_t *params, const char *divider, const char *separator, unsigned int flags)
 {
     memset (params, 0, sizeof (*params));
     params->entry_div_len = snprintf (&params->entry_div[0], sizeof (params->entry_div), "%s", divider);
@@ -356,45 +356,45 @@ int  ice_params_setup (ice_params_t *params, const char *divider, const char *se
 }
 
 
-static int ice_http_setup_req (ice_http_t *http, unsigned int flags, const char *uri)
+static int mc_http_setup_req (mc_http_t *http, unsigned int flags, const char *uri)
 {
     if (uri == NULL || uri[0] == 0) return -1;
     // special case, first line has blank name as it is different to the other headers
     if (http->headers.head == NULL)
     {
         char line [1024];
-        ice_param_t  firsthdr = { .name = "", .value = line, .flags = PARAM_CONST|PARAM_AS };
+        mc_param_t  firsthdr = { .name = "", .value = line, .flags = PARAM_CONST|PARAM_AS };
         snprintf (line, sizeof(line), "GET %.1000s HTTP/1.0", uri);
 
         http->headers.len = 1;       // start with allowing for the nul
         http->in_major = http->in_minor = 1;
-        ice_http_apply (http, &firsthdr);
+        mc_http_apply (http, &firsthdr);
     }
-    ice_config_t *config = config_get_config();
-    ice_http_printf (http, "User-Agent", 0, "%s", config->server_id);
+    mc_config_t *config = config_get_config();
+    mc_http_printf (http, "User-Agent", 0, "%s", config->server_id);
     config_release_config();
-    ice_http_printf (http, "Connection", 0, "Close");
+    mc_http_printf (http, "Connection", 0, "Close");
     return 0;
 }
 
 
-int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsigned int flags, const char *statusmsg)
+int  mc_http_setup_flags (mc_http_t *http, client_t *client, int status, unsigned int flags, const char *statusmsg)
 {
     if (client && client->respcode) return -1;
     memset (http, 0, sizeof (*http));
-    ice_params_setup (&http->headers, ": ", "\r\n", 0);
+    mc_params_setup (&http->headers, ": ", "\r\n", 0);
     http->client = client;
-    if (flags & ICE_HTTP_REQUEST)
-        return ice_http_setup_req (http, flags, statusmsg);
+    if (flags & MC_HTTP_REQUEST)
+        return mc_http_setup_req (http, flags, statusmsg);
 
-    ice_http_status_lookup (status, &http->conn);
+    mc_http_status_lookup (status, &http->conn);
     client->respcode = http->conn.status;
 
     // for matching on header pattern matching and quicker lookup/check
     snprintf (&http->respcode[0], sizeof (http->respcode), "%" PRIu16, client->respcode);
 
     char protocol[20];
-    if (flags & ICE_HTTP_USE_ICY)
+    if (flags & MC_HTTP_USE_ICY)
         strcpy (protocol, "ICY");
     else
     {
@@ -407,17 +407,17 @@ int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsig
         snprintf (protocol, sizeof protocol, "HTTP/%d.%d", http->in_major, http->in_minor);
     }
 
-    if ((flags & ICE_HTTP_CONN_CLOSE) == 0)
+    if ((flags & MC_HTTP_CONN_CLOSE) == 0)
         http->in_connection = httpp_getvar (client->parser, "connection");
     http->in_origin = httpp_getvar (client->parser, "origin");
 
     char line [1024];
-    ice_param_t  firsthdr = { .name = "", .value = line, .flags = PARAM_CONST|PARAM_AS };
+    mc_param_t  firsthdr = { .name = "", .value = line, .flags = PARAM_CONST|PARAM_AS };
     if (statusmsg == NULL)
         statusmsg = http->conn.msg;
     snprintf (line, sizeof(line), "%s %d %.1000s", protocol, http->conn.status, statusmsg);
 
-    ice_http_apply (http, &firsthdr);
+    mc_http_apply (http, &firsthdr);
     if (http->conn.status >= 100 && http->conn.status < 200)
     {
         client->respcode = 0;       // informational codes are followed by others so reset
@@ -429,7 +429,7 @@ int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsig
     if (http->conn.status >= 400)
         client->flags &= ~CLIENT_KEEPALIVE;  // for permanent errors, avoid keep alive
 
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     const char *realm = config->server_id;
     mount_proxy *mountinfo = client->mount ? config_find_mount (config, client->mount) : NULL;
     http->in_server_id = strdup (realm ? realm : PACKAGE_STRING);
@@ -438,10 +438,10 @@ int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsig
         if (mountinfo->auth && mountinfo->auth->realm)
             realm = mountinfo->auth->realm;
         if (mountinfo->http_headers)
-            ice_http_apply_cfg (http, mountinfo->http_headers);
+            mc_http_apply_cfg (http, mountinfo->http_headers);
     }
     else
-        ice_http_apply_cfg (http, config->http_headers);
+        mc_http_apply_cfg (http, config->http_headers);
     if (realm && client->respcode == 401)        http->in_realm = strdup (realm);
     config_release_config();
 
@@ -449,9 +449,9 @@ int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsig
 }
 
 
-static int _ice_params_complete (ice_params_t *pm, refbuf_t *rb)
+static int _ice_params_complete (mc_params_t *pm, refbuf_t *rb)
 {
-    ice_param_t *h = pm->head;
+    mc_param_t *h = pm->head;
     unsigned int remain = rb->len;
     char *p = rb->data;
     while (h)
@@ -468,7 +468,7 @@ static int _ice_params_complete (ice_params_t *pm, refbuf_t *rb)
 }
 
 
-int  ice_http_complete (ice_http_t *http)
+int  mc_http_complete (mc_http_t *http)
 {
     if (http == NULL || http->client == NULL || http->headers.head == NULL) return -1;
 
@@ -477,11 +477,11 @@ int  ice_http_complete (ice_http_t *http)
     uint64_t msglen = remain + http->headers.extra_len;
 
     if (http->in_length > 0)
-        ice_http_printf (http, "Content-Length", PARAM_PASS, "%" PRIu64, http->in_length);  // forward notification
+        mc_http_printf (http, "Content-Length", PARAM_PASS, "%" PRIu64, http->in_length);  // forward notification
     else if (http->in_length == 0)
-        ice_http_printf (http, "Content-Length", PARAM_PASS, "%" PRIu64, msglen);  // headers + simple message
+        mc_http_printf (http, "Content-Length", PARAM_PASS, "%" PRIu64, msglen);  // headers + simple message
 
-    ice_params_apply (&http->headers, &(ice_param_t){ .name = "", .value = "\r\n" });
+    mc_params_apply (&http->headers, &(mc_param_t){ .name = "", .value = "\r\n" });
 
     remain += http->headers.len;  // starts with space for nul char
     refbuf_t *rb = refbuf_new (remain);
@@ -496,12 +496,12 @@ int  ice_http_complete (ice_http_t *http)
         written += snprintf (p, (rb->len - written), "%s", msg);
         rb->len = written; // don't send the last nul
     }
-    ice_http_clear (http);
+    mc_http_clear (http);
     return written < 0 ? -1 : 0;
 }
 
 
-refbuf_t *ice_params_complete (ice_params_t *pm)
+refbuf_t *mc_params_complete (mc_params_t *pm)
 {
     if (pm == NULL || pm->head == NULL) return NULL;
     uint64_t remain = pm->extra_len + pm->len;
@@ -509,14 +509,14 @@ refbuf_t *ice_params_complete (ice_params_t *pm)
     int written = _ice_params_complete (pm, rb);
     if (written >= 0)
         rb->len = written; // do not include the last null even though it is there
-    ice_params_clear (pm);
+    mc_params_clear (pm);
     return rb;
 }
 
 
-ice_config_http_header_t default_headers[] =
+mc_config_http_header_t default_headers[] =
 {
-    { .hdr = { .status = "2*",          .name = "Server",               .value = "Icecast",
+    { .hdr = { .status = "2*",          .name = "Server",               .value = "Mcaster1",
                                         .callback = _server_hdr }, },
     { .hdr = { .status = "[234]*",      .name = "Connection",           .value = "Close",
                                         .callback = _connection_hdr } },

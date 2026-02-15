@@ -1,5 +1,5 @@
 /* -*- c-basic-offset: 4; -*- */
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -552,13 +552,13 @@ void flv_meta_append_string (refbuf_t *buffer, const char *tag, const char *valu
 }
 
 
-int flv_create_client_data (format_plugin_t *plugin, ice_http_t *http, client_t *client)
+int flv_create_client_data (format_plugin_t *plugin, mc_http_t *http, client_t *client)
 {
     struct flv *flv = calloc (1, sizeof (struct flv));
 
-    if (ice_http_setup_flags (http, client, 200, 0, NULL) < 0) return -1;
+    if (mc_http_setup_flags (http, client, 200, 0, NULL) < 0) return -1;
     http->in_length = (off_t)-1;
-    ice_http_printf (http, "content-type", 0, "video/x-flv");
+    mc_http_printf (http, "content-type", 0, "video/x-flv");
     mpeg_setup (&flv->mpeg_sync, client->connection.ip);
     mpeg_check_numframes (&flv->mpeg_sync, 1);
     client->format_data = flv;

@@ -1,82 +1,158 @@
-<xsl:stylesheet xmlns:xsl = "http://www.w3.org/1999/XSL/Transform" version = "1.0" >
-<xsl:output method="xml" media-type="text/html" indent="yes" encoding="UTF-8"
-    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-    doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output method="html" indent="yes" encoding="UTF-8" doctype-system="about:legacy-compat"/>
 
-<xsl:template match = "/icestats" >
-<html>
+<xsl:template match="/mcaster1stats">
+<html lang="en">
 <head>
-<title>Icecast Streaming Media Server</title>
-<link rel="stylesheet" type="text/css" href="../style.css" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Authentication - Mcaster1DNAS Admin</title>
+
+    <!-- FontAwesome 6.x for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <script src="/mcaster-utils.js"></script>
 </head>
-<body bgcolor="#000" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0">
+<body>
+    <div class="mcaster-header">
+        <div class="mcaster-container">
+            <div class="mcaster-header-top">
+            <div class="mcaster-brand">
+                <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
+                <div class="brand-text">
+                    <h1 style="margin: 0; font-size: 1.75rem;">
+                        <span class="brand-mcaster">Mcaster1</span>
+                        <span class="brand-dnas">DNAS Admin</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="mcaster-nav">
+                <a href="stats.xsl"><i class="fas fa-chart-line"></i> Stats</a>
+                <a href="listmounts.xsl"><i class="fas fa-stream"></i> Mounts</a>
+                <a href="managerelays.xsl"><i class="fas fa-project-diagram"></i> Relays</a>
+                <a href="logs.xsl"><i class="fas fa-file-alt"></i> Logs</a>
+                <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
+                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>
+            </div>
+        </div>
+    </div>
 
-<div class="main">
+    <div class="mcaster-main">
+        <div class="mcaster-container">
 
-<div class="roundcont">
-<div class="roundtop">
+            <!-- Response Message -->
+            <xsl:for-each select="iceresponse">
+                <div class="mcaster-card" style="background: #dcfce7; border-left: 4px solid var(--dnas-green);">
+                    <p style="margin: 0; color: var(--text-primary);">
+                        <i class="fas fa-check-circle" style="color: var(--dnas-green);"></i>
+                        <strong>Response:</strong> <xsl:value-of select="message"/>
+                    </p>
+                </div>
+            </xsl:for-each>
 
-</div>
-<div class="newscontent">
-<xsl:for-each select="iceresponse">
-<xsl:value-of select="message" />
-</xsl:for-each>
-<xsl:for-each select="source">
-<h3>
-<xsl:if test="server_name"><xsl:value-of select="server_name" /> </xsl:if>
-(<xsl:value-of select="@mount" />)</h3>
-  <table border="0" cellpadding="1" cellspacing="5" bgcolor="444444">
-  <tr>
-    <td align="center">
-      <a class="nav2" href="listclients.xsl?mount={@mount}">List Clients</a> |
-      <a class="nav2" href="moveclients.xsl?mount={@mount}">Move Listeners</a> |
-      <a class="nav2" href="updatemetadata.xsl?mount={@mount}">Update Metadata</a> |
-      <a class="nav2" href="killsource.xsl?mount={@mount}">Kill Source</a>
-    </td></tr>
-  </table>
-<br></br>
-<form method="GET" action="manageauth.xsl">
-<table cellpadding="2" cellspacing="4" border="0" >
-		<tr>
-				<td ><b>User Id</b></td>
-				<td ></td>
-		</tr>
-<xsl:variable name = "themount" ><xsl:value-of select="@mount" /></xsl:variable>
-<xsl:for-each select="User">
-		<tr>
-				<td><xsl:value-of select="username" /></td>
-				<td><a class="nav2" href="manageauth.xsl?mount={$themount}&amp;username={username}&amp;action=delete">delete</a></td>
-		</tr>
-</xsl:for-each>
-</table>
-<br/>
-<table cellpadding="2" cellspacing="4" border="0" >
-		<tr>
-				<td ><b>User Id</b></td>
-				<td ><input type="text" name="username" /></td>
-		</tr>
-		<tr>
-				<td ><b>Password</b></td>
-				<td ><input type="text" name="password" /></td>
-		</tr>
-		<tr>
-				<td colspan="2"><input type="Submit" name="Submit" value="Add New User" /></td>
-		</tr>
-</table>
-<input type="hidden" name="mount" value="{@mount}"/>
-<input type="hidden" name="action" value="add"/>
-</form>
-<br />
-<br />
-</xsl:for-each>
-<xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
-</div>
-<div class="roundbottom">
+            <xsl:for-each select="source">
+                <div class="mcaster-card">
+                    <h2>
+                        <i class="fas fa-key"></i> Authentication Management
+                        <xsl:if test="server_name">
+                            - <xsl:value-of select="server_name"/>
+                        </xsl:if>
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Mount Point: <strong><xsl:value-of select="@mount"/></strong>
+                    </p>
 
-</div>
-</div>
-<div class="poster">Support icecast development at <a class="nav" href="http://www.icecast.org">www.icecast.org</a></div>
-</div>
+                    <!-- Admin Actions -->
+                    <div style="margin: 1rem 0; padding: 1rem; background: var(--bg-light); border-radius: var(--radius-md);">
+                        <strong style="display: block; margin-bottom: 0.5rem;">Admin Actions:</strong>
+                        <a href="listclients.xsl?mount={@mount}" class="admin-action-btn">
+                            <i class="fas fa-users"></i> List Clients
+                        </a>
+                        <a href="moveclients.xsl?mount={@mount}" class="admin-action-btn">
+                            <i class="fas fa-exchange-alt"></i> Move Listeners
+                        </a>
+                        <a href="updatemetadata.xsl?mount={@mount}" class="admin-action-btn">
+                            <i class="fas fa-edit"></i> Update Metadata
+                        </a>
+                        <a href="killsource.xsl?mount={@mount}" class="admin-action-btn danger">
+                            <i class="fas fa-stop-circle"></i> Kill Source
+                        </a>
+                    </div>
+
+                    <!-- Existing Users -->
+                    <h3><i class="fas fa-users-cog"></i> Authorized Users</h3>
+                    <xsl:choose>
+                        <xsl:when test="User">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th style="text-align: center; width: 150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <xsl:variable name="themount"><xsl:value-of select="@mount"/></xsl:variable>
+                                    <xsl:for-each select="User">
+                                        <tr>
+                                            <td><i class="fas fa-user"></i> <xsl:value-of select="username"/></td>
+                                            <td style="text-align: center;">
+                                                <a href="manageauth.xsl?mount={$themount}&amp;username={username}&amp;action=delete" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </xsl:for-each>
+                                </tbody>
+                            </table>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <p style="text-align: center; padding: 2rem; color: var(--text-secondary); background: var(--bg-light); border-radius: var(--radius-md);">
+                                <i class="fas fa-info-circle"></i> No users configured yet.
+                            </p>
+                        </xsl:otherwise>
+                    </xsl:choose>
+
+                    <!-- Add New User Form -->
+                    <h3 style="margin-top: 2rem;"><i class="fas fa-user-plus"></i> Add New User</h3>
+                    <form method="GET" action="manageauth.xsl">
+                        <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius-md);">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                                    <i class="fas fa-user"></i> Username
+                                </label>
+                                <input type="text" name="username" required="required" style="width: 100%; max-width: 400px;"/>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                                    <i class="fas fa-lock"></i> Password
+                                </label>
+                                <input type="password" name="password" required="required" style="width: 100%; max-width: 400px;"/>
+                            </div>
+                            <input type="hidden" name="mount" value="{@mount}"/>
+                            <input type="hidden" name="action" value="add"/>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Add User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </xsl:for-each>
+
+        </div>
+    </div>
+
+    <div class="mcaster-footer">
+        <div class="mcaster-container">
+            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
+                <span class="page-load-time" id="page-load-time">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </span>
+            </p>
+        </div>
+    </div>
 </body>
 </html>
 </xsl:template>

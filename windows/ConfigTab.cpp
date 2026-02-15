@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Icecast2win.h"
+#include "Mcaster1Win.h"
 #include "ConfigTab.h"
 
 #ifdef _DEBUG
@@ -49,7 +49,7 @@ void CConfigTab::SaveConfiguration()
 	// TODO: Add your control notification handler code here
 	FILE	*filep;
 	char	buffer[2046] = "";
-	CIcecast2winApp	*myApp = (CIcecast2winApp *)AfxGetApp();
+	CMcaster1WinApp	*myApp = (CMcaster1WinApp *)AfxGetApp();
 
 	UpdateData(TRUE);
 	if (m_Config != "") {

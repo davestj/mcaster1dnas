@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -260,9 +260,9 @@ static int directory_recheck (client_t *client)
 }
 
 
-static void yp_client_add (ice_config_t *config)
+static void yp_client_add (mc_config_t *config)
 {
-    if (config->num_yp_directories == 0 || active_yps || global_state() != ICE_RUNNING)
+    if (config->num_yp_directories == 0 || active_yps || global_state() != MC_RUNNING)
         return;
     INFO0 ("Starting Directory client for YP processing");
     ypclient.ops = &directory_client_ops;
@@ -287,7 +287,7 @@ static ypdata_t *find_yp_mount (ypdata_t *mounts, const char *mount)
 }
 
 
-void yp_recheck_config (ice_config_t *config)
+void yp_recheck_config (mc_config_t *config)
 {
     int i;
     struct yp_server *server;
@@ -354,7 +354,7 @@ void yp_recheck_config (ice_config_t *config)
 }
 
 
-void yp_initialize (ice_config_t *config)
+void yp_initialize (mc_config_t *config)
 {
     thread_rwlock_create (&yp_lock);
     thread_mutex_create (&yp_pending_lock);
@@ -504,9 +504,9 @@ static const char *yp_stat (stats_handle_t stats, const char *name)
 
 static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
 {
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", PARAM_AS, "add");
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", PARAM_AS, "add");
     stats_handle_t stats = stats_handle (yp->mount);
     do
     {
@@ -517,7 +517,7 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
         char bitrate [30];
         if (name[0] && genre[0] && type[0] && yp_normalise_bitrate (stats, bitrate, sizeof bitrate))
         {
-            ice_param_t x[] = {
+            mc_param_t x[] = {
                 { .name="admin",        .value = serv_admin },
                 { .name="sn",           .value = (char*)name },
                 { .name="genre",        .value = (char*)genre },
@@ -531,8 +531,8 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
                 { .name="",             .value = (char*)yp_stat (stats, "audio_info"), .flags = PARAM_AS }
             };
             for (int i=0; i < (sizeof (x)/sizeof (x[0])); i++)
-                ice_params_apply (&post, &x[i]);
-            refbuf_t *rb = ice_params_complete (&post);
+                mc_params_apply (&post, &x[i]);
+            refbuf_t *rb = mc_params_complete (&post);
             stats_release (stats);
             int ret = send_to_yp ("add", yp, rb->data);
             refbuf_release (rb);
@@ -547,7 +547,7 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
         INFO1 ("mount %s requires stats (sn, genre, type, bitrate)", yp->mount);
         yp_schedule (yp, 600);
     } while (0);
-    ice_params_clear (&post);
+    mc_params_clear (&post);
     return -1;
 }
 
@@ -563,23 +563,23 @@ static int do_yp_touch (ypdata_t *yp, char *s, unsigned len)
             return 0;
         }
         int max_listeners = 1;
-        ice_params_t post;
-        ice_params_setup (&post, "=", "&", PARAMS_ESC);
-        ice_params_printf (&post, "action", PARAM_AS, "touch");
-        ice_params_printf (&post, "sid",    PARAM_AS, "%s", yp->sid);
+        mc_params_t post;
+        mc_params_setup (&post, "=", "&", PARAMS_ESC);
+        mc_params_printf (&post, "action", PARAM_AS, "touch");
+        mc_params_printf (&post, "sid",    PARAM_AS, "%s", yp->sid);
         stats_handle_t stats = stats_handle (yp->mount);
         if (stats)
         {
-            ice_params_printf (&post, "st", PARAM_AS, "%s", yp->current_song);
-            ice_params_printf (&post, "listeners", PARAM_AS, "%s", yp_stat (stats, "listeners"));
+            mc_params_printf (&post, "st", PARAM_AS, "%s", yp->current_song);
+            mc_params_printf (&post, "listeners", PARAM_AS, "%s", yp_stat (stats, "listeners"));
             const char *v = stats_retrieve_nocopy (stats, "max_listeners");
             if (v)
                 max_listeners = atoi (v);
             if (v == NULL || strcmp (v, "unlimited") == 0 || max_listeners < 0)
                 max_listeners = serv_max_listeners;
-            ice_params_printf (&post, "max_listeners", PARAM_AS, "%d", max_listeners);
-            ice_params_printf (&post, "stype", 0, "%s", yp_stat (stats, "subtype"));
-            refbuf_t *rb = ice_params_complete (&post);
+            mc_params_printf (&post, "max_listeners", PARAM_AS, "%d", max_listeners);
+            mc_params_printf (&post, "stype", 0, "%s", yp_stat (stats, "subtype"));
+            refbuf_t *rb = mc_params_complete (&post);
             stats_release (stats);
             int ret = send_to_yp ("touch", yp, rb->data);
             refbuf_release (rb);
@@ -587,7 +587,7 @@ static int do_yp_touch (ypdata_t *yp, char *s, unsigned len)
                 yp_schedule (yp, yp->touch_interval);
             return ret;
         }
-        ice_params_clear (&post);
+        mc_params_clear (&post);
         free (yp->sid);
         yp->sid = NULL; // loop to exit out
     } while (1);
@@ -682,7 +682,7 @@ static ypdata_t *create_yp_entry (const char *mount)
         int ret;
         char *url;
         mount_proxy *mountproxy = NULL;
-        ice_config_t *config;
+        mc_config_t *config;
         static int adjust = 0;
 
         if (yp == NULL)
@@ -861,7 +861,7 @@ static void *yp_update_thread(void *arg)
     }
     thread_rwlock_unlock (&yp_lock);
 
-    if (global_state() == ICE_RUNNING)
+    if (global_state() == MC_RUNNING)
         client_add_incoming (&ypclient);
     // DEBUG0("YP thread shutdown");
     return NULL;
@@ -1068,7 +1068,7 @@ static void *yp_pending_update (void *arg)
 
 static void yp_queue_change (yp_change_t *change)
 {
-    if (global.running != ICE_RUNNING)
+    if (global.running != MC_RUNNING)
     {
         free (change->mount);
         free (change);

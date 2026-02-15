@@ -86,13 +86,13 @@
 #define HAVE_FNMATCH_H 1
 
 /* Name of package */
-#define PACKAGE "icecast"
+#define PACKAGE "mcaster1"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT "karl@xiph.org"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "Icecast"
+#define PACKAGE_NAME "Mcaster1"
 
 /* Version number of package */
 #define VERSION "2.3.2-kh30"
@@ -104,7 +104,7 @@
 #define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "icecast"
+#define PACKAGE_TARNAME "mcaster1"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

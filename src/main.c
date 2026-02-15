@@ -1,9 +1,13 @@
-/* Icecast
+/* Mcaster1DNAS - Digital Network Audio Server
+ *
+ * Based on Icecast-KH by Karl Heyes
+ * Based on Icecast2 by Xiph.Org Foundation
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
  *
- * Copyright 2010-2022, Karl Heyes <karl@kheyes.plus.com>,
+ * Copyright 2025-2026, Saint John (David St John) <davestj@gmail.com>
+ * Copyright 2010-2022, Karl Heyes <karl@kheyes.plus.com>
  * Copyright 2000-2004, Jack Moffitt <jack@xiph.org>,
  *                      Michael Smith <msmith@xiph.org>,
  *                      oddsock <oddsock@xiph.org>,
@@ -86,11 +90,11 @@ void fatal_error (const char *perr)
 static void _print_usage(void)
 {
     printf("%s\n\n", ICECAST_VERSION_STRING);
-    printf("usage: icecast [-b -v] -c <file>\n");
+    printf("usage: mcaster1 [-b -v] -c <file>\n");
     printf("options:\n");
     printf("\t-c <file>\tSpecify configuration file\n");
     printf("\t-v\t\tDisplay version info\n");
-    printf("\t-b\t\tRun icecast in the background\n");
+    printf("\t-b\t\tRun mcaster1 in the background\n");
     printf("\n");
 }
 
@@ -147,7 +151,7 @@ static int _parse_config_opts(int argc, char **argv, char *filename, int size)
         if (strcmp(argv[i], "-b") == 0) {
 #ifndef WIN32
             pid_t pid;
-            fprintf(stdout, "Starting icecast2\nDetaching from the console\n");
+            fprintf(stdout, "Starting Mcaster1DNAS\nDetaching from the console\n");
 
             pid = fork();
 
@@ -189,7 +193,7 @@ static int _parse_config_opts(int argc, char **argv, char *filename, int size)
 /* bind the socket and start listening */
 static int server_proc_init(void)
 {
-    ice_config_t *config = config_get_config_unlocked();
+    mc_config_t *config = config_get_config_unlocked();
 
     if (init_logging (config) < 0)
         return 0;
@@ -222,7 +226,7 @@ void server_process (void)
 {
     INFO1 ("%s server started", ICECAST_VERSION_STRING);
 
-    global.running = ICE_RUNNING;
+    global.running = MC_RUNNING;
 
     /* Do this after logging init */
     auth_initialise ();
@@ -239,10 +243,10 @@ void server_process (void)
 }
 
 
-/* unix traditionally defaults to 1024 open FDs max, which is often a restriction for icecast
+/* unix traditionally defaults to 1024 open FDs max, which is often a restriction for mcaster1
  * so here (as root) we check the current limit against clients allowed and up it while we can
  */
-static void check_open_file_limit (ice_config_t *config)
+static void check_open_file_limit (mc_config_t *config)
 {
 #ifdef HAVE_GETRLIMIT
     struct rlimit rlimit;
@@ -265,7 +269,7 @@ static void check_open_file_limit (ice_config_t *config)
  * threads. Change uid as well, after figuring out uid _first_ */
 static void _ch_root_uid_setup(void)
 {
-   ice_config_t *conf = config_get_config_unlocked();
+   mc_config_t *conf = config_get_config_unlocked();
 #ifdef CHUID
    struct passwd *user;
    struct group *group;
@@ -383,7 +387,7 @@ int server_init (int argc, char *argv[])
                         _fatal_error("no root element found");
                         break;
                     case CONFIG_EBADROOT:
-                        _fatal_error("root element is not <icecast>");
+                        _fatal_error("root element is not <mcaster1>");
                         break;
                     default:
                         _fatal_error("XML config parsing error");
@@ -409,7 +413,7 @@ int server_init (int argc, char *argv[])
      * assume */
     if (getuid() == 0) /* Running as root! Don't allow this */
     {
-        fprintf (stderr, "ERROR: You should not run icecast2 as root\n");
+        fprintf (stderr, "ERROR: You should not run mcaster1dnas as root\n");
         fprintf (stderr, "Use the changeowner directive in the config file\n");
         return -1;
     }

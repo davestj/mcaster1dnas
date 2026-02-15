@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -34,8 +34,8 @@ void event_config_read (void)
 {
     int ret;
     char *filename;
-    ice_config_t *config;
-    ice_config_t new_config, old_config;
+    mc_config_t *config;
+    mc_config_t new_config, old_config;
     /* reread config file */
 
     INFO0("Re-reading XML");
@@ -57,7 +57,7 @@ void event_config_read (void)
                 ERROR1("Root element not found in %s", filename);
                 break;
             case CONFIG_EBADROOT:
-                ERROR1("Not an icecast2 config file: %s", filename);
+                ERROR1("Not an mcaster1 config file: %s", filename);
                 break;
             default:
                 ERROR1("Parse error in reading %s", filename);

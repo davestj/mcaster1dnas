@@ -288,7 +288,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = Icecast2win.rc2
+EXTRA_DIST = Mcaster1Win.rc2
 all: all-am
 
 .SUFFIXES:

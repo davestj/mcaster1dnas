@@ -1,6 +1,6 @@
 # Configure paths for libogg
 # updated by Karl Heyes 10-Jun-2003
-# Jack Moffitt <jack@icecast.org> 10-21-2000
+# Jack Moffitt <jack@mcaster1.org> 10-21-2000
 # Shamelessly stolen from Owen Taylor and Manish Singh
 
 dnl XIPH_PATH_OGG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])

@@ -110,17 +110,17 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libicetiming_la_LIBADD =
-am_libicetiming_la_OBJECTS = libicetiming_la-timing.lo
-libicetiming_la_OBJECTS = $(am_libicetiming_la_OBJECTS)
+libmctiming_la_LIBADD =
+am_libmctiming_la_OBJECTS = libmctiming_la-timing.lo
+libmctiming_la_OBJECTS = $(am_libmctiming_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libicetiming_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+libmctiming_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(libicetiming_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+	$(libmctiming_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
+	$@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -136,7 +136,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libicetiming_la-timing.Plo
+am__depfiles_remade = ./$(DEPDIR)/libmctiming_la-timing.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -156,8 +156,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libicetiming_la_SOURCES)
-DIST_SOURCES = $(libicetiming_la_SOURCES)
+SOURCES = $(libmctiming_la_SOURCES)
+DIST_SOURCES = $(libmctiming_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -349,10 +349,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = BUILDING COPYING README TODO
-noinst_LTLIBRARIES = libicetiming.la
+noinst_LTLIBRARIES = libmctiming.la
 noinst_HEADERS = timing.h
-libicetiming_la_SOURCES = timing.c
-libicetiming_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmctiming_la_SOURCES = timing.c
+libmctiming_la_CFLAGS = @XIPH_CFLAGS@ -static
 all: all-am
 
 .SUFFIXES:
@@ -398,8 +398,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libicetiming.la: $(libicetiming_la_OBJECTS) $(libicetiming_la_DEPENDENCIES) $(EXTRA_libicetiming_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libicetiming_la_LINK)  $(libicetiming_la_OBJECTS) $(libicetiming_la_LIBADD) $(LIBS)
+libmctiming.la: $(libmctiming_la_OBJECTS) $(libmctiming_la_DEPENDENCIES) $(EXTRA_libmctiming_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libmctiming_la_LINK)  $(libmctiming_la_OBJECTS) $(libmctiming_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -407,7 +407,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libicetiming_la-timing.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmctiming_la-timing.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -436,12 +436,12 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libicetiming_la-timing.lo: timing.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicetiming_la_CFLAGS) $(CFLAGS) -MT libicetiming_la-timing.lo -MD -MP -MF $(DEPDIR)/libicetiming_la-timing.Tpo -c -o libicetiming_la-timing.lo `test -f 'timing.c' || echo '$(srcdir)/'`timing.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libicetiming_la-timing.Tpo $(DEPDIR)/libicetiming_la-timing.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='timing.c' object='libicetiming_la-timing.lo' libtool=yes @AMDEPBACKSLASH@
+libmctiming_la-timing.lo: timing.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmctiming_la_CFLAGS) $(CFLAGS) -MT libmctiming_la-timing.lo -MD -MP -MF $(DEPDIR)/libmctiming_la-timing.Tpo -c -o libmctiming_la-timing.lo `test -f 'timing.c' || echo '$(srcdir)/'`timing.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmctiming_la-timing.Tpo $(DEPDIR)/libmctiming_la-timing.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='timing.c' object='libmctiming_la-timing.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicetiming_la_CFLAGS) $(CFLAGS) -c -o libicetiming_la-timing.lo `test -f 'timing.c' || echo '$(srcdir)/'`timing.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmctiming_la_CFLAGS) $(CFLAGS) -c -o libmctiming_la-timing.lo `test -f 'timing.c' || echo '$(srcdir)/'`timing.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -573,7 +573,7 @@ clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/libicetiming_la-timing.Plo
+		-rm -f ./$(DEPDIR)/libmctiming_la-timing.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -619,7 +619,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/libicetiming_la-timing.Plo
+		-rm -f ./$(DEPDIR)/libmctiming_la-timing.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -1,72 +1,149 @@
-<xsl:stylesheet xmlns:xsl = "http://www.w3.org/1999/XSL/Transform" version = "1.0" >
-<xsl:output method="xml" media-type="text/html" indent="yes" encoding="UTF-8"
-    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-    doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output method="html" indent="yes" encoding="UTF-8" doctype-system="about:legacy-compat"/>
 
-<xsl:template match = "/icerelaystats" >
-<html>
+<xsl:template match="/icerelaystats">
+<html lang="en">
 <head>
-<title>Icecast Streaming Media Server</title>
-<link rel="stylesheet" type="text/css" href="../style.css" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Relays - Mcaster1DNAS Admin</title>
+
+    <!-- FontAwesome 6.x for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <script src="/mcaster-utils.js"></script>
 </head>
 <body>
+    <div class="mcaster-header">
+        <div class="mcaster-container">
+            <div class="mcaster-header-top">
+            <div class="mcaster-brand">
+                <div class="brand-icon"><i class="fas fa-broadcast-tower"></i></div>
+                <div class="brand-text">
+                    <h1 style="margin: 0; font-size: 1.75rem;">
+                        <span class="brand-mcaster">Mcaster1</span>
+                        <span class="brand-dnas">DNAS Admin</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="mcaster-nav">
+                <a href="stats.xsl"><i class="fas fa-chart-line"></i> Stats</a>
+                <a href="listmounts.xsl"><i class="fas fa-stream"></i> Mounts</a>
+                <a href="managerelays.xsl"><i class="fas fa-project-diagram"></i> Relays</a>
+                <a href="logs.xsl"><i class="fas fa-file-alt"></i> Logs</a>
+                <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
+                <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>
+            </div>
+        </div>
+    </div>
 
-<div class="main">
+    <div class="mcaster-main">
+        <div class="mcaster-container">
 
-<div class="roundcont">
-<div class="roundtop">
+            <xsl:for-each select="relay">
+                <div class="mcaster-card">
+                    <h2>
+                        <i class="fas fa-project-diagram"></i> Relay: <xsl:value-of select="localmount"/>
+                        <xsl:choose>
+                            <xsl:when test="enable!='0'">
+                                <a href="managerelays.xsl?relay={localmount}&amp;enable=0" class="btn btn-secondary" style="font-size: 0.875rem; margin-left: 1rem;">
+                                    <i class="fas fa-pause"></i> Disable
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <a href="managerelays.xsl?relay={localmount}&amp;enable=1" class="btn btn-primary" style="font-size: 0.875rem; margin-left: 1rem;">
+                                    <i class="fas fa-play"></i> Enable
+                                </a>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </h2>
 
-</div>
-<div class="newscontent">
-<xsl:for-each select="relay">
-<h3>Mount
-<xsl:value-of select="localmount" />
-<xsl:choose>
-<xsl:when test = "enable!='0'">
-    (<a href="managerelays.xsl?relay={localmount}&amp;enable=0">disable</a>)
-</xsl:when>
-<xsl:otherwise>
-    (<a href="managerelays.xsl?relay={localmount}&amp;enable=1">enable</a>)
-</xsl:otherwise>
-</xsl:choose>
-</h3>
-    <p>
-    <xsl:choose>
-        <xsl:when test="enable">Enabled</xsl:when>
-        <xsl:otherwise>Disabled</xsl:otherwise>
-    </xsl:choose>
-    <xsl:if test="on_demand=1" >, On Demand</xsl:if>
-    <xsl:if test="from_master=1" >, Slave Relay</xsl:if>
-    <xsl:if test="run_on > 0" >
-        <td class="streamdata">, run on for <xsl:value-of select="run_on" />s</td>
-    </xsl:if>
-</p>
-<br />
-<table border="0" cellpadding="4">
-    <xsl:for-each select="master">
-    <tr><td></td></tr>
-    <tr>
-        <xsl:if test="active" >
-        <xsl:attribute name="style">background-color: green</xsl:attribute>
-        </xsl:if>
-        <th>Host (priority <xsl:value-of select="priority" />) </th>
-        <td class="streamdata"> <xsl:value-of select="server" />,</td>
-        <td class="streamdata"> Port <xsl:value-of select="port" />,</td>
-        <td class="streamdata"> <xsl:value-of select="mount" /></td>
-        </tr>
-    </xsl:for-each>
-</table>
-<br />
-<br></br>
-</xsl:for-each>
-<xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
-</div>
-<div class="roundbottom">
+                    <!-- Relay Status -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <xsl:choose>
+                            <xsl:when test="enable">
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-check-circle"></i> Enabled
+                                </span>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <span class="status-badge status-inactive">
+                                    <i class="fas fa-times-circle"></i> Disabled
+                                </span>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="on_demand=1">
+                            <span class="status-badge status-warning">
+                                <i class="fas fa-clock"></i> On Demand
+                            </span>
+                        </xsl:if>
+                        <xsl:if test="from_master=1">
+                            <span class="status-badge status-active">
+                                <i class="fas fa-server"></i> Slave Relay
+                            </span>
+                        </xsl:if>
+                        <xsl:if test="run_on &gt; 0">
+                            <span class="status-badge" style="background: #dbeafe; color: #1e40af;">
+                                <i class="fas fa-hourglass-half"></i> Run on for <xsl:value-of select="run_on"/>s
+                            </span>
+                        </xsl:if>
+                    </div>
 
-</div>
-</div>
-<div class="poster">Support icecast development at <a class="nav" href="http://www.icecast.org">www.icecast.org</a></div>
-</div>
+                    <!-- Master Servers -->
+                    <h3><i class="fas fa-server"></i> Master Servers</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 100px;">Priority</th>
+                                <th>Server</th>
+                                <th>Port</th>
+                                <th>Mount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <xsl:for-each select="master">
+                                <tr>
+                                    <xsl:if test="active">
+                                        <xsl:attribute name="style">background: #dcfce7;</xsl:attribute>
+                                    </xsl:if>
+                                    <td style="text-align: center;">
+                                        <xsl:if test="active">
+                                            <i class="fas fa-check-circle" style="color: var(--dnas-green); margin-right: 0.5rem;"></i>
+                                        </xsl:if>
+                                        <xsl:value-of select="priority"/>
+                                    </td>
+                                    <td><xsl:value-of select="server"/></td>
+                                    <td><xsl:value-of select="port"/></td>
+                                    <td><xsl:value-of select="mount"/></td>
+                                </tr>
+                            </xsl:for-each>
+                        </tbody>
+                    </table>
+                </div>
+            </xsl:for-each>
+
+            <xsl:if test="not(relay)">
+                <div class="mcaster-card text-center">
+                    <h2><i class="fas fa-info-circle"></i> No Relays Configured</h2>
+                    <p>There are currently no relays configured on this server.</p>
+                </div>
+            </xsl:if>
+
+        </div>
+    </div>
+
+    <div class="mcaster-footer">
+        <div class="mcaster-container">
+            <p><i class="fas fa-server"></i> Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
+                <span class="page-load-time" id="page-load-time">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </span>
+            </p>
+        </div>
+    </div>
 </body>
 </html>
 </xsl:template>

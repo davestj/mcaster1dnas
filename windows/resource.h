@@ -1,11 +1,11 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Icecast2win.rc
+// Used by Mcaster1Win.rc
 //
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
-#define IDD_ICECAST2WIN_DIALOG          102
+#define IDD_MCASTER1WIN_DIALOG          102
 #define IDR_MAINFRAME                   128
 #define IDR_MENU1                       132
 #define IDB_BITMAP1                     134

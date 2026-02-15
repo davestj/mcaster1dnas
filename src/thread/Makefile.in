@@ -110,17 +110,17 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libicethread_la_LIBADD =
-am_libicethread_la_OBJECTS = libicethread_la-thread.lo
-libicethread_la_OBJECTS = $(am_libicethread_la_OBJECTS)
+libmcthread_la_LIBADD =
+am_libmcthread_la_OBJECTS = libmcthread_la-thread.lo
+libmcthread_la_OBJECTS = $(am_libmcthread_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libicethread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+libmcthread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(libicethread_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+	$(libmcthread_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
+	$@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -136,7 +136,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libicethread_la-thread.Plo
+am__depfiles_remade = ./$(DEPDIR)/libmcthread_la-thread.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -156,8 +156,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libicethread_la_SOURCES)
-DIST_SOURCES = $(libicethread_la_SOURCES)
+SOURCES = $(libmcthread_la_SOURCES)
+DIST_SOURCES = $(libmcthread_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -349,10 +349,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = BUILDING COPYING README TODO
-noinst_LTLIBRARIES = libicethread.la
+noinst_LTLIBRARIES = libmcthread.la
 noinst_HEADERS = thread.h
-libicethread_la_SOURCES = thread.c
-libicethread_la_CFLAGS = @XIPH_CFLAGS@ -static
+libmcthread_la_SOURCES = thread.c
+libmcthread_la_CFLAGS = @XIPH_CFLAGS@ -static
 AM_CPPFLAGS = -I$(top_srcdir)/src
 all: all-am
 
@@ -399,8 +399,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libicethread.la: $(libicethread_la_OBJECTS) $(libicethread_la_DEPENDENCIES) $(EXTRA_libicethread_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libicethread_la_LINK)  $(libicethread_la_OBJECTS) $(libicethread_la_LIBADD) $(LIBS)
+libmcthread.la: $(libmcthread_la_OBJECTS) $(libmcthread_la_DEPENDENCIES) $(EXTRA_libmcthread_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libmcthread_la_LINK)  $(libmcthread_la_OBJECTS) $(libmcthread_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -408,7 +408,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libicethread_la-thread.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcthread_la-thread.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -437,12 +437,12 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libicethread_la-thread.lo: thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicethread_la_CFLAGS) $(CFLAGS) -MT libicethread_la-thread.lo -MD -MP -MF $(DEPDIR)/libicethread_la-thread.Tpo -c -o libicethread_la-thread.lo `test -f 'thread.c' || echo '$(srcdir)/'`thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libicethread_la-thread.Tpo $(DEPDIR)/libicethread_la-thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='thread.c' object='libicethread_la-thread.lo' libtool=yes @AMDEPBACKSLASH@
+libmcthread_la-thread.lo: thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcthread_la_CFLAGS) $(CFLAGS) -MT libmcthread_la-thread.lo -MD -MP -MF $(DEPDIR)/libmcthread_la-thread.Tpo -c -o libmcthread_la-thread.lo `test -f 'thread.c' || echo '$(srcdir)/'`thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcthread_la-thread.Tpo $(DEPDIR)/libmcthread_la-thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='thread.c' object='libmcthread_la-thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libicethread_la_CFLAGS) $(CFLAGS) -c -o libicethread_la-thread.lo `test -f 'thread.c' || echo '$(srcdir)/'`thread.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcthread_la_CFLAGS) $(CFLAGS) -c -o libmcthread_la-thread.lo `test -f 'thread.c' || echo '$(srcdir)/'`thread.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -574,7 +574,7 @@ clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/libicethread_la-thread.Plo
+		-rm -f ./$(DEPDIR)/libmcthread_la-thread.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -620,7 +620,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/libicethread_la-thread.Plo
+		-rm -f ./$(DEPDIR)/libmcthread_la-thread.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

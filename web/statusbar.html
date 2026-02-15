@@ -1,36 +1,39 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="./style.css" />
-    <title>Icecast Streaming Media Server</title>
-  </head>
-
-  <body>
-    <div class="nav">
-    <h1>Icecast2</h1>
-    <center>
-    <table class="roundcont">
-      <tr>
-        <td class="topleft"></td>
-        <td rowspan="2" class="nav">
-          <table>
-              <tr>
-                  <td>
-                      <a target="_parent" href="./admin.html">Admin</a>
-                      <a target="content" href="./status.xsl">Status</a>
-                      <a target="content" href="./server_version.xsl">Info</a>
-                      <a target="content" href="http://dir.xiph.org/">Stream Directory</a>
-                  </td>
-            </tr>
-          </table>
-        </td>
-        <td class="topright"></td>
-      </tr>
-      <tr>
-        <td class="bottomleft"></td>
-        <td class="bottomright"></td>
-      </tr>
-    </table>
-    </center>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <script src="/mcaster-utils.js"></script>
+    <title>Mcaster1DNAS Navigation</title>
+</head>
+<body style="margin: 0; padding: 0.5rem; background: white;">
+    <div class="mcaster-header" style="border-bottom: none; box-shadow: none; padding: 0.5rem;">
+        <div class="mcaster-header-top">
+            <div class="mcaster-brand">
+            <div class="brand-icon">M1</div>
+            <div class="brand-text">
+                <h1 style="margin: 0; font-size: 1.5rem;">
+                    <span class="brand-mcaster">Mcaster1</span>
+                    <span class="brand-dnas">DNAS</span>
+                </h1>
+            </div>
+            </div>
+            <div class="mcaster-clock">
+                <div class="mcaster-clock-time">
+                    <i class="fas fa-clock mcaster-clock-icon"></i>
+                    <span id="live-time">Loading...</span>
+                </div>
+                <div class="mcaster-clock-date" id="live-date">Loading...</div>
+            </div>
+        </div>
+        <div class="mcaster-nav">
+            <a href="./status.xsl" target="content"><i class="fas fa-home"></i> Status</a>
+            <a href="./server_version.xsl" target="content"><i class="fas fa-info-circle"></i> Server Info</a>
+            <a href="./credits.xsl" target="content"><i class="fas fa-award"></i> Credits</a>
+            <a href="./admin.html" target="_parent"><i class="fas fa-shield-alt"></i> Admin</a>
+            <a href="https://mcaster1.com/" target="_blank"><i class="fas fa-external-link-alt"></i> Mcaster1.com</a>
+        </div>
+    </div>
+</body>
 </html>

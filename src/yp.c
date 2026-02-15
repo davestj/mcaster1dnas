@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -46,6 +46,11 @@ struct yp_server
     unsigned    url_timeout;
     unsigned    touch_interval;
     int         remove;
+
+    char        *logfile;
+    int         logid;
+    time_t      next_health_check;
+    int         health_check_status;  // 1=alive, 0=down, -1=not checked
 
     CURL *curl;
     struct ypdata_tag *mounts, *pending_mounts;
@@ -107,6 +112,7 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len);
 static int do_yp_touch (ypdata_t *yp, char *s, unsigned len);
 static void yp_destroy_ypdata(ypdata_t *ypdata);
 static int  directory_recheck (client_t *client);
+static void yp_log (struct yp_server *server, const char *mount, const char *action, const char *message);
 
 
 struct _client_functions directory_client_ops =
@@ -211,8 +217,11 @@ static void destroy_yp_server (struct yp_server *server)
         curl_easy_cleanup (server->curl);
     if (server->mounts) WARN0 ("active ypdata not freed up");
     if (server->pending_mounts) WARN0 ("pending ypdata not freed up");
+    if (server->logid >= 0)
+        log_close (server->logid);
     free (server->url);
     free (server->server_id);
+    free (server->logfile);
     free (server);
 }
 
@@ -260,9 +269,31 @@ static int directory_recheck (client_t *client)
 }
 
 
-static void yp_client_add (ice_config_t *config)
+/* Log YP directory operations to dedicated log file if configured */
+static void yp_log (struct yp_server *server, const char *mount, const char *action, const char *message)
 {
-    if (config->num_yp_directories == 0 || active_yps || global_state() != ICE_RUNNING)
+    if (server == NULL || server->logid < 0)
+        return;
+
+    char timestamp[128];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm_info);
+
+    if (mount && message)
+        log_write_direct (server->logid, "[%s] %s - %s: %s - %s", timestamp, server->url, action, mount, message);
+    else if (mount)
+        log_write_direct (server->logid, "[%s] %s - %s: %s", timestamp, server->url, action, mount);
+    else if (message)
+        log_write_direct (server->logid, "[%s] %s - %s: %s", timestamp, server->url, action, message);
+    else
+        log_write_direct (server->logid, "[%s] %s - %s", timestamp, server->url, action);
+}
+
+
+static void yp_client_add (mc_config_t *config)
+{
+    if (config->num_yp_directories == 0 || active_yps || global_state() != MC_RUNNING)
         return;
     INFO0 ("Starting Directory client for YP processing");
     ypclient.ops = &directory_client_ops;
@@ -287,7 +318,7 @@ static ypdata_t *find_yp_mount (ypdata_t *mounts, const char *mount)
 }
 
 
-void yp_recheck_config (ice_config_t *config)
+void yp_recheck_config (mc_config_t *config)
 {
     int i;
     struct yp_server *server;
@@ -320,6 +351,35 @@ void yp_recheck_config (ice_config_t *config)
             server->url = strdup (config->yp_url[i]);
             server->url_timeout = config->yp_url_timeout[i];
             server->touch_interval = config->yp_touch_interval[i];
+            server->logid = -1;
+            server->next_health_check = 0;
+            server->health_check_status = -1;  // Not checked yet
+
+            /* Open YP log file - use specified file or create default in log directory */
+            if (config->yp_logfile[i])
+            {
+                server->logfile = strdup (config->yp_logfile[i]);
+            }
+            else if (config->log_dir)
+            {
+                /* Create default YP log file in log directory */
+                char default_log[512];
+                snprintf (default_log, sizeof(default_log), "%s/yp-health.log", config->log_dir);
+                server->logfile = strdup (default_log);
+            }
+
+            if (server->logfile)
+            {
+                server->logid = log_open (server->logfile);
+                if (server->logid < 0)
+                    WARN2 ("Could not open YP log file \"%s\" for server \"%s\"", server->logfile, server->url);
+                else
+                {
+                    INFO2 ("YP server \"%s\" logging to \"%s\"", server->url, server->logfile);
+                    /* Write initial log entry to create file immediately */
+                    yp_log (server, NULL, "init", "YP health monitoring started");
+                }
+            }
             server->curl = icecurl_easy_init();
             if (server->curl == NULL)
             {
@@ -354,7 +414,7 @@ void yp_recheck_config (ice_config_t *config)
 }
 
 
-void yp_initialize (ice_config_t *config)
+void yp_initialize (mc_config_t *config)
 {
     thread_rwlock_create (&yp_lock);
     thread_mutex_create (&yp_pending_lock);
@@ -403,6 +463,7 @@ static int send_to_yp (const char *cmd, ypdata_t *yp, char *post)
         yp->process = do_yp_add;
         yp_schedule (yp, 1200);
         ERROR3 ("connection to %s failed on %s with \"%s\"", server->url, yp->mount, server->curl_error);
+        yp_log (server, yp->mount, cmd, server->curl_error);
         return -2;
     }
     if (yp->cmd_ok == 0)
@@ -412,6 +473,7 @@ static int send_to_yp (const char *cmd, ypdata_t *yp, char *post)
         if (yp->process == do_yp_add)
         {
             ERROR4 ("YP %s on %s failed for %s: %s", cmd, server->url, yp->mount, yp->error_msg);
+            yp_log (server, yp->mount, cmd, yp->error_msg);
             yp_schedule (yp, 7200);
         }
         if (yp->process == do_yp_touch)
@@ -427,6 +489,7 @@ static int send_to_yp (const char *cmd, ypdata_t *yp, char *post)
             else
                 yp_schedule (yp, yp->touch_interval);
             INFO4 ("YP %s on %s failed for %s: %s", cmd, server->url, yp->mount, yp->error_msg);
+            yp_log (server, yp->mount, cmd, yp->error_msg);
         }
         yp->process = do_yp_add;
         free (yp->sid);
@@ -436,6 +499,7 @@ static int send_to_yp (const char *cmd, ypdata_t *yp, char *post)
         return -1;
     }
     DEBUG3 ("YP %s at %s for %s succeeded", cmd, server->url, yp->mount);
+    yp_log (server, yp->mount, cmd, "SUCCESS");
     return 0;
 }
 #endif
@@ -453,6 +517,7 @@ static int do_yp_remove (ypdata_t *yp, char *s, unsigned len)
             return ret+1;
 
         INFO1 ("clearing up YP entry for %s", yp->mount);
+        yp_log (yp->server, yp->mount, "remove", "Removing mount from YP");
         ret = send_to_yp ("remove", yp, s);
         free (yp->sid);
         yp->sid = NULL;
@@ -504,9 +569,9 @@ static const char *yp_stat (stats_handle_t stats, const char *name)
 
 static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
 {
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", PARAM_AS, "add");
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", PARAM_AS, "add");
     stats_handle_t stats = stats_handle (yp->mount);
     do
     {
@@ -517,7 +582,7 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
         char bitrate [30];
         if (name[0] && genre[0] && type[0] && yp_normalise_bitrate (stats, bitrate, sizeof bitrate))
         {
-            ice_param_t x[] = {
+            mc_param_t x[] = {
                 { .name="admin",        .value = serv_admin },
                 { .name="sn",           .value = (char*)name },
                 { .name="genre",        .value = (char*)genre },
@@ -531,8 +596,8 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
                 { .name="",             .value = (char*)yp_stat (stats, "audio_info"), .flags = PARAM_AS }
             };
             for (int i=0; i < (sizeof (x)/sizeof (x[0])); i++)
-                ice_params_apply (&post, &x[i]);
-            refbuf_t *rb = ice_params_complete (&post);
+                mc_params_apply (&post, &x[i]);
+            refbuf_t *rb = mc_params_complete (&post);
             stats_release (stats);
             int ret = send_to_yp ("add", yp, rb->data);
             refbuf_release (rb);
@@ -547,7 +612,7 @@ static int do_yp_add (ypdata_t *yp, char *s, unsigned len)
         INFO1 ("mount %s requires stats (sn, genre, type, bitrate)", yp->mount);
         yp_schedule (yp, 600);
     } while (0);
-    ice_params_clear (&post);
+    mc_params_clear (&post);
     return -1;
 }
 
@@ -563,23 +628,23 @@ static int do_yp_touch (ypdata_t *yp, char *s, unsigned len)
             return 0;
         }
         int max_listeners = 1;
-        ice_params_t post;
-        ice_params_setup (&post, "=", "&", PARAMS_ESC);
-        ice_params_printf (&post, "action", PARAM_AS, "touch");
-        ice_params_printf (&post, "sid",    PARAM_AS, "%s", yp->sid);
+        mc_params_t post;
+        mc_params_setup (&post, "=", "&", PARAMS_ESC);
+        mc_params_printf (&post, "action", PARAM_AS, "touch");
+        mc_params_printf (&post, "sid",    PARAM_AS, "%s", yp->sid);
         stats_handle_t stats = stats_handle (yp->mount);
         if (stats)
         {
-            ice_params_printf (&post, "st", PARAM_AS, "%s", yp->current_song);
-            ice_params_printf (&post, "listeners", PARAM_AS, "%s", yp_stat (stats, "listeners"));
+            mc_params_printf (&post, "st", PARAM_AS, "%s", yp->current_song);
+            mc_params_printf (&post, "listeners", PARAM_AS, "%s", yp_stat (stats, "listeners"));
             const char *v = stats_retrieve_nocopy (stats, "max_listeners");
             if (v)
                 max_listeners = atoi (v);
             if (v == NULL || strcmp (v, "unlimited") == 0 || max_listeners < 0)
                 max_listeners = serv_max_listeners;
-            ice_params_printf (&post, "max_listeners", PARAM_AS, "%d", max_listeners);
-            ice_params_printf (&post, "stype", 0, "%s", yp_stat (stats, "subtype"));
-            refbuf_t *rb = ice_params_complete (&post);
+            mc_params_printf (&post, "max_listeners", PARAM_AS, "%d", max_listeners);
+            mc_params_printf (&post, "stype", 0, "%s", yp_stat (stats, "subtype"));
+            refbuf_t *rb = mc_params_complete (&post);
             stats_release (stats);
             int ret = send_to_yp ("touch", yp, rb->data);
             refbuf_release (rb);
@@ -587,7 +652,7 @@ static int do_yp_touch (ypdata_t *yp, char *s, unsigned len)
                 yp_schedule (yp, yp->touch_interval);
             return ret;
         }
-        ice_params_clear (&post);
+        mc_params_clear (&post);
         free (yp->sid);
         yp->sid = NULL; // loop to exit out
     } while (1);
@@ -629,14 +694,80 @@ static int process_ypdata (struct yp_server *server, ypdata_t *yp)
 }
 
 
+/* Perform a health check ping to YP server even when no mounts are active */
+static void yp_health_check (struct yp_server *server)
+{
+    if (server == NULL)
+        return;
+
+    time_t current_time = time(NULL);
+
+    /* Only check if it's time for the next health check */
+    /* Allow first check to run immediately (next_health_check = 0 at init) */
+    if (server->next_health_check > 0 && current_time < server->next_health_check)
+        return;
+
+    /* Schedule next health check using touch_interval (default 300 seconds = 5 minutes) */
+    server->next_health_check = current_time + server->touch_interval;
+
+    /* Perform simple GET request to check if server is responding */
+    CURL *check_curl = icecurl_easy_init();
+    if (check_curl == NULL)
+    {
+        yp_log (server, NULL, "health-check", "FAILED - Could not initialize CURL");
+        server->health_check_status = 0;
+        return;
+    }
+
+    char curl_err[CURL_ERROR_SIZE];
+    curl_err[0] = '\0';
+
+    curl_easy_setopt (check_curl, CURLOPT_URL, server->url);
+    curl_easy_setopt (check_curl, CURLOPT_USERAGENT, server->server_id);
+    curl_easy_setopt (check_curl, CURLOPT_WRITEFUNCTION, handle_returned_data);
+    curl_easy_setopt (check_curl, CURLOPT_TIMEOUT, server->url_timeout);
+    curl_easy_setopt (check_curl, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt (check_curl, CURLOPT_ERRORBUFFER, curl_err);
+    curl_easy_setopt (check_curl, CURLOPT_NOBODY, 1L);  // HEAD request
+
+    int curlcode = curl_easy_perform (check_curl);
+    curl_easy_cleanup (check_curl);
+
+    if (curlcode == 0)
+    {
+        server->health_check_status = 1;
+        yp_log (server, NULL, "health-check", "SUCCESS - YP server alive and ready for live icy-metadata streams");
+        DEBUG1 ("YP server %s is alive", server->url);
+    }
+    else
+    {
+        server->health_check_status = 0;
+        char msg[512];
+        snprintf (msg, sizeof(msg), "FAILED - YP server not responding: %s", curl_err[0] ? curl_err : "Unknown error");
+        yp_log (server, NULL, "health-check", msg);
+        WARN2 ("YP server %s health check failed: %s", server->url, curl_err);
+    }
+}
+
+
 static void yp_process_server (struct yp_server *server)
 {
     ypdata_t *yp;
     int error = 0, within_limit = 20;
 
+    now = time(NULL);
+
+    /* Perform health check if logging is enabled - runs even without mounts */
+    if (server->logid >= 0)
+    {
+        yp_health_check (server);
+        /* Schedule next YP thread run for health check */
+        if ((uint64_t)server->next_health_check < ypclient.counter)
+            ypclient.counter = (uint64_t)server->next_health_check;
+    }
+
     /* DEBUG1("processing yp server %s", server->url); */
     yp = server->mounts;
-    now = time(NULL);
     while (yp)
     {
         /* if one of the streams shows that the server cannot be contacted then mark the
@@ -682,7 +813,7 @@ static ypdata_t *create_yp_entry (const char *mount)
         int ret;
         char *url;
         mount_proxy *mountproxy = NULL;
-        ice_config_t *config;
+        mc_config_t *config;
         static int adjust = 0;
 
         if (yp == NULL)
@@ -861,7 +992,7 @@ static void *yp_update_thread(void *arg)
     }
     thread_rwlock_unlock (&yp_lock);
 
-    if (global_state() == ICE_RUNNING)
+    if (global_state() == MC_RUNNING)
         client_add_incoming (&ypclient);
     // DEBUG0("YP thread shutdown");
     return NULL;
@@ -1068,7 +1199,7 @@ static void *yp_pending_update (void *arg)
 
 static void yp_queue_change (yp_change_t *change)
 {
-    if (global.running != ICE_RUNNING)
+    if (global.running != MC_RUNNING)
     {
         free (change->mount);
         free (change);

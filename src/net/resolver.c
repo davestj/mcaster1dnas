@@ -1,7 +1,7 @@
 /*
  * resolver.c - name resolver library
  *
- * Copyright (C) 1999 the icecast team <team@icecast.org>
+ * Copyright (C) 1999 the mcaster1 team <team@mcaster1.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

@@ -23,7 +23,7 @@ CTrayNot::CTrayNot ( CWnd* pWnd, UINT uCallbackMessage,
 	m_tnd.uID = 0 ;
 	m_tnd.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP ;	
 	m_tnd.uCallbackMessage = uCallbackMessage;  
-	strcpy ( m_tnd.szTip, "Icecast2");
+	strcpy ( m_tnd.szTip, "Mcaster1DNAS");
 	//or you could use:
 	//strcpy ( m_tnd.szTip, AfxGetApp()->m_pszAppName);
 	//this will display the app name instead of the string you specify 

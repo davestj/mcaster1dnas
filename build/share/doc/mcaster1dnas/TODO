@@ -1,0 +1,156 @@
+Mcaster1DNAS TODO List
+================================================================================
+
+COMPLETED (v2.5.0):
+--------------------------------------------------------------------------------
+✅ YAML configuration file support
+✅ YP connection logging feature
+✅ Tabbed admin logs interface
+✅ XML/YAML format auto-detection
+✅ Comprehensive YAML templates
+✅ YP per-server logging
+
+PLANNED FOR v2.6.0:
+--------------------------------------------------------------------------------
+
+Configuration:
+☐ JSON configuration support
+☐ Config validation tool (mcaster1-validate-config)
+☐ Config converter tools:
+  ☐ mcaster1-xml2yaml
+  ☐ mcaster1-yaml2xml
+  ☐ mcaster1-json2yaml
+☐ Environment variable substitution in configs
+☐ Include directives for modular configurations
+☐ Config reload without restart (SIGHUP handler improvement)
+
+YP Features:
+☐ Log rotation support for YP logs
+☐ YP log level configuration (INFO, DEBUG, ERROR filtering)
+☐ Real-time YP log viewer in admin interface (without iframe)
+☐ YP statistics dashboard showing success/failure rates
+☐ Email alerts for YP listing failures
+☐ Retry logic improvements for YP failures
+☐ Multi-region YP server support with automatic failover
+
+Admin Interface:
+☐ Real-time charts and graphs for statistics
+☐ WebSocket support for live updates (remove page refresh)
+☐ Listener geolocation map
+☐ Stream quality metrics dashboard
+☐ Mobile-responsive admin interface improvements
+☐ Dark mode support
+☐ Export logs as CSV/JSON
+☐ Advanced filtering for logs viewer
+☐ Mount point health monitoring dashboard
+
+Logging:
+☐ Structured logging (JSON format option)
+☐ Log aggregation support (syslog, rsyslog)
+☐ Per-mount access logs with custom formats
+☐ Request tracing with correlation IDs
+☐ Performance metrics logging
+
+Authentication:
+☐ OAuth2 authentication support
+☐ LDAP authentication integration
+☐ JWT token authentication for API access
+☐ Two-factor authentication for admin
+☐ API key management
+
+Streaming:
+☐ HTTP/2 support
+☐ QUIC protocol support
+☐ Adaptive bitrate streaming (HLS, DASH)
+☐ WebRTC support for ultra-low latency
+☐ Opus codec optimizations
+☐ AAC-HE v2 support
+☐ Multi-codec transcoding
+
+Monitoring:
+☐ Prometheus metrics exporter
+☐ StatsD integration
+☐ Health check endpoints (/health, /ready, /live)
+☐ Performance profiling tools
+☐ Connection pool monitoring
+☐ Buffer usage metrics
+
+Security:
+☐ Rate limiting per IP/mount
+☐ DDoS protection improvements
+☐ Automatic TLS certificate renewal (Let's Encrypt)
+☐ Security headers enforcement (CSP, HSTS, etc.)
+☐ Audit logging for admin actions
+☐ IP whitelist/blacklist improvements
+
+API:
+☐ RESTful API for server control
+☐ GraphQL API for statistics
+☐ WebSocket API for real-time events
+☐ API documentation (OpenAPI/Swagger)
+☐ API versioning support
+
+Performance:
+☐ Zero-copy networking optimizations
+☐ Connection pooling for relays
+☐ Memory pool allocator
+☐ Thread pool sizing improvements
+☐ Cache-aware data structures
+
+Documentation:
+☐ Interactive web-based documentation
+☐ Video tutorials for common tasks
+☐ Migration guide from Icecast 2.x
+☐ Best practices guide
+☐ Troubleshooting flowcharts
+☐ Performance tuning guide
+
+Quality of Life:
+☐ Docker container support
+☐ Kubernetes deployment examples
+☐ systemd service improvements
+☐ Automated testing suite
+☐ Continuous integration setup
+☐ Load testing tools
+☐ Benchmarking suite
+
+Nice to Have:
+☐ Plugin system for custom extensions
+☐ Lua scripting support for dynamic behavior
+☐ Database backend for configuration (optional)
+☐ Clustering support for high availability
+☐ CDN integration
+☐ S3-compatible storage for recordings
+
+COMMUNITY REQUESTS:
+--------------------------------------------------------------------------------
+☐ Windows native build (currently Linux/Unix only)
+☐ macOS ARM64 optimizations
+☐ Android streaming app integration guide
+☐ iOS streaming app integration guide
+
+BUG FIXES:
+--------------------------------------------------------------------------------
+☐ None currently reported
+
+EXPERIMENTAL:
+--------------------------------------------------------------------------------
+☐ AI-powered stream quality monitoring
+☐ Automatic audio normalization
+☐ Speech-to-text for metadata generation
+☐ Content-aware caching
+
+LONG TERM:
+--------------------------------------------------------------------------------
+☐ Video streaming support (beyond audio)
+☐ Interactive streaming features (chat integration)
+☐ Podcast hosting and RSS generation
+☐ On-demand content library
+☐ Stream recording and archiving improvements
+
+================================================================================
+Want to contribute? Check the GitHub repository for contribution guidelines!
+Priority is given to features that benefit the most users.
+================================================================================
+
+Last Updated: February 14, 2026

@@ -1,6 +1,6 @@
 /* threads.c: Thread Abstraction Functions
  *
- * Copyright (c) 1999, 2000 the icecast team <team@icecast.org>
+ * Copyright (c) 1999, 2000 the mcaster1 team <team@mcaster1.org>
  * Copyright (c) 2020-2023 Karl Heyes <karl@kheyes.plus.com>
  *
  *  This library is free software; you can redistribute it and/or
@@ -206,7 +206,7 @@ void thread_initialize(void)
     _catch_signals();
 
     lock_problem_abort = 0;
-    dbg = getenv ("ICE_LOCK_ABORT");
+    dbg = getenv ("MC_LOCK_ABORT");
     if (dbg)
         lock_problem_abort = atoi (dbg);
     _initialized = 1;

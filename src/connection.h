@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -26,7 +26,7 @@
 #endif
 
 struct source_tag;
-struct ice_config_tag;
+struct mc_config_tag;
 typedef struct connection_tag connection_t;
 
 #include "compat.h"
@@ -98,7 +98,7 @@ void connection_initialize(void);
 void connection_shutdown(void);
 void connection_thread_startup();
 void connection_thread_shutdown();
-int  connection_setup_sockets (struct ice_config_tag *config);
+int  connection_setup_sockets (struct mc_config_tag *config);
 int  connection_reset (connection_t *con, uint64_t time_ms);
 void connection_close(connection_t *con);
 int  connection_init (connection_t *con, sock_t sock, const char *addr);
@@ -135,6 +135,6 @@ int connection_check_relay_pass(http_parser_t *parser);
 int connection_check_admin_pass(http_parser_t *parser);
 
 void connection_close_sigfd (void);
-void connection_listen_sockets_close (struct ice_config_tag *config, int all_sockets);
+void connection_listen_sockets_close (struct mc_config_tag *config, int all_sockets);
 
 #endif  /* __CONNECTION_H__ */

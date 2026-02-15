@@ -1,8 +1,12 @@
-/* Icecast
+/* Mcaster1DNAS - Digital Network Audio Server
+ *
+ * Based on Icecast-KH by Karl Heyes
+ * Based on Icecast2 by Xiph.Org Foundation
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
  *
+ * Copyright 2025-2026, Saint John (David St John) <davestj@gmail.com>
  * Copyright 2010-2022, Karl Heyes <karl@kheyes.plus.com>
  * Copyright 2000-2004, Jack Moffitt <jack@xiph.org>,
  *                      Michael Smith <msmith@xiph.org>,
@@ -15,19 +19,20 @@
 #define __GLOBAL_H__
 
 
-#define ICE_LISTEN_QUEUE 64
+#define MC_LISTEN_QUEUE 64
 
-#define ICE_RUNNING 1
-#define ICE_HALTING 2
+#define MC_RUNNING 1
+#define MC_HALTING 2
 
-#define ICECAST_VERSION_STRING "Icecast " PACKAGE_VERSION
+#define ICECAST_VERSION_STRING "Mcaster1DNAS " PACKAGE_VERSION
+#define MCASTER1_VERSION_STRING "Mcaster1DNAS " PACKAGE_VERSION
 
 #include <signal.h>
 #include "net/sock.h"
 #include "compat.h"
 #include "avl/avl.h"
 
-typedef struct ice_global_tag
+typedef struct mc_global_tag
 {
     int server_sockets;
     sock_t *serversock;
@@ -58,7 +63,7 @@ typedef struct ice_global_tag
     struct rate_calc *out_bitrate;
 
     rwlock_t workers_rw;
-} ice_global_t;
+} mc_global_t;
 
 extern unsigned int throttle_sends;
 
@@ -89,7 +94,7 @@ typedef struct {
 
 #endif
 
-extern ice_global_t global;
+extern mc_global_t global;
 
 void global_initialize(void);
 void global_shutdown(void);

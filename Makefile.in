@@ -109,7 +109,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = icecast.nsis
+CONFIG_CLEAN_FILES = mcaster1.nsis
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -200,8 +200,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/install-sh \
 	$(top_srcdir)/build-aux/ltmain.sh \
-	$(top_srcdir)/build-aux/missing AUTHORS COPYING NEWS README \
-	TODO build-aux/compile build-aux/config.guess \
+	$(top_srcdir)/build-aux/missing AUTHORS COPYING ChangeLog NEWS \
+	README TODO build-aux/compile build-aux/config.guess \
 	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
 	build-aux/ltmain.sh build-aux/missing config.sub
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -326,6 +326,9 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKGCONFIG = @PKGCONFIG@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
@@ -356,6 +359,8 @@ XIPH_CPPFLAGS = @XIPH_CPPFLAGS@
 XIPH_LDFLAGS = @XIPH_LDFLAGS@
 XIPH_LIBS = @XIPH_LIBS@
 XSLTCONFIG = @XSLTCONFIG@
+YAML_CFLAGS = @YAML_CFLAGS@
+YAML_LIBS = @YAML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -419,7 +424,7 @@ CLEANFILES = git_hash.h
 EXTRA_DIST = HACKING config.h.vc6 m4/acx_pthread.m4 m4/ogg.m4 \
     m4/theora.m4 m4/vorbis.m4 m4/speex.m4\
     m4/xiph_compiler.m4 m4/xiph_curl.m4 m4/xiph_net.m4 \
-    m4/xiph_types.m4 m4/xiph_xml2.m4 m4/xiph_openssl.m4 icecast.spec
+    m4/xiph_types.m4 m4/xiph_xml2.m4 m4/xiph_openssl.m4 mcaster1.spec
 
 doc_DATA = README AUTHORS COPYING NEWS TODO
 all: $(BUILT_SOURCES) config.h
@@ -474,7 +479,7 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-icecast.nsis: $(top_builddir)/config.status 
+mcaster1.nsis: $(top_builddir)/config.status 
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:

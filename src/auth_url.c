@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -23,26 +23,26 @@
  * For a user to be accecpted the following HTTP header needs
  * to be returned (the actual string can be specified in the xml file)
  *
- * icecast-auth-user: 1
+ * mcaster1-auth-user: 1
  *
  * A listening client may also be configured as only to stay connected for a
  * certain length of time. eg The auth server may only allow a 15 minute
  * playback by sending back.
  *
- * icecast-auth-timelimit: 900
+ * mcaster1-auth-timelimit: 900
  *
  * A listening client may be a slave relay and as such you may want it to avoid
- * certain checks like max listeners. Send this header back if to wish icecast
+ * certain checks like max listeners. Send this header back if to wish mcaster1
  * to treat the client as a slave relay.
  *
- * icecast-slave: 1
+ * mcaster1-slave: 1
  *
  * On client disconnection another request can be sent to a URL with the POST
  * information of
  *
  * action=listener_remove&server=host&port=8000&client=1&mount=/live&user=fred&pass=mypass&ip=127.0.0.1&duration=3600
  *
- * client refers to the icecast client identification number. mount refers
+ * client refers to the mcaster1 client identification number. mount refers
  * to the mountpoint (beginning with / and may contain query parameters eg ?&
  * encoded) and duration is the amount of time in seconds. user and pass
  * setting can be blank
@@ -288,13 +288,13 @@ static size_t handle_url_header (void *ptr, size_t size, size_t nmemb, void *str
             client->connection.discon.time = time(NULL) + limit;
             break;
         }
-        if (strncasecmp (header, "icecast-slave:", 14) == 0)
+        if (strncasecmp (header, "mcaster1-slave:", 14) == 0)
         {
             auth_user->flags |= CLIENT_IS_SLAVE;
             break;
         }
 
-        if (strncasecmp (header, "icecast-auth-message:", 21) == 0)
+        if (strncasecmp (header, "mcaster1-auth-message:", 21) == 0)
         {
             snprintf (atd->errormsg, sizeof (atd->errormsg), "%s", hvalue);
             break;
@@ -410,21 +410,21 @@ static auth_result url_remove_listener (auth_client *auth_user)
     } while (0);
     thread_mutex_unlock (&url->updating);
 
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", PARAM_AS,       "listener_remove");
-    ice_params_printf (&post, "server", 0,              "%s", auth_user->hostname);
-    ice_params_printf (&post, "port",   PARAM_AS,       "%d", auth_user->port);
-    ice_params_printf (&post, "client", PARAM_AS,       "%" PRIu64, client->connection.id);
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", PARAM_AS,       "listener_remove");
+    mc_params_printf (&post, "server", 0,              "%s", auth_user->hostname);
+    mc_params_printf (&post, "port",   PARAM_AS,       "%d", auth_user->port);
+    mc_params_printf (&post, "client", PARAM_AS,       "%" PRIu64, client->connection.id);
 
-    ice_params_printf (&post, "mount",  0,              "%s", auth_user->mount);
-    ice_params_printf (&post, "user",   0,              "%s", (client->username ? client->username : ""));
-    ice_params_printf (&post, "pass",   0,              "%s", (client->password ? client->password : ""));
-    ice_params_printf (&post, "ip",     0,              "%s", &client->connection.ip[0]);
-    ice_params_printf (&post, "duration", PARAM_AS,     "%" PRIu64, (uint64_t)duration);
-    ice_params_printf (&post, "agent",  0,              "%s", httpp_getvar (client->parser, "user-agent"));
-    ice_params_printf (&post, "sent",   PARAM_AS,       "%" PRIu64, client->connection.sent_bytes);
-    refbuf_t *rb = ice_params_complete (&post);
+    mc_params_printf (&post, "mount",  0,              "%s", auth_user->mount);
+    mc_params_printf (&post, "user",   0,              "%s", (client->username ? client->username : ""));
+    mc_params_printf (&post, "pass",   0,              "%s", (client->password ? client->password : ""));
+    mc_params_printf (&post, "ip",     0,              "%s", &client->connection.ip[0]);
+    mc_params_printf (&post, "duration", PARAM_AS,     "%" PRIu64, (uint64_t)duration);
+    mc_params_printf (&post, "agent",  0,              "%s", httpp_getvar (client->parser, "user-agent"));
+    mc_params_printf (&post, "sent",   PARAM_AS,       "%" PRIu64, client->connection.sent_bytes);
+    refbuf_t *rb = mc_params_complete (&post);
     if (rb == NULL) return AUTH_FAILED;
 
     if (strchr (url->listener_remove.url, '@') == NULL)
@@ -518,25 +518,25 @@ static auth_result url_add_listener (auth_client *auth_user)
     if (res)
         INFO2 ("restarting auth after timeout on %s, with client %" PRI_ConnID, auth_user->mount, CONN_ID(client));
 
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", PARAM_AS,       "listener_add");
-    ice_params_printf (&post, "port",   PARAM_AS,       "%d", auth_user->port);
-    ice_params_printf (&post, "client", PARAM_AS,       "%" PRIu64, client->connection.id);
-    ice_params_printf (&post, "server", 0,              "%s", auth_user->hostname);
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", PARAM_AS,       "listener_add");
+    mc_params_printf (&post, "port",   PARAM_AS,       "%d", auth_user->port);
+    mc_params_printf (&post, "client", PARAM_AS,       "%" PRIu64, client->connection.id);
+    mc_params_printf (&post, "server", 0,              "%s", auth_user->hostname);
 
     const char *tmp = httpp_getvar (client->parser, HTTPP_VAR_QUERYARGS);
-    ice_params_printf (&post, "mount",  0,      "%s%s", auth_user->mount, (tmp ? tmp : ""));
-    ice_params_printf (&post, "user",   0,      "%s",   (client->username ? client->username : ""));
-    ice_params_printf (&post, "pass",   0,      "%s",   (client->password ? client->password : ""));
-    ice_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
-    ice_params_printf (&post, "agent",  0,      "%s",   httpp_getvar (client->parser, "user-agent"));
+    mc_params_printf (&post, "mount",  0,      "%s%s", auth_user->mount, (tmp ? tmp : ""));
+    mc_params_printf (&post, "user",   0,      "%s",   (client->username ? client->username : ""));
+    mc_params_printf (&post, "pass",   0,      "%s",   (client->password ? client->password : ""));
+    mc_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
+    mc_params_printf (&post, "agent",  0,      "%s",   httpp_getvar (client->parser, "user-agent"));
 
     tmp = httpp_getvar (client->parser, "referer");
-    ice_params_printf (&post, "referer", 0,     "%s", (tmp ? tmp : ""));
+    mc_params_printf (&post, "referer", 0,     "%s", (tmp ? tmp : ""));
 
     char *listeners = stats_get_value (auth_user->mount, "listeners");
-    ice_params_printf (&post, "listeners", PARAM_AS,    "%s", (listeners ? listeners : ""));
+    mc_params_printf (&post, "listeners", PARAM_AS,    "%s", (listeners ? listeners : ""));
     free (listeners);
 
     char *cur_header = url->header_chk_list;
@@ -548,11 +548,11 @@ static auth_result url_add_listener (auth_client *auth_user)
             char name[200];
             int r = snprintf (name, sizeof name, "%s%s", url->header_chk_prefix, cur_header);
             if (r > 0 && r < sizeof name)
-                ice_params_printf (&post, name, 0, "%s", val);
+                mc_params_printf (&post, name, 0, "%s", val);
         }
         cur_header += (strlen(cur_header) + 1); // get past next nul
     }
-    refbuf_t *rb = ice_params_complete (&post);
+    refbuf_t *rb = mc_params_complete (&post);
     if (rb == NULL) return AUTH_FAILED;
 
     if (strchr (url->listener_add.url, '@') == NULL)
@@ -671,15 +671,15 @@ static void url_stream_start (auth_client *auth_user)
     auth_url *url = auth_user->auth->state;
     auth_thread_data *atd = auth_user->thread_data;
 
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", 0,              "mount_add");
-    ice_params_printf (&post, "mount",  0,              "%s",   auth_user->mount);
-    ice_params_printf (&post, "server", 0,              "%s",   auth_user->hostname);
-    ice_params_printf (&post, "port",   PARAM_AS,       "%d",   auth_user->port);
-    ice_params_printf (&post, "ip",     0,              "%s",   &client->connection.ip[0]);
-    ice_params_printf (&post, "agent",  0,              "%s",   client->aux_data ? (char*)client->aux_data : "");
-    refbuf_t *rb = ice_params_complete (&post);
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", 0,              "mount_add");
+    mc_params_printf (&post, "mount",  0,              "%s",   auth_user->mount);
+    mc_params_printf (&post, "server", 0,              "%s",   auth_user->hostname);
+    mc_params_printf (&post, "port",   PARAM_AS,       "%d",   auth_user->port);
+    mc_params_printf (&post, "ip",     0,              "%s",   &client->connection.ip[0]);
+    mc_params_printf (&post, "agent",  0,              "%s",   client->aux_data ? (char*)client->aux_data : "");
+    refbuf_t *rb = mc_params_complete (&post);
     if (rb == NULL) return;
 
     if (strchr (url->mount_add.url, '@') == NULL)
@@ -712,15 +712,15 @@ static void url_stream_end (auth_client *auth_user)
     auth_url *url = auth_user->auth->state;
     auth_thread_data *atd = auth_user->thread_data;
 
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", 0,      "mount_remove");
-    ice_params_printf (&post, "mount",  0,      "%s",   auth_user->mount);
-    ice_params_printf (&post, "server", 0,      "%s",   auth_user->hostname);
-    ice_params_printf (&post, "port",   0,      "%d",   auth_user->port);
-    ice_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
-    ice_params_printf (&post, "agent",  0,      "%s",   client->aux_data ? (char*)client->aux_data : "");
-    refbuf_t *rb = ice_params_complete (&post);
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", 0,      "mount_remove");
+    mc_params_printf (&post, "mount",  0,      "%s",   auth_user->mount);
+    mc_params_printf (&post, "server", 0,      "%s",   auth_user->hostname);
+    mc_params_printf (&post, "port",   0,      "%d",   auth_user->port);
+    mc_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
+    mc_params_printf (&post, "agent",  0,      "%s",   client->aux_data ? (char*)client->aux_data : "");
+    refbuf_t *rb = mc_params_complete (&post);
     if (rb == NULL) return;
 
     if (strchr (url->mount_remove.url, '@') == NULL)
@@ -767,18 +767,18 @@ static void url_stream_auth (auth_client *auth_user)
     curl_easy_setopt (atd->curl, CURLOPT_WRITEHEADER, auth_user);
     curl_easy_setopt (atd->curl, CURLOPT_WRITEDATA, auth_user);
 
-    ice_params_t post;
-    ice_params_setup (&post, "=", "&", PARAMS_ESC);
-    ice_params_printf (&post, "action", 0,      "stream_auth");
-    ice_params_printf (&post, "mount",  0,      "%s",   auth_user->mount);
-    ice_params_printf (&post, "server", 0,      "%s",   auth_user->hostname);
-    ice_params_printf (&post, "port",   PARAM_AS,  "%d",   auth_user->port);
-    ice_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
-    ice_params_printf (&post, "user",   0,      "%s",   (client->username ? client->username : ""));
-    ice_params_printf (&post, "pass",   0,      "%s",   (client->password ? client->password : ""));
+    mc_params_t post;
+    mc_params_setup (&post, "=", "&", PARAMS_ESC);
+    mc_params_printf (&post, "action", 0,      "stream_auth");
+    mc_params_printf (&post, "mount",  0,      "%s",   auth_user->mount);
+    mc_params_printf (&post, "server", 0,      "%s",   auth_user->hostname);
+    mc_params_printf (&post, "port",   PARAM_AS,  "%d",   auth_user->port);
+    mc_params_printf (&post, "ip",     0,      "%s",   &client->connection.ip[0]);
+    mc_params_printf (&post, "user",   0,      "%s",   (client->username ? client->username : ""));
+    mc_params_printf (&post, "pass",   0,      "%s",   (client->password ? client->password : ""));
     if (strcmp (auth_user->mount, httpp_getvar (client->parser, HTTPP_VAR_URI)) != 0)
-        adm = ice_params_printf (&post, "admin", PARAM_AS,  "1") < 0 ? 0 : 1;
-    refbuf_t *rb = ice_params_complete (&post);
+        adm = mc_params_printf (&post, "admin", PARAM_AS,  "1") < 0 ? 0 : 1;
+    refbuf_t *rb = mc_params_complete (&post);
     if (rb == NULL) return;
 
     curl_easy_setopt (atd->curl, CURLOPT_POSTFIELDS, rb->data);
@@ -812,7 +812,7 @@ static auth_result auth_url_listuser (auth_t *auth, xmlNodePtr srcnode)
 static void *alloc_thread_data (auth_t *auth)
 {
     auth_thread_data *atd = calloc (1, sizeof (auth_thread_data));
-    ice_config_t *config = config_get_config_unlocked();
+    mc_config_t *config = config_get_config_unlocked();
     auth_url *url = auth->state;
     atd->server_id = strdup (config->server_id);
 
@@ -881,8 +881,8 @@ int auth_get_url_auth (auth_t *authenticator, config_options_t *options)
     authenticator->release_thread_data = release_thread_data;
 
     url_info = calloc(1, sizeof(auth_url));
-    url_info->auth_header = strdup ("icecast-auth-user:");
-    url_info->timelimit_header = strdup ("icecast-auth-timelimit:");
+    url_info->auth_header = strdup ("mcaster1-auth-user:");
+    url_info->timelimit_header = strdup ("mcaster1-auth-timelimit:");
     url_info->header_chk_prefix = strdup ("ClientHeader-");
     url_info->redir_limit = 1;
     thread_mutex_create (&url_info->updating);

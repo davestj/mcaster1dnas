@@ -1,0 +1,286 @@
+[2026-02-14  16:05:22] INFO thread/ lock abort set to 0
+[2026-02-14  16:05:22] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/logs/access.log
+[2026-02-14  16:05:22] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from conf/mcaster1-test.xml
+[2026-02-14  16:05:22] INFO connection/get_ssl_certificate No SSL capability on any configured ports
+[2026-02-14  16:05:22] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  16:05:22] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  16:05:22] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  16:05:22] INFO fserve/fserve_initialize file serving started
+[2026-02-14  16:05:22] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-14  16:05:22] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-14  16:05:22] INFO client/log_commit_thread started
+[2026-02-14  16:05:22] INFO client/workers_adjust requested worker count 1
+[2026-02-14  16:05:22] INFO client/worker_start starting incoming worker thread 0x55a57bd420c0
+[2026-02-14  16:05:22] INFO connection/connection_thread connection thread started
+[2026-02-14  16:06:26] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:06:26] INFO admin/admin_handle_general_request processing file stats
+[2026-02-14  16:10:22] INFO connection/connection_thread connection thread finished
+[2026-02-14  16:10:22] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  16:10:22] INFO slave/_slave_thread shutting down current relays
+[2026-02-14  16:10:22] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-14  16:10:22] INFO client/workers_adjust requested worker count 0
+[2026-02-14  16:10:22] INFO client/worker shutting down
+[2026-02-14  16:10:22] INFO client/worker_stop stopping incoming worker thread
+[2026-02-14  16:10:22] INFO client/worker shutting down
+[2026-02-14  16:10:22] INFO main/server_process Shutting down
+[2026-02-14  16:10:22] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-14  16:10:22] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  16:10:22] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  16:10:22] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-14  16:10:22] INFO fserve/fserve_shutdown file serving stopped
+[2026-02-14  16:13:56] INFO thread/ lock abort set to 0
+[2026-02-14  16:13:56] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/logs/access.log
+[2026-02-14  16:13:56] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from conf/mcaster1-test.xml
+[2026-02-14  16:13:56] INFO connection/get_ssl_certificate No SSL capability on any configured ports
+[2026-02-14  16:13:56] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  16:13:56] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  16:13:56] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  16:13:56] INFO fserve/fserve_initialize file serving started
+[2026-02-14  16:13:56] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-14  16:13:56] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-14  16:13:56] INFO client/workers_adjust requested worker count 1
+[2026-02-14  16:13:56] INFO client/worker_start starting incoming worker thread 0x557b8177a0c0
+[2026-02-14  16:13:56] INFO client/log_commit_thread started
+[2026-02-14  16:13:56] INFO connection/connection_thread connection thread started
+[2026-02-14  16:14:04] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:14:04] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  16:14:04] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  16:14:04] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-14  16:14:04] INFO fserve/open_fh lookup of "/images/mcaster1.png"
+[2026-02-14  16:14:04] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  16:14:36] INFO connection/connection_thread connection thread finished
+[2026-02-14  16:14:37] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  16:14:37] INFO slave/_slave_thread shutting down current relays
+[2026-02-14  16:14:37] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-14  16:14:37] INFO client/workers_adjust requested worker count 0
+[2026-02-14  16:14:37] INFO client/worker shutting down
+[2026-02-14  16:14:37] INFO client/worker_stop stopping incoming worker thread
+[2026-02-14  16:14:37] INFO client/worker shutting down
+[2026-02-14  16:14:37] INFO main/server_process Shutting down
+[2026-02-14  16:14:37] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-14  16:14:37] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  16:14:37] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  16:14:37] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-14  16:14:37] INFO fserve/fserve_shutdown file serving stopped
+[2026-02-14  16:14:54] INFO thread/ lock abort set to 0
+[2026-02-14  16:14:54] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/logs/access.log
+[2026-02-14  16:14:54] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from conf/mcaster1-test.xml
+[2026-02-14  16:14:54] INFO connection/get_ssl_certificate SSL certificate found at /var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem
+[2026-02-14  16:14:54] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-14  16:14:54] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  16:14:54] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  16:14:54] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  16:14:54] INFO fserve/fserve_initialize file serving started
+[2026-02-14  16:14:54] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-14  16:14:54] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-14  16:14:54] INFO client/workers_adjust requested worker count 1
+[2026-02-14  16:14:54] INFO client/log_commit_thread started
+[2026-02-14  16:14:54] INFO client/worker_start starting incoming worker thread 0x559e24c75790
+[2026-02-14  16:14:54] INFO connection/connection_thread connection thread started
+[2026-02-14  16:14:58] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:14:58] INFO admin/admin_handle_general_request processing file stats
+[2026-02-14  16:15:10] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  16:15:10] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  16:15:10] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-14  16:15:11] INFO fserve/open_fh lookup of "/images/mcaster1.png"
+[2026-02-14  16:15:11] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  16:15:33] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  16:15:33] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  16:15:33] INFO admin/admin_handle_general_request Bad or missing password on admin command request (stats.xsl)
+[2026-02-14  16:15:37] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  16:15:37] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-14  16:20:32] INFO connection/connection_thread connection thread finished
+[2026-02-14  16:20:32] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  16:20:32] INFO slave/_slave_thread shutting down current relays
+[2026-02-14  16:20:32] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-14  16:20:32] INFO client/workers_adjust requested worker count 0
+[2026-02-14  16:20:32] INFO client/worker shutting down
+[2026-02-14  16:20:32] INFO client/worker_stop stopping incoming worker thread
+[2026-02-14  16:20:32] INFO client/worker shutting down
+[2026-02-14  16:20:32] INFO main/server_process Shutting down
+[2026-02-14  16:20:32] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-14  16:20:32] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  16:20:32] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  16:20:32] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-14  16:20:32] INFO fserve/fserve_shutdown file serving stopped
+[2026-02-14  16:43:17] INFO thread/ lock abort set to 0
+[2026-02-14  16:43:17] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/logs/access.log
+[2026-02-14  16:43:17] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from conf/mcaster1-test.xml
+[2026-02-14  16:43:17] INFO connection/get_ssl_certificate SSL certificate found at /var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem
+[2026-02-14  16:43:17] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-14  16:43:17] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  16:43:17] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  16:43:17] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  16:43:17] INFO fserve/fserve_initialize file serving started
+[2026-02-14  16:43:17] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-14  16:43:17] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-14  16:43:17] INFO client/workers_adjust requested worker count 1
+[2026-02-14  16:43:17] INFO client/worker_start starting incoming worker thread 0x5630c65c4790
+[2026-02-14  16:43:17] INFO client/log_commit_thread started
+[2026-02-14  16:43:17] INFO connection/connection_thread connection thread started
+[2026-02-14  16:43:28] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:43:28] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  16:43:28] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  16:43:28] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-14  16:43:28] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  16:43:34] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/server_version.xsl
+[2026-02-14  16:43:42] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  16:43:42] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  16:43:42] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  16:43:42] INFO admin/admin_handle_general_request Bad or missing password on admin command request (stats.xsl)
+[2026-02-14  16:43:42] INFO fserve/open_fh lookup of "/images/mcaster1.png"
+[2026-02-14  16:43:48] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  16:43:48] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-14  16:43:48] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:43:50] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-14  16:43:50] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:43:50] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-14  16:43:52] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl
+[2026-02-14  16:43:53] INFO event/event_config_read Re-reading XML
+[2026-02-14  16:43:53] WARN xml/parsing warning: 
+[2026-02-14  16:43:53] WARN xml/parsing unknown node "ssl" parsing "listen-socket" at line 67
+[2026-02-14  16:43:53] INFO thread/ lock abort set to 0
+[2026-02-14  16:43:53] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  16:43:53] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  16:43:53] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/logs.xsl
+[2026-02-14  16:43:53] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  16:43:53] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/showlog.xsl
+[2026-02-14  16:43:53] INFO connection/connection_thread connection thread finished
+[2026-02-14  16:43:53] INFO client/workers_adjust requested worker count 1
+[2026-02-14  16:43:53] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  16:43:53] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  16:43:53] INFO connection/get_ssl_certificate SSL certificate found at /var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem
+[2026-02-14  16:43:53] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-14  16:43:53] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  16:43:53] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  16:43:53] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  16:43:53] INFO connection/connection_thread connection thread started
+[2026-02-14  16:43:54] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:43:54] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  16:43:54] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  16:54:30] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  16:56:20] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  16:56:20] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  16:56:20] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  16:56:20] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  16:56:21] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:56:21] INFO fserve/open_fh lookup of "/images/mcaster1.png"
+[2026-02-14  16:56:21] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  16:56:23] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  16:56:23] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:56:44] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  16:56:44] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:56:45] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  16:56:48] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  16:56:48] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  16:56:50] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  16:56:50] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  16:56:50] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  16:56:54] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  16:56:55] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  17:10:56] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  17:10:56] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  17:10:56] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  17:10:56] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  17:11:02] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  17:11:02] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  17:11:02] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  17:11:02] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  17:11:02] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:11:02] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:11:08] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  17:11:08] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:11:12] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/server_version.xsl
+[2026-02-14  17:11:45] INFO connection/connection_thread connection thread finished
+[2026-02-14  17:11:45] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  17:11:45] INFO slave/_slave_thread shutting down current relays
+[2026-02-14  17:11:45] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-14  17:11:45] INFO client/workers_adjust requested worker count 0
+[2026-02-14  17:11:45] INFO client/worker shutting down
+[2026-02-14  17:11:45] INFO client/worker_stop stopping incoming worker thread
+[2026-02-14  17:11:45] INFO client/worker shutting down
+[2026-02-14  17:11:45] INFO main/server_process Shutting down
+[2026-02-14  17:11:45] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-14  17:11:45] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  17:11:45] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  17:11:45] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-14  17:11:45] INFO fserve/fserve_shutdown file serving stopped
+[2026-02-14  17:11:47] INFO thread/ lock abort set to 0
+[2026-02-14  17:11:47] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/logs/access.log
+[2026-02-14  17:11:47] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from conf/mcaster1-test.xml
+[2026-02-14  17:11:47] INFO connection/get_ssl_certificate SSL certificate found at /var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem
+[2026-02-14  17:11:47] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-14  17:11:47] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  17:11:47] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  17:11:47] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  17:11:47] INFO fserve/fserve_initialize file serving started
+[2026-02-14  17:11:47] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-14  17:11:47] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-14  17:11:47] INFO client/workers_adjust requested worker count 1
+[2026-02-14  17:11:47] INFO client/worker_start starting incoming worker thread 0x564f6e4db790
+[2026-02-14  17:11:47] INFO client/log_commit_thread started
+[2026-02-14  17:11:47] INFO connection/connection_thread connection thread started
+[2026-02-14  17:11:53] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  17:11:53] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  17:11:53] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  17:11:53] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-14  17:11:54] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-14  17:11:58] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  17:11:58] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  17:11:58] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  17:11:58] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  17:11:58] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-14  17:11:58] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:11:58] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:12:11] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  17:12:11] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/logs.xsl
+[2026-02-14  17:12:11] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  17:12:11] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/showlog.xsl
+[2026-02-14  17:12:13] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-14  17:12:14] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-14  17:12:14] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:12:16] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-14  17:12:16] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:12:19] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl
+[2026-02-14  17:12:19] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:12:19] INFO event/event_config_read Re-reading XML
+[2026-02-14  17:12:19] WARN xml/parsing warning: 
+[2026-02-14  17:12:19] WARN xml/parsing unknown node "ssl" parsing "listen-socket" at line 67
+[2026-02-14  17:12:19] INFO thread/ lock abort set to 0
+[2026-02-14  17:12:19] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  17:12:19] INFO connection/connection_thread connection thread finished
+[2026-02-14  17:12:19] INFO client/workers_adjust requested worker count 1
+[2026-02-14  17:12:19] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  17:12:19] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  17:12:19] INFO connection/get_ssl_certificate SSL certificate found at /var/www/mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem
+[2026-02-14  17:12:19] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-14  17:12:19] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-14  17:12:19] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-14  17:12:19] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-14  17:12:19] INFO connection/connection_thread connection thread started
+[2026-02-14  17:12:20] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-14  17:12:21] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:12:22] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  17:12:22] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  17:12:23] INFO fserve/open_fh lookup of "/index.html"
+[2026-02-14  17:12:23] INFO fserve/open_fh lookup of "/mcaster1-modern.css"
+[2026-02-14  17:12:23] INFO fserve/open_fh lookup of "/statusbar.html"
+[2026-02-14  17:12:26] INFO fserve/open_fh lookup of "/admin.html"
+[2026-02-14  17:12:27] INFO fserve/open_fh lookup of "/adminbar.html"
+[2026-02-14  17:12:27] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-14  17:12:27] WARN admin/command_list_log request to show unknown log "playlistlog"
+[2026-02-14  17:12:27] INFO admin/admin_handle_general_request processing file mcaster1-modern.css
+[2026-02-14  17:13:12] INFO connection/connection_thread connection thread finished
+[2026-02-14  17:13:12] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-14  17:13:12] INFO slave/_slave_thread shutting down current relays
+[2026-02-14  17:13:12] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-14  17:13:12] INFO client/workers_adjust requested worker count 0
+[2026-02-14  17:13:12] INFO client/worker shutting down
+[2026-02-14  17:13:12] INFO client/worker_stop stopping incoming worker thread
+[2026-02-14  17:13:12] INFO client/worker shutting down
+[2026-02-14  17:13:12] INFO main/server_process Shutting down
+[2026-02-14  17:13:12] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-14  17:13:12] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-14  17:13:12] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-14  17:13:12] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-14  17:13:12] INFO fserve/fserve_shutdown file serving stopped

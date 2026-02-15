@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -125,7 +125,7 @@ void fserve_initialize(void)
 {
     if (fserve_running) return;
 
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
 
     mimetypes = NULL;
     thread_mutex_create (&pending_lock);
@@ -502,7 +502,7 @@ int fserve_client_create (client_t *httpclient, const char *path)
     int m3u_requested = 0, m3u_file_available = 1;
     int xspf_requested = 0, xspf_file_available = 1;
     int ret = -1;
-    ice_config_t *config;
+    mc_config_t *config;
     fbinfo finfo;
 
     config = config_get_config();
@@ -613,7 +613,7 @@ static void file_release (client_t *client)
             m = fh->finfo.mount;
         if (m)
         {
-            ice_config_t *config;
+            mc_config_t *config;
             char *mount = strdup (m);
             mount_proxy *mountinfo;
 
@@ -1001,7 +1001,7 @@ int fserve_setup_client_fb (client_t *client, fbinfo *finfo)
             break;
         client->connection.discon.sent -= client->connection.start_pos;
 
-        ice_http_t http = ICE_HTTP_INIT;
+        mc_http_t http = MC_HTTP_INIT;
         http.in_length = client->connection.discon.sent;
         if (fh->finfo.limit)
             client->flags &= ~CLIENT_KEEPALIVE; // file loops so drop keep alive
@@ -1017,7 +1017,7 @@ int fserve_setup_client_fb (client_t *client, fbinfo *finfo)
                 client->check_buffer = fh->format->write_buf_to_client;
             ret = 0;
         }
-        ice_http_complete (&http);
+        mc_http_complete (&http);
     } while (0);
     if (ret < 0)
     {
@@ -1042,10 +1042,10 @@ int fserve_setup_client_fb (client_t *client, fbinfo *finfo)
 }
 
 
-int client_http_send (ice_http_t *http)
+int client_http_send (mc_http_t *http)
 {
     client_t *client = http->client;
-    ice_http_complete (http);
+    mc_http_complete (http);
     return fserve_setup_client (client);
 }
 
@@ -1155,7 +1155,7 @@ void fserve_write_mime_ext (const char *mimetype, char *buf, unsigned int len)
 }
 
 
-void fserve_recheck_mime_types (ice_config_t *config)
+void fserve_recheck_mime_types (mc_config_t *config)
 {
     mime_type *mapping;
     int i;
@@ -1362,7 +1362,7 @@ int fserve_list_clients (client_t *client, const char *mount, int response, int 
     finfo.override = NULL;
 
     doc = xmlNewDoc(XMLSTR("1.0"));
-    node = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+    node = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
     xmlDocSetRootElement(doc, node);
     srcnode = xmlNewChild(node, NULL, XMLSTR("source"), NULL);
     xmlSetProp(srcnode, XMLSTR("mount"), XMLSTR(mount));
@@ -1463,7 +1463,7 @@ void fserve_scan (time_t now)
     avl_node *node;
 
     global_lock();
-    if (global.running != ICE_RUNNING)
+    if (global.running != MC_RUNNING)
         now = (time_t)0;
     global_unlock();
 

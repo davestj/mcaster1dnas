@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; -*- */
 /* sock.c: General Socket Functions
  *
- * Copyright (c) 1999 the icecast team
+ * Copyright (c) 1999 the mcaster1 team
  * Copyright (c) 2010-2023 Karl Heyes <karl@kheyes.plus.com>
  *
  *  This library is free software; you can redistribute it and/or

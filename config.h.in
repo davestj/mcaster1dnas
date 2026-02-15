@@ -252,6 +252,9 @@
 /* Define to 1 if you have the `xsltSaveResultToString' function. */
 #undef HAVE_XSLTSAVERESULTTOSTRING
 
+/* Define if libyaml is available */
+#undef HAVE_YAML
+
 /* "Character set for ICY metadata" */
 #undef ICY_DEFAULT_CHARSET
 

@@ -1,0 +1,281 @@
+Mcaster1DNAS 2.5.0 - README
+=====================================================================
+
+Mcaster1DNAS is a streaming media server which currently supports Ogg
+Vorbis, Opus, MP3, AAC, FLAC, and other audio formats. It can be used
+to create an Internet radio station or a privately running jukebox and
+many things in between. It is very versatile in that new formats can be
+added relatively easily and supports open standards for communication
+and interaction.
+
+Based on Icecast-KH by Karl Heyes, Mcaster1DNAS extends the original
+Icecast2 with advanced features, modern UI, and enhanced functionality.
+
+Mcaster1DNAS is distributed under the GNU GPL, version 2. A copy of
+this license is included with this software in the COPYING file.
+
+NEW IN VERSION 2.5.0
+=====================================================================
+
+✨ YAML Configuration Support
+  - Modern, human-readable alternative to XML
+  - Automatic format detection (XML vs YAML)
+  - Complete feature parity with XML
+  - Four comprehensive templates provided
+  - See YAML_IMPLEMENTATION.md for details
+
+✨ YP Connection Logging
+  - Per-YP-server logging for debugging directory issues
+  - Optional yp-logfile parameter in configurations
+  - Detailed transaction logs with timestamps
+  - See YP_LOGGING_FEATURE.md for details
+
+✨ Tabbed Admin Logs Interface
+  - Modern tabbed design for log viewing
+  - Access, Error, Playlist, and YP Connection logs
+  - Clean UI with helpful descriptions
+  - Session persistence
+
+Prerequisites
+=====================================================================
+Mcaster1DNAS requires the following packages:
+
+Required:
+* libxml2 >= 2.7 - http://xmlsoft.org/downloads.html
+* libxslt >= 1.1 - http://xmlsoft.org/XSLT/downloads.html
+* curl >= 7.10 - http://curl.haxx.se/download.html
+  NOTE: Mcaster1DNAS may be compiled without curl, however this will
+        disable all Directory server interaction (YP).
+* ogg/vorbis >= 1.0 - http://www.vorbis.com/files
+
+Optional:
+* libyaml >= 0.1.7 - YAML configuration support
+  Debian/Ubuntu: apt-get install libyaml-dev
+  RHEL/CentOS:   yum install libyaml-devel
+
+* OpenSSL >= 1.0 - HTTPS/SSL support
+  Most Linux distributions include OpenSSL by default
+
+A Note About Package Management
+=====================================================================
+If your operating system uses package managers (apt, yum, dnf, etc.):
+
+You will need to install the "development" or "devel" packages for
+each prerequisite in addition to the normal packages.
+
+Example on Debian/Ubuntu:
+  sudo apt-get install libxml2-dev libxslt1-dev libcurl4-openssl-dev \
+                       libvorbis-dev libyaml-dev libssl-dev
+
+Example on RHEL/CentOS:
+  sudo yum install libxml2-devel libxslt-devel curl-devel \
+                   libvorbis-devel libyaml-devel openssl-devel
+
+Build/Install
+=====================================================================
+To build Mcaster1DNAS on a Unix platform:
+
+Standard Build:
+   ./autogen.sh
+   ./configure
+   make
+   make install
+
+Build with YAML and SSL support (recommended):
+   ./autogen.sh
+   ./configure --with-yaml --with-openssl
+   make
+   make install
+
+Build with custom prefix:
+   ./configure --prefix=/usr/local/mcaster1dnas \
+               --with-yaml --with-openssl
+   make
+   make install
+
+Configure Options:
+  --with-yaml       Enable YAML configuration support (requires libyaml)
+  --with-openssl    Enable SSL/HTTPS support (requires OpenSSL)
+  --prefix=PATH     Installation directory (default: /usr/local)
+
+Configuration
+=====================================================================
+
+Sample configuration files are installed in:
+  - /usr/local/etc/mcaster1.xml (XML format - traditional)
+  - /usr/local/share/mcaster1/ (YAML templates)
+
+YAML Templates Provided:
+  - mcaster1.yaml.in               - Comprehensive template (recommended)
+  - mcaster1_minimal.yaml.in       - Minimal configuration
+  - mcaster1_shoutcast_compat.yaml.in - Shoutcast DSP compatibility
+  - mcaster1_advanced.yaml.in      - All advanced features
+
+Starting the Server:
+
+With XML config:
+   mcaster1 -c /etc/mcaster1.xml
+
+With YAML config:
+   mcaster1 -c /etc/mcaster1.yaml
+
+The server automatically detects whether your config is XML or YAML!
+
+YP Directory Logging (NEW):
+
+To enable YP connection logging for debugging directory listing issues:
+
+YAML format:
+   directories:
+     - yp-url: "http://dir.example.com/yp"
+       yp-logfile: "/var/log/mcaster1/yp.log"
+
+XML format:
+   <directory>
+       <yp-url>http://dir.example.com/yp</yp-url>
+       <yp-logfile>/var/log/mcaster1/yp.log</yp-logfile>
+   </directory>
+
+Admin Interface
+=====================================================================
+Access the web admin interface at:
+   http://your-server:port/admin/
+
+Default credentials (CHANGE THESE!):
+   Username: admin
+   Password: hackme
+
+Features:
+   - Real-time statistics dashboard
+   - Mount point management
+   - Listener management
+   - Relay configuration
+   - Tabbed log viewer (Access, Error, Playlist, YP)
+   - Modern UI with live updates
+
+Documentation
+=====================================================================
+Comprehensive documentation is available in the doc/ directory.
+
+View in browser:
+   doc/index.html
+
+Additional documentation:
+   - YAML_IMPLEMENTATION.md - YAML configuration guide
+   - YP_LOGGING_FEATURE.md  - YP logging feature documentation
+   - YAML_TEST_REPORT.txt   - Production testing verification
+   - ChangeLog              - Version history and changes
+   - TODO                   - Planned features and roadmap
+
+Support
+=====================================================================
+For help, questions, or to report issues:
+
+   Email:   mcaster1@xiph.org
+   IRC:     irc.freenode.net #mcaster1
+   GitHub:  https://github.com/mcaster1/mcaster1dnas (if available)
+
+When reporting issues, please include:
+   - Mcaster1DNAS version (mcaster1 -v)
+   - Operating system and version
+   - Configuration file (sanitized - remove passwords!)
+   - Relevant log entries from error.log
+
+Quick Start Guide
+=====================================================================
+
+1. Install Prerequisites:
+   apt-get install libxml2-dev libxslt1-dev libcurl4-openssl-dev \
+                   libvorbis-dev libyaml-dev libssl-dev
+
+2. Build and Install:
+   ./autogen.sh
+   ./configure --with-yaml --with-openssl
+   make
+   sudo make install
+
+3. Copy Configuration Template:
+   cp conf/mcaster1.yaml.in /etc/mcaster1.yaml
+
+4. Edit Configuration:
+   vi /etc/mcaster1.yaml
+   # Set hostname, passwords, ports, etc.
+
+5. Create Log Directory:
+   mkdir -p /var/log/mcaster1
+   chown mcaster1:mcaster1 /var/log/mcaster1
+
+6. Start Server:
+   mcaster1 -c /etc/mcaster1.yaml
+
+7. Test in Browser:
+   http://your-server:8000/status.xsl
+
+8. Access Admin:
+   http://your-server:8000/admin/
+
+Security Notes
+=====================================================================
+
+IMPORTANT SECURITY STEPS:
+
+1. Change ALL default passwords in your configuration:
+   - admin-password
+   - source-password
+   - relay-password
+
+2. Use HTTPS for admin interface (configure SSL certificate)
+
+3. Restrict admin access by IP if possible
+
+4. Keep your server and dependencies updated
+
+5. Review and customize authentication settings
+
+6. Consider running server as non-root user (recommended)
+
+7. Enable firewall rules to limit access
+
+Performance Tips
+=====================================================================
+
+For high-traffic servers:
+
+1. Increase system limits:
+   - File descriptors (ulimit -n)
+   - TCP buffer sizes
+
+2. Configure appropriate worker count:
+   workers: 2-4 (based on CPU cores)
+
+3. Adjust queue and burst sizes:
+   queue-size: 524288
+   burst-size: 65536
+
+4. Enable bandwidth limiting per mount if needed
+
+5. Monitor logs for performance issues
+
+6. Consider using a CDN for high listener counts
+
+License
+=====================================================================
+GNU General Public License, version 2
+
+See COPYING file for full license text.
+
+Credits
+=====================================================================
+Mcaster1DNAS is based on:
+   - Icecast-KH by Karl Heyes
+   - Icecast2 by Xiph.Org Foundation
+
+See AUTHORS file for contributor list.
+
+Version Information
+=====================================================================
+Current Version: 2.5.0
+Release Date: February 14, 2026
+Status: Production Ready
+
+For version history, see ChangeLog.

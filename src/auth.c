@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -119,7 +119,7 @@ void auth_check_http (client_t *client)
 
 static auth_client *auth_client_setup (const char *mount, client_t *client)
 {
-    ice_config_t *config = config_get_config_unlocked();
+    mc_config_t *config = config_get_config_unlocked();
     auth_client *auth_user = calloc (1, sizeof(auth_client));
 
     auth_user->mount = strdup (mount);
@@ -930,7 +930,7 @@ void auth_stream_end (mount_proxy *mountinfo, source_t *source)
  */
 int auth_check_source (client_t *client, const char *mount)
 {
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     char *pass = config->source_password;
     char *user = "source";
     int ret = -1;

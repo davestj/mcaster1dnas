@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -28,6 +28,9 @@
 #include "thread/thread.h"
 #include "timing/timing.h"
 #include "cfgfile.h"
+#ifdef HAVE_YAML
+#include "cfgfile_yaml.h"
+#endif
 #include "refbuf.h"
 #include "client.h"
 #include "params.h"
@@ -37,7 +40,7 @@
 
 #define CATMODULE "cfgfile"
 #define CONFIG_DEFAULT_LOCATION "Earth"
-#define CONFIG_DEFAULT_ADMIN "icemaster@localhost"
+#define CONFIG_DEFAULT_ADMIN "admin@mcaster1.com"
 #define CONFIG_DEFAULT_CLIENT_LIMIT 256
 #define CONFIG_DEFAULT_SOURCE_LIMIT 16
 #define CONFIG_DEFAULT_QUEUE_SIZE_LIMIT (500*1024)
@@ -64,10 +67,10 @@
 #define CONFIG_DEFAULT_CIPHER_LIST "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA"
 
 #ifndef _WIN32
-#define CONFIG_DEFAULT_BASE_DIR "/usr/local/icecast"
-#define CONFIG_DEFAULT_LOG_DIR "/usr/local/icecast/logs"
-#define CONFIG_DEFAULT_WEBROOT_DIR "/usr/local/icecast/webroot"
-#define CONFIG_DEFAULT_ADMINROOT_DIR "/usr/local/icecast/admin"
+#define CONFIG_DEFAULT_BASE_DIR "/usr/local/mcaster1"
+#define CONFIG_DEFAULT_LOG_DIR "/usr/local/mcaster1/logs"
+#define CONFIG_DEFAULT_WEBROOT_DIR "/usr/local/mcaster1/webroot"
+#define CONFIG_DEFAULT_ADMINROOT_DIR "/usr/local/mcaster1/admin"
 #define MIMETYPESFILE "/etc/mime.types"
 #else
 #define CONFIG_DEFAULT_BASE_DIR ".\\"
@@ -79,11 +82,11 @@
 #define MIMETYPESFILE ".\\mime.types"
 #endif
 
-static ice_config_t _current_configuration;
-static ice_config_locks _locks;
+static mc_config_t _current_configuration;
+static mc_config_locks _locks;
 uint64_t config_updated = (uint64_t)0;
 
-static void _set_defaults(ice_config_t *c);
+static void _set_defaults(mc_config_t *c);
 
 static void create_locks(void)
 {
@@ -102,7 +105,7 @@ typedef struct
     xmlNodePtr parent, node;
     xmlChar *val;
     unsigned int flags;
-    ice_config_t *config;
+    mc_config_t *config;
 } cfg_xml;
 
 #define CFGXML_CHECK_NODE       (1<<0)
@@ -110,7 +113,6 @@ typedef struct
 
 
 static int  _parse_root (cfg_xml *cfg, void *p);
-static aliases* config_clear_alias (aliases *alias);
 
 /*
  */
@@ -458,9 +460,9 @@ void config_shutdown(void)
     }
 }
 
-void config_init_configuration(ice_config_t *configuration)
+void config_init_configuration(mc_config_t *configuration)
 {
-    memset(configuration, 0, sizeof(ice_config_t));
+    memset(configuration, 0, sizeof(mc_config_t));
     _set_defaults(configuration);
 }
 
@@ -478,7 +480,7 @@ redirect_host *config_clear_redirect (redirect_host *redir)
 }
 
 
-static void _clear_http_header_contents (ice_config_http_header_t *entry)
+static void _clear_http_header_contents (mc_config_http_header_t *entry)
 {
     xmlFree (entry->hdr.name);
     xmlFree (entry->hdr.value);
@@ -486,11 +488,11 @@ static void _clear_http_header_contents (ice_config_http_header_t *entry)
 }
 
 
-ice_config_http_header_t *config_clear_http_header (ice_config_http_header_t *header)
+mc_config_http_header_t *config_clear_http_header (mc_config_http_header_t *header)
 {
     if (header == NULL)
         return header;
-    ice_config_http_header_t *ret = header->next;
+    mc_config_http_header_t *ret = header->next;
     _clear_http_header_contents (header);
     free (header);
     return ret;
@@ -631,9 +633,9 @@ aliases* config_clear_alias (aliases *alias)
     return next;
 }
 
-void config_clear(ice_config_t *c)
+void config_clear(mc_config_t *c)
 {
-    ice_config_dir_t *dirnode, *nextdirnode;
+    mc_config_dir_t *dirnode, *nextdirnode;
 
     free(c->config_filename);
 
@@ -715,11 +717,73 @@ void config_clear(ice_config_t *c)
     while (i < c->num_yp_directories)
     {
         if (c->yp_url[i]) xmlFree (c->yp_url[i]);
+        if (c->yp_logfile[i]) xmlFree (c->yp_logfile[i]);
         i++;
     }
 #endif
 
-    memset(c, 0, sizeof(ice_config_t));
+    memset(c, 0, sizeof(mc_config_t));
+}
+
+/* Config file format detection */
+typedef enum {
+    CONFIG_FORMAT_XML,
+    CONFIG_FORMAT_YAML,
+    CONFIG_FORMAT_UNKNOWN
+} config_format_t;
+
+static config_format_t detect_config_format(const char *filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if (!fp) return CONFIG_FORMAT_UNKNOWN;
+
+    char buf[512];
+    config_format_t format = CONFIG_FORMAT_XML; /* default */
+
+    /* Read first few lines to detect format */
+    while (fgets(buf, sizeof(buf), fp)) {
+        char *p = buf;
+
+        /* Skip whitespace */
+        while (*p && (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r'))
+            p++;
+
+        if (*p == '\0' || *p == '#')
+            continue; /* Skip blank lines and comments */
+
+        /* YAML indicators */
+        if (strncmp(p, "---", 3) == 0) {
+            format = CONFIG_FORMAT_YAML;
+            break;
+        }
+
+        /* Check for YAML key: value pattern (common at start of config) */
+        if (strchr(p, ':') && !strchr(p, '<')) {
+            /* Likely YAML if we have : but no < */
+            char *colon = strchr(p, ':');
+            if (colon && (colon[1] == ' ' || colon[1] == '\n' || colon[1] == '\r')) {
+                format = CONFIG_FORMAT_YAML;
+                break;
+            }
+        }
+
+        /* XML indicators */
+        if (*p == '<') {
+            if (strncmp(p+1, "?xml", 4) == 0 ||
+                strncmp(p+1, "mcaster1", 8) == 0 ||
+                strncmp(p+1, "icecast", 7) == 0) {
+                format = CONFIG_FORMAT_XML;
+                break;
+            }
+        }
+
+        /* If we found non-comment, non-whitespace content, break */
+        if (*p)
+            break;
+    }
+
+    fclose(fp);
+    return format;
 }
 
 int config_initial_parse_file(const char *filename)
@@ -728,12 +792,31 @@ int config_initial_parse_file(const char *filename)
     return config_parse_file(filename, &_current_configuration);
 }
 
-int config_parse_file(const char *filename, ice_config_t *configuration)
+int config_parse_file(const char *filename, mc_config_t *configuration)
 {
     xmlDocPtr doc;
     xmlNodePtr node;
 
     if (filename == NULL || strcmp(filename, "") == 0) return CONFIG_EINSANE;
+
+    /* Detect config file format */
+    config_format_t format = detect_config_format(filename);
+
+#ifdef HAVE_YAML
+    if (format == CONFIG_FORMAT_YAML) {
+        INFO1("Detected YAML configuration format: %s", filename);
+        return config_parse_yaml_file(filename, configuration);
+    }
+#else
+    if (format == CONFIG_FORMAT_YAML) {
+        ERROR0("YAML configuration file detected but YAML support not compiled in");
+        ERROR0("Recompile with --with-yaml or convert config to XML format");
+        return CONFIG_EPARSE;
+    }
+#endif
+
+    /* Parse as XML */
+    INFO1("Parsing XML configuration file: %s", filename);
 
     xmlSetGenericErrorFunc ("conf/file", log_parse_failure);
     xmlSetStructuredErrorFunc ("conf/file", config_xml_parse_failure);
@@ -748,7 +831,7 @@ int config_parse_file(const char *filename, ice_config_t *configuration)
         return CONFIG_ENOROOT;
     }
 
-    if (xmlStrcmp(node->name, XMLSTR("icecast")) != 0) {
+    if (xmlStrcmp(node->name, XMLSTR("mcaster1")) != 0) {
         xmlFreeDoc(doc);
         return CONFIG_EBADROOT;
     }
@@ -773,7 +856,7 @@ int config_parse_cmdline(int arg, char **argv)
     return 0;
 }
 
-ice_config_locks *config_locks(void)
+mc_config_locks *config_locks(void)
 {
     return &_locks;
 }
@@ -783,28 +866,28 @@ void config_release_config(void)
     thread_rwlock_unlock(&(_locks.config_lock));
 }
 
-ice_config_t *config_get_config_c(const char *file, int line)
+mc_config_t *config_get_config_c(const char *file, int line)
 {
     thread_rwlock_rlock_c(&(_locks.config_lock), line, file);
     return &_current_configuration;
 }
 
-ice_config_t *config_grab_config(void)
+mc_config_t *config_grab_config(void)
 {
     thread_rwlock_wlock(&(_locks.config_lock));
     return &_current_configuration;
 }
 
 /* MUST be called with the lock held! */
-void config_set_config (ice_config_t *new_config, ice_config_t *old_config)
+void config_set_config (mc_config_t *new_config, mc_config_t *old_config)
 {
     if (old_config)
-        memcpy (old_config, &_current_configuration, sizeof(ice_config_t));
-    memcpy(&_current_configuration, new_config, sizeof(ice_config_t));
+        memcpy (old_config, &_current_configuration, sizeof(mc_config_t));
+    memcpy(&_current_configuration, new_config, sizeof(mc_config_t));
     config_updated = timing_get_time();
 }
 
-ice_config_t *config_get_config_unlocked(void)
+mc_config_t *config_get_config_unlocked(void)
 {
     return &_current_configuration;
 }
@@ -819,7 +902,7 @@ static int compare_mounts (void *arg, void *a, void *b)
 }
 
 
-static void _set_defaults(ice_config_t *configuration)
+static void _set_defaults(mc_config_t *configuration)
 {
     configuration->gitversion = GIT_VERSION;
     configuration->location = (char *)xmlCharStrdup (CONFIG_DEFAULT_LOCATION);
@@ -835,7 +918,7 @@ static void _set_defaults(ice_config_t *configuration)
     configuration->source_timeout = CONFIG_DEFAULT_SOURCE_TIMEOUT;
     configuration->source_password = (char *)xmlCharStrdup (CONFIG_DEFAULT_SOURCE_PASSWORD);
     configuration->shoutcast_mount = (char *)xmlCharStrdup (CONFIG_DEFAULT_SHOUTCAST_MOUNT);
-    configuration->ice_login = CONFIG_DEFAULT_ICE_LOGIN;
+    configuration->mc_login = CONFIG_DEFAULT_ICE_LOGIN;
     configuration->fileserve = CONFIG_DEFAULT_FILESERVE;
     configuration->touch_interval = CONFIG_DEFAULT_TOUCH_FREQ;
     configuration->on_demand = 0;
@@ -882,7 +965,7 @@ static void _set_defaults(ice_config_t *configuration)
 static int _parse_alias (cfg_xml *cfg, void *arg)
 {
     aliases **cur, *alias = calloc (1, sizeof (aliases));
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "source",             config_get_str,     &alias->source },
         { "destination",        config_get_str,     &alias->destination },
@@ -892,7 +975,7 @@ static int _parse_alias (cfg_xml *cfg, void *arg)
         { NULL, NULL, NULL }
     };
     alias->port = -1;
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (alias->source == NULL || alias->destination == NULL)
     {
@@ -909,8 +992,8 @@ static int _parse_alias (cfg_xml *cfg, void *arg)
 
 static int _parse_authentication (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "source-password",    config_get_str,     &config->source_password },
         { "admin-user",         config_get_str,     &config->admin_username },
@@ -920,7 +1003,7 @@ static int _parse_authentication (cfg_xml *cfg, void *arg)
         { NULL, NULL, NULL }
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     return 1;
 }
@@ -928,15 +1011,15 @@ static int _parse_authentication (cfg_xml *cfg, void *arg)
 
 static int _parse_chown (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "user",   config_get_str, &config->user },
         { "group",  config_get_str, &config->group },
         { NULL, NULL, NULL }
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     config->chuid = 1;
     return 1;
@@ -945,15 +1028,15 @@ static int _parse_chown (cfg_xml *cfg, void *arg)
 
 static int _parse_security (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "chroot",         config_get_bool,    &config->chroot },
         { "changeowner",    _parse_chown },
         { NULL, NULL, NULL }
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     return 1;
 }
@@ -963,7 +1046,7 @@ static int _parse_accesslog (cfg_xml *cfg, void *arg)
 {
     struct access_log *log = arg;
     char *type = NULL;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "name",           config_get_str,     &log->name,     .flags = CFG_TAG_DEF },
         { "ip",             config_get_bool,    &log->log_ip },
@@ -982,7 +1065,7 @@ static int _parse_accesslog (cfg_xml *cfg, void *arg)
     log->type = LOG_ACCESS_CLF;
     log->qstr = 1;
     log->archive = -1;
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (type && strcmp (type, "CLF-ESC") == 0)
         log->type = LOG_ACCESS_CLF_ESC;
@@ -994,7 +1077,7 @@ static int _parse_accesslog (cfg_xml *cfg, void *arg)
 static int _parse_errorlog (cfg_xml *cfg, void *arg)
 {
     error_log *log = arg;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "name",           config_get_str,             &log->name,    .flags = CFG_TAG_DEF },
         { "archive",        config_get_bool,            &log->archive },
@@ -1008,13 +1091,13 @@ static int _parse_errorlog (cfg_xml *cfg, void *arg)
 
     log->logid = -1;
     logging_init_levels (&log->level, 0);
-    return parse_xml_tags (cfg, icecast_tags);
+    return parse_xml_tags (cfg, mcaster1_tags);
 }
 
 static int _parse_playlistlog (cfg_xml *cfg, void *arg)
 {
     playlist_log *log = arg;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "name",           config_get_str,     &log->name, .flags = CFG_TAG_DEF },
         { "archive",        config_get_bool,    &log->archive },
@@ -1026,15 +1109,15 @@ static int _parse_playlistlog (cfg_xml *cfg, void *arg)
     };
 
     log->logid = -1;
-    return parse_xml_tags (cfg, icecast_tags);
+    return parse_xml_tags (cfg, mcaster1_tags);
 }
 
 static int _parse_logging (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     long old_trigger_size = -1;
     int old_archive = 1;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "preroll-log",        _parse_errorlog,    &config->preroll_log },
         { "accesslog",          _parse_accesslog,   &config->access_log },
@@ -1065,7 +1148,7 @@ static int _parse_logging (cfg_xml *cfg, void *arg)
     config->playlist_log.display = 10;
     config->playlist_log.archive = -1;
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (old_trigger_size < 0)
         old_trigger_size = 20000;   // default
@@ -1176,8 +1259,8 @@ static int parse_xforward (cfg_xml *cfg, void *arg)
 
 static int _parse_paths (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "basedir",            config_get_str, &config->base_dir },
         { "logdir",             config_get_str, &config->log_dir },
@@ -1201,7 +1284,7 @@ static int _parse_paths (cfg_xml *cfg, void *arg)
     };
 
     config->mimetypes_fn = (char *)xmlCharStrdup (MIMETYPESFILE);
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (config->cert_file)
     {
@@ -1214,12 +1297,13 @@ static int _parse_paths (cfg_xml *cfg, void *arg)
 
 static int _parse_directory (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "yp-url",         config_get_str, &config->yp_url [config->num_yp_directories]},
         { "yp-url-timeout", config_get_int, &config->yp_url_timeout [config->num_yp_directories]},
         { "touch-interval", config_get_int, &config->yp_touch_interval [config->num_yp_directories]},
+        { "yp-logfile",     config_get_str, &config->yp_logfile [config->num_yp_directories]},
         { NULL, NULL, NULL }
     };
 
@@ -1231,7 +1315,7 @@ static int _parse_directory (cfg_xml *cfg, void *arg)
 
     config->yp_url_timeout [config->num_yp_directories] = 10;
     config->yp_touch_interval [config->num_yp_directories] = 600;
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (config->yp_url [config->num_yp_directories] == NULL)
         return -1;
@@ -1240,10 +1324,10 @@ static int _parse_directory (cfg_xml *cfg, void *arg)
 }
 
 
-static int _add_http_header (ice_config_http_header_t **top, const ice_config_http_header_t *src, int log)
+static int _add_http_header (mc_config_http_header_t **top, const mc_config_http_header_t *src, int log)
 {
     // does it already exist, if so maybe replace
-    ice_config_http_header_t **trail = top, *cur = *top;
+    mc_config_http_header_t **trail = top, *cur = *top;
 
     while (cur)
     {
@@ -1281,10 +1365,10 @@ static int _add_http_header (ice_config_http_header_t **top, const ice_config_ht
 
 static int config_get_http_header (cfg_xml *cfg, void *arg)
 {
-    ice_config_http_header_t **top = arg;
+    mc_config_http_header_t **top = arg;
     char *name = NULL, *value = NULL, *code = NULL;
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "name",       config_get_str,         &name },
         { "value",      config_get_str,         &value },
@@ -1292,7 +1376,7 @@ static int config_get_http_header (cfg_xml *cfg, void *arg)
         { NULL, NULL, NULL },
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     do
     {
@@ -1310,7 +1394,7 @@ static int config_get_http_header (cfg_xml *cfg, void *arg)
             break;
         }
 
-        ice_config_http_header_t hdr = { .flags = PARAM_NOCOPY, .hdr = { .name = name, .value = value, .status = code } };
+        mc_config_http_header_t hdr = { .flags = PARAM_NOCOPY, .hdr = { .name = name, .value = value, .status = code } };
         if (_add_http_header (top,  &hdr, 1) < 0)
             break;
 
@@ -1324,11 +1408,11 @@ static int config_get_http_header (cfg_xml *cfg, void *arg)
 }
 
 
-int config_http_copy (ice_config_http_header_t *src, ice_config_http_header_t **dest)
+int config_http_copy (mc_config_http_header_t *src, mc_config_http_header_t **dest)
 {
     while (src)
     {
-        ice_config_http_header_t hdr = *src;
+        mc_config_http_header_t hdr = *src;
         hdr.flags &= ~PARAM_NOCOPY;
         _add_http_header (dest, &hdr, 0);
         dest = &(*dest)->next;
@@ -1340,14 +1424,14 @@ int config_http_copy (ice_config_http_header_t *src, ice_config_http_header_t **
 
 static int _parse_http_headers (cfg_xml *cfg, void *arg)
 {
-    ice_config_http_header_t **h_p = arg;
-    struct cfg_tag icecast_tags[] =
+    mc_config_http_header_t **h_p = arg;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "header",               config_get_http_header,    h_p,  .flags = CFG_TAG_NOTATTR|CFG_TAG_ALLOW_MANY },
         { NULL, NULL, NULL },
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     return 1;
 }
@@ -1367,14 +1451,14 @@ config_options_t *config_clear_option (config_options_t *opt)
 static int _parse_mount_auth_option (cfg_xml *cfg, void *arg)
 {
     config_options_t *opt = calloc (1, sizeof (*opt)), **head = arg;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "name",               config_get_str,    &opt->name },
         { "value",              config_get_str,    &opt->value },
         { NULL, NULL, NULL },
     };
     do {
-        if (parse_xml_tags (cfg, icecast_tags) < 0)
+        if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             break;
         if (opt->name == NULL) break;
         if (opt->value == NULL) break;
@@ -1392,7 +1476,7 @@ static int _parse_mount_auth (cfg_xml *cfg, void *arg)
     config_options_t *opt = NULL;
     int ret = -1;
     auth_t *auth = calloc (1, sizeof (auth_t));
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "type",            config_get_str,            &auth->type },
         { "option",         _parse_mount_auth_option,   &opt,   .flags = CFG_TAG_NOTATTR|CFG_TAG_ALLOW_MANY },
@@ -1400,7 +1484,7 @@ static int _parse_mount_auth (cfg_xml *cfg, void *arg)
     };
     do {
         auth->handlers = 5;
-        if (parse_xml_tags (cfg, icecast_tags) < 0)
+        if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             break;
         if (auth_get_authenticator (auth, opt) < 0)
         {
@@ -1421,14 +1505,14 @@ static int _parse_fallback (cfg_xml *cfg, void *x)
 {
     fbinfo *fb = (fbinfo*)x;
     int64_t limit = 0;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "mount",              config_get_str,         &fb->mount,   .flags = CFG_TAG_DEF },
         { "rate",               config_get_bitrate,     &limit },
         { NULL, NULL, NULL },
     };
 
-    parse_xml_tags (cfg, icecast_tags);
+    parse_xml_tags (cfg, mcaster1_tags);
     if (fb->mount == NULL)
         WARN1 ("incomplete specification (line %ld)", xmlGetLineNo (cfg->node));
     fb->limit = limit/8;   // the fbinfo sruct expects measure in bytes
@@ -1438,11 +1522,11 @@ static int _parse_fallback (cfg_xml *cfg, void *x)
 
 static int _parse_mount (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     mount_proxy *mount = calloc(1, sizeof(mount_proxy));
     char *redirect = NULL;
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "mount-name",         config_get_str,     &mount->mountname },
         { "priority",           config_get_int,     &mount->priority },
@@ -1531,7 +1615,7 @@ static int _parse_mount (cfg_xml *cfg, void *arg)
     mount->preroll_log.archive = -1;
     config_http_copy (config->http_headers, &mount->http_headers);
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
 
     if (mount->mountname == NULL)
@@ -1590,7 +1674,7 @@ static int _relay_host (cfg_xml *cfg, void *arg)
     relay_server_host *host = calloc (1, sizeof (relay_server_host));
     int secure = 0;
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "ip",             config_get_str,     &host->ip },
         { "server",         config_get_str,     &host->ip },
@@ -1613,7 +1697,7 @@ static int _relay_host (cfg_xml *cfg, void *arg)
     host->port = relay->hosts->port;
     host->timeout = relay->hosts->timeout;
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
 
     if (host->timeout < 1 || host->timeout > 60)
@@ -1639,12 +1723,12 @@ static int _relay_host (cfg_xml *cfg, void *arg)
 
 static int _parse_relay (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     relay_server *relay = calloc(1, sizeof(relay_server));
     relay_server_host *host = calloc (1, sizeof (relay_server_host));
     int on_demand = config->on_demand, icy_metadata = 1, running = 1;
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "master",                     _relay_host,        relay,      .flags = CFG_TAG_NOTATTR|CFG_TAG_ALLOW_MANY },
         { "host",                       _relay_host,        relay,      .flags = CFG_TAG_NOTATTR|CFG_TAG_ALLOW_MANY },
@@ -1678,7 +1762,7 @@ static int _parse_relay (cfg_xml *cfg, void *arg)
 
     do
     {
-        if (parse_xml_tags (cfg, icecast_tags) < 0)
+        if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             return -1;
 
         if (on_demand)      relay->flags |= RELAY_ON_DEMAND;
@@ -1716,10 +1800,10 @@ static int _parse_relay (cfg_xml *cfg, void *arg)
 
 static int _parse_redirect (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     redirect_host *redir = calloc (1, sizeof (*redir));
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "host",       config_get_str,         &redir->server },
         { "port",       config_get_port,        &redir->port },
@@ -1729,7 +1813,7 @@ static int _parse_redirect (cfg_xml *cfg, void *arg)
     do
     {
         redir->port = 8000;
-        if (parse_xml_tags (cfg, icecast_tags) < 0)
+        if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             break;
 
         if (redir->server == NULL)
@@ -1745,8 +1829,8 @@ static int _parse_redirect (cfg_xml *cfg, void *arg)
 
 static int _parse_limits (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
-    struct cfg_tag icecast_tags[] =
+    mc_config_t *config = cfg->config;
+    struct cfg_tag mcaster1_tags[] =
     {
         { "max-bandwidth",      config_get_bitrate,     &config->max_bandwidth },
         { "max-listeners",      config_get_int,         &config->max_listeners },
@@ -1762,7 +1846,7 @@ static int _parse_limits (cfg_xml *cfg, void *arg)
         { "inactivity-timeout", config_get_int,         &config->inactivity_timeout },
         { NULL, NULL, NULL },
     };
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (config->workers_count < 1)   config->workers_count = 1;
     if (config->workers_count > 400) config->workers_count = 400;
@@ -1772,9 +1856,9 @@ static int _parse_limits (cfg_xml *cfg, void *arg)
 
 static int _parse_master (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "server",             config_get_str,     &config->master_server },
         { "port",               config_get_port,    &config->master_server_port },
@@ -1791,7 +1875,7 @@ static int _parse_master (cfg_xml *cfg, void *arg)
         { NULL, NULL, NULL },
     };
 
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
     if (config->master_update_interval < 2)
         config->master_update_interval = 60;
@@ -1804,10 +1888,10 @@ static int _parse_master (cfg_xml *cfg, void *arg)
 
 static int _parse_listen_sock (cfg_xml *cfg, void *arg)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     listener_t *listener = calloc (1, sizeof(listener_t));
 
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "port",               config_get_port,    &listener->port },
         { "shoutcast-compat",   config_get_bool,    &listener->shoutcast_compat },
@@ -1822,14 +1906,14 @@ static int _parse_listen_sock (cfg_xml *cfg, void *arg)
     };
 
     listener->refcount = 1;
-    listener->qlen = ICE_LISTEN_QUEUE;
+    listener->qlen = MC_LISTEN_QUEUE;
     do {
-        if (parse_xml_tags (cfg, icecast_tags) < 0)
+        if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             break;
         if (listener->port == 0) break;
 
         if (listener->qlen < 1)
-            listener->qlen = ICE_LISTEN_QUEUE;
+            listener->qlen = MC_LISTEN_QUEUE;
 
         if (listener->shoutcast_mount)
         {
@@ -1870,9 +1954,9 @@ static int _parse_listen_sock (cfg_xml *cfg, void *arg)
 
 static int _parse_root (cfg_xml *cfg, void *p)
 {
-    ice_config_t *config = cfg->config;
+    mc_config_t *config = cfg->config;
     char *bindaddress = NULL;
-    struct cfg_tag icecast_tags[] =
+    struct cfg_tag mcaster1_tags[] =
     {
         { "location",           config_get_str,     &config->location },
         { "admin",              config_get_str,     &config->admin },
@@ -1912,14 +1996,14 @@ static int _parse_root (cfg_xml *cfg, void *p)
         { NULL, NULL, NULL }
     };
 
-    extern ice_config_http_header_t default_headers[];
+    extern mc_config_http_header_t default_headers[];
 
     for (int i = 0; default_headers[i].hdr.name; i++)
         if (_add_http_header (&config->http_headers, &default_headers[i], 1) < 0)
             WARN1 ("Problem with default header %s", default_headers[i].hdr.name);
 
     config->master_relay_auth = 1;
-    if (parse_xml_tags (cfg, icecast_tags) < 0)
+    if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
 
     if (config->max_redirects == 0 && config->master_redirect)
@@ -1931,7 +2015,7 @@ static int _parse_root (cfg_xml *cfg, void *p)
             listener_t *listener = calloc (1, sizeof(listener_t));
             listener->refcount = 1;
             listener->port = config->port;
-            listener->qlen = ICE_LISTEN_QUEUE;
+            listener->qlen = MC_LISTEN_QUEUE;
             listener->bind_address = (char*)xmlStrdup (XMLSTR(bindaddress));
             listener->next = config->listen_sock;
             config->listen_sock = listener;
@@ -1950,9 +2034,9 @@ static int _parse_root (cfg_xml *cfg, void *p)
 
 
 /* return the mount details that match the supplied mountpoint */
-mount_proxy *config_find_mount (ice_config_t *_c, const char *mount)
+mount_proxy *config_find_mount (mc_config_t *_c, const char *mount)
 {
-    ice_config_t *config = _c;
+    mc_config_t *config = _c;
     if (mount == NULL)
     {
         WARN0 ("no mount name provided");
@@ -2009,9 +2093,9 @@ int config_mount_ref (mount_proxy *mountinfo, int inc)
 }
 
 
-mount_proxy *config_lock_mount (ice_config_t *_c, const char *mount)
+mount_proxy *config_lock_mount (mc_config_t *_c, const char *mount)
 {
-    ice_config_t *config = _c;
+    mc_config_t *config = _c;
     if (_c == NULL)
         config = config_get_config();
     mount_proxy *mountinfo = config_find_mount (config, mount);

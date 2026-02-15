@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -15,8 +15,8 @@
 #define __PARAMS_H__
 
 
-typedef struct _ice_http_t              ice_http_t;
-typedef struct _ice_param_t             ice_param_t;
+typedef struct _ice_http_t              mc_http_t;
+typedef struct _ice_param_t             mc_param_t;
 
 typedef struct _ice_param_t
 {
@@ -26,14 +26,14 @@ typedef struct _ice_param_t
     uint16_t    value_len;
     char        *name;
     char        *value;
-    int         (*callback)(void *arg, ice_param_t *curr);
+    int         (*callback)(void *arg, mc_param_t *curr);
     void        *callback_arg;         // sent in arg for callback
-} ice_param_t;
+} mc_param_t;
 
 
 typedef struct  _ice_params_t
 {
-    ice_param_t *head;          // linked list
+    mc_param_t *head;          // linked list
     uint32_t    len;
     uint32_t    flags;
 
@@ -45,19 +45,19 @@ typedef struct  _ice_params_t
 
     char        entry_end[4];  // may need to increase in future but fine for now
     char        entry_div[4];
-} ice_params_t;
+} mc_params_t;
 
 
 typedef struct
 {
     int         status;
     const char  *msg;
-} ice_http_status_t;
+} mc_http_status_t;
 
 
 typedef struct  _ice_http_t
 {
-    ice_params_t headers;
+    mc_params_t headers;
 
     char        respcode[4];
 
@@ -74,10 +74,10 @@ typedef struct  _ice_http_t
 
     client_t    *client;
 
-    ice_http_status_t  conn;
-} ice_http_t;
+    mc_http_status_t  conn;
+} mc_http_t;
 
-// for ice_param_t
+// for mc_param_t
 #define PARAM_PASS                              0
 #define PARAM_NOCOPY                            (1<<0)
 #define PARAM_AS                                (1<<1)          // ignore any default encodings
@@ -86,32 +86,32 @@ typedef struct  _ice_http_t
 #define PARAM_CONST                             (1<<8)          // fixed
 #define PARAM_MULTI                             (1<<9)          // allow duplicate param
 
-// for ice_params_t
+// for mc_params_t
 #define PARAMS_ESC                              (1<<10)         // use escape encoding for all tags by default
 
-// for ice_http_t
-#define ICE_HTTP_REQUEST                        (1<<0)
-#define ICE_HTTP_WILDCARD_ORIGIN                (1<<1)
-#define ICE_HTTP_USE_ICY                        (1<<2)
-#define ICE_HTTP_CONN_CLOSE                     (1<<3)
+// for mc_http_t
+#define MC_HTTP_REQUEST                        (1<<0)
+#define MC_HTTP_WILDCARD_ORIGIN                (1<<1)
+#define MC_HTTP_USE_ICY                        (1<<2)
+#define MC_HTTP_CONN_CLOSE                     (1<<3)
 
 
-#define ICE_HTTP_INIT   ((ice_http_t){ .client = NULL })
+#define MC_HTTP_INIT   ((mc_http_t){ .client = NULL })
 
-int  ice_http_setup_flags (ice_http_t *http, client_t *client, int status, unsigned int flags, const char *statusmsg);
+int  mc_http_setup_flags (mc_http_t *http, client_t *client, int status, unsigned int flags, const char *statusmsg);
 
-int  ice_http_apply_cfg (ice_http_t *http, struct _config_http_header_tag *h);
-int  ice_http_apply (ice_http_t *http, const ice_param_t *header);
-int  ice_http_apply_block (ice_http_t *http, refbuf_t *ref);
-void ice_http_clear (ice_http_t *http);
-int  ice_http_complete (ice_http_t *http);
-int  ice_http_send (ice_http_t *http);
-int  ice_http_printf (ice_http_t *http, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
+int  mc_http_apply_cfg (mc_http_t *http, struct _config_http_header_tag *h);
+int  mc_http_apply (mc_http_t *http, const mc_param_t *header);
+int  mc_http_apply_block (mc_http_t *http, refbuf_t *ref);
+void mc_http_clear (mc_http_t *http);
+int  mc_http_complete (mc_http_t *http);
+int  mc_http_send (mc_http_t *http);
+int  mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
 
-int  ice_params_setup (ice_params_t *p, const char *divider, const char *separator, unsigned int flags);
-int  ice_params_printf (ice_params_t *p, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
-int  ice_params_apply (ice_params_t *pm, const ice_param_t *header);
-void ice_params_clear (ice_params_t *params);
-refbuf_t *ice_params_complete (ice_params_t *pm);
+int  mc_params_setup (mc_params_t *p, const char *divider, const char *separator, unsigned int flags);
+int  mc_params_printf (mc_params_t *p, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
+int  mc_params_apply (mc_params_t *pm, const mc_param_t *header);
+void mc_params_clear (mc_params_t *params);
+refbuf_t *mc_params_complete (mc_params_t *pm);
 
 #endif

@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -140,7 +140,7 @@ xmlDocPtr admin_build_sourcelist (const char *mount, int show_listeners)
     time_t now = time(NULL);
 
     doc = xmlNewDoc(XMLSTR("1.0"));
-    xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+    xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
     xmlDocSetRootElement(doc, xmlnode);
 
     if (mount) {
@@ -159,7 +159,7 @@ xmlDocPtr admin_build_sourcelist (const char *mount, int show_listeners)
         thread_rwlock_rlock (&source->lock);
         if (source_available (source))
         {
-            ice_config_t *config;
+            mc_config_t *config;
             mount_proxy *mountinfo;
 
             srcnode = xmlNewChild (xmlnode, NULL, XMLSTR("source"), NULL);
@@ -218,18 +218,18 @@ int admin_send_response (xmlDocPtr doc, client_t *client,
         xmlFree(buff);
         xmlFreeDoc (doc);
 
-        ice_http_t http = ICE_HTTP_INIT;
-        ice_http_setup_flags (&http, client, 200, 0, NULL);
+        mc_http_t http = MC_HTTP_INIT;
+        mc_http_setup_flags (&http, client, 200, 0, NULL);
         http.in_length = len;
-        ice_http_printf (&http, "Content-Type", 0, "%s", "text/xml");
-        ice_http_apply_block (&http, rb);
+        mc_http_printf (&http, "Content-Type", 0, "%s", "text/xml");
+        mc_http_apply_block (&http, rb);
         return client_http_send (&http);
     }
     if (response == XSLT)
     {
         char *fullpath_xslt_template;
         int fullpath_xslt_template_len;
-        ice_config_t *config = config_get_config();
+        mc_config_t *config = config_get_config();
 
         fullpath_xslt_template_len = strlen (config->adminroot_dir) +
             strlen(xslt_template) + 2;
@@ -475,11 +475,22 @@ static int command_require (client_t *client, const char *name, const char **var
 
 int html_success (client_t *client, const char *message)
 {
-    ice_http_t http = ICE_HTTP_INIT;
-    if (ice_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
-    ice_http_printf (&http, NULL, 0,
-            "<html><head><title>Admin request successful</title></head>"
-            "<body><p>%s</p></body></html>", message);
+    mc_http_t http = MC_HTTP_INIT;
+    if (mc_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
+    mc_http_printf (&http, NULL, 0,
+            "<!DOCTYPE html>"
+            "<html lang=\"en\"><head><meta charset=\"UTF-8\"/>"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"/>"
+            "<title>Success - Mcaster1DNAS Admin</title>"
+            "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\"/>"
+            "<link rel=\"stylesheet\" href=\"/admin/mcaster1-modern.css\"/>"
+            "</head><body>"
+            "<div class=\"mcaster-main\"><div class=\"mcaster-container\">"
+            "<div class=\"mcaster-card\" style=\"max-width:600px;margin:2rem auto;text-align:center;\">"
+            "<h2><i class=\"fas fa-check-circle\" style=\"color:var(--dnas-green);\"></i> Success</h2>"
+            "<p style=\"font-size:1.125rem;\">%s</p>"
+            "<a href=\"javascript:history.back()\" class=\"btn btn-primary\"><i class=\"fas fa-arrow-left\"></i> Go Back</a>"
+            "</div></div></div></body></html>", message);
     return client_http_send (&http);
 }
 
@@ -533,7 +544,7 @@ static int admin_function (const char *function, char *buf, unsigned int len)
 {
     if (strcmp (function, "reopenlog") == 0)
     {
-        ice_config_t *config = config_grab_config();
+        mc_config_t *config = config_grab_config();
 
         restart_logging (config);
         config_release_config();
@@ -735,7 +746,7 @@ static int command_show_listeners (client_t *client, source_t *source, int respo
     char buf[22];
 
     doc = xmlNewDoc(XMLSTR("1.0"));
-    node = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+    node = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
     srcnode = xmlNewChild(node, NULL, XMLSTR("source"), NULL);
 
     xmlSetProp(srcnode, XMLSTR("mount"), XMLSTR(source->mount));
@@ -811,7 +822,7 @@ static int command_manageauth (client_t *client, source_t *source, int response)
     const char *username = NULL;
     const char *message = NULL;
     int ret = AUTH_OK;
-    ice_config_t *config = config_get_config ();
+    mc_config_t *config = config_get_config ();
     mount_proxy *mountinfo = config_find_mount (config, source->mount);
 
     do
@@ -839,7 +850,7 @@ static int command_manageauth (client_t *client, source_t *source, int response)
             }
             ret = mountinfo->auth->adduser(mountinfo->auth, username, password);
             if (ret == AUTH_FAILED) {
-                message = "User add failed - check the icecast error log";
+                message = "User add failed - check the mcaster1 error log";
             }
             if (ret == AUTH_USERADDED) {
                 message = "User added";
@@ -857,7 +868,7 @@ static int command_manageauth (client_t *client, source_t *source, int response)
             }
             ret = mountinfo->auth->deleteuser(mountinfo->auth, username);
             if (ret == AUTH_FAILED) {
-                message = "User delete failed - check the icecast error log";
+                message = "User delete failed - check the mcaster1 error log";
             }
             if (ret == AUTH_USERDELETED) {
                 message = "User deleted";
@@ -865,7 +876,7 @@ static int command_manageauth (client_t *client, source_t *source, int response)
         }
 
         doc = xmlNewDoc(XMLSTR "1.0");
-        node = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+        node = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
         srcnode = xmlNewChild(node, NULL, XMLSTR("source"), NULL);
         xmlSetProp(srcnode, XMLSTR "mount", XMLSTR(source->mount));
         thread_rwlock_unlock (&source->lock);
@@ -961,7 +972,7 @@ static int command_fallback (client_t *client, source_t *source, int response)
 {
     char *mount = strdup (source->mount);
     mount_proxy *mountinfo;
-    ice_config_t *config;
+    mc_config_t *config;
 
     thread_rwlock_unlock (&source->lock);
     DEBUG0("Got fallback request");
@@ -1165,7 +1176,7 @@ static int command_list_log (client_t *client, int response)
     const char *logname = httpp_get_query_param (client->parser, "log");
     int log = -1;
     unsigned int len = 0;
-    ice_config_t *config;
+    mc_config_t *config;
 
     if (logname == NULL)
         return client_send_400 (client, "No log specified");
@@ -1184,6 +1195,58 @@ static int command_list_log (client_t *client, int response)
         log = config->access_log.logid;
     else if (strcmp (logname, "playlistlog") == 0)
         log = config->playlist_log.logid;
+    else if (strcmp (logname, "yplog") == 0)
+    {
+        /* YP log is written to disk, read it directly from file */
+        char yp_log_path[512];
+        FILE *fp;
+        long file_size;
+
+        snprintf (yp_log_path, sizeof(yp_log_path), "%s/yp-health.log", config->log_dir ? config->log_dir : "./logs");
+        fp = fopen (yp_log_path, "rb");
+        if (fp == NULL)
+        {
+            config_release_config();
+            WARN1 ("YP log file not found: %s", yp_log_path);
+            return client_send_400 (client, "YP log not available");
+        }
+
+        /* Get file size */
+        fseek (fp, 0, SEEK_END);
+        file_size = ftell (fp);
+        fseek (fp, 0, SEEK_SET);
+
+        /* Read entire file into buffer */
+        content = refbuf_new (file_size + 1);
+        content->len = fread (content->data, 1, file_size, fp);
+        content->data[content->len] = '\0';
+        fclose (fp);
+
+        config_release_config();
+
+        if (response == XSLT)
+        {
+            xmlNodePtr xmlnode;
+            xmlDocPtr doc;
+
+            doc = xmlNewDoc(XMLSTR("1.0"));
+            xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
+            xmlDocSetRootElement(doc, xmlnode);
+            xmlNewTextChild (xmlnode, NULL, XMLSTR("log"), XMLSTR(content->data));
+            refbuf_release (content);
+
+            return admin_send_response (doc, client, XSLT, "showlog.xsl");
+        }
+        else
+        {
+            mc_http_t http = MC_HTTP_INIT;
+            if (mc_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
+            mc_http_apply_block (&http, content);
+            http.in_length = content->len;
+            mc_http_printf (&http, "Content-Type", 0, "text/plain");
+            return client_http_send (&http);
+        }
+    }
 
     if (log_contents (log, level, NULL, &len) < 0)
     {
@@ -1193,6 +1256,7 @@ static int command_list_log (client_t *client, int response)
     }
     content = refbuf_new (len+1);
     log_contents (log, level, &content->data, &content->len);
+
     config_release_config();
 
     if (response == XSLT)
@@ -1201,7 +1265,7 @@ static int command_list_log (client_t *client, int response)
         xmlDocPtr doc;
 
         doc = xmlNewDoc(XMLSTR("1.0"));
-        xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+        xmlnode = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
         xmlDocSetRootElement(doc, xmlnode);
         xmlNewTextChild (xmlnode, NULL, XMLSTR("log"), XMLSTR(content->data));
         refbuf_release (content);
@@ -1210,11 +1274,11 @@ static int command_list_log (client_t *client, int response)
     }
     else
     {
-        ice_http_t http = ICE_HTTP_INIT;
-        if (ice_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
-        ice_http_apply_block (&http, content);
+        mc_http_t http = MC_HTTP_INIT;
+        if (mc_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
+        mc_http_apply_block (&http, content);
         http.in_length = content->len;
-        ice_http_printf (&http, "Content-Type", 0, "text/plain");
+        mc_http_printf (&http, "Content-Type", 0, "text/plain");
         return client_http_send (&http);
     }
 }
@@ -1235,9 +1299,9 @@ int command_list_mounts(client_t *client, int response)
         else
             rb = stats_get_streams (0);
 
-        ice_http_t http = ICE_HTTP_INIT;
-        if (ice_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
-        ice_http_apply_block (&http, rb);
+        mc_http_t http = MC_HTTP_INIT;
+        if (mc_http_setup_flags (&http, client, 200, 0, NULL) < 0) return -1;
+        mc_http_apply_block (&http, rb);
         return client_http_send (&http);
     }
     else
@@ -1260,7 +1324,7 @@ static int command_updatemetadata(client_t *client, source_t *source, int respon
 
     thread_rwlock_unlock (&source->lock);
     doc = xmlNewDoc(XMLSTR("1.0"));
-    node = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+    node = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
     srcnode = xmlNewChild(node, NULL, XMLSTR("source"), NULL);
     xmlSetProp(srcnode, XMLSTR("mount"), XMLSTR(source->mount));
     xmlDocSetRootElement(doc, node);
@@ -1273,7 +1337,7 @@ static int command_updatemetadata(client_t *client, source_t *source, int respon
 static int command_alloc(client_t *client)
 {
     xmlDocPtr doc = xmlNewDoc (XMLSTR("1.0"));
-    xmlNodePtr rootnode = xmlNewDocNode(doc, NULL, XMLSTR("icestats"), NULL);
+    xmlNodePtr rootnode = xmlNewDocNode(doc, NULL, XMLSTR("mcaster1stats"), NULL);
     avl_node *node;
     char value[25];
 

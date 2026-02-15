@@ -1,4 +1,4 @@
-/* Icecast
+/* Mcaster1
  *
  * This program is distributed under the GNU General Public License, version 2.
  * A copy of this license is included with this source.
@@ -137,7 +137,7 @@ void logging_init_levels (log_levels_t *ll, unsigned n)
 
 void logging_access (client_t *client)
 {
-    ice_config_t *config = config_get_config();
+    mc_config_t *config = config_get_config();
     logging_access_id (&config->access_log, client);
     config_release_config ();
 }
@@ -195,7 +195,7 @@ void log_parse_failure (void *ctx, const char *fmt, ...)
 }
 
 
-static int recheck_log_file (ice_config_t *config, int *id, const char *file)
+static int recheck_log_file (mc_config_t *config, int *id, const char *file)
 {
     char fn [FILENAME_MAX] = "";
 
@@ -226,7 +226,7 @@ static int recheck_log_file (ice_config_t *config, int *id, const char *file)
 }
 
 
-static int recheck_access_log (ice_config_t *config, struct access_log *access)
+static int recheck_access_log (mc_config_t *config, struct access_log *access)
 {
     if (recheck_log_file (config, &access->logid, access->name) < 0)
         return -1;
@@ -244,9 +244,9 @@ static int recheck_access_log (ice_config_t *config, struct access_log *access)
 }
 
 
-int restart_logging (ice_config_t *config)
+int restart_logging (mc_config_t *config)
 {
-    ice_config_t *current = config_get_config_unlocked();
+    mc_config_t *current = config_get_config_unlocked();
     int ret = 0;
 
     config->error_log.logid = current->error_log.logid;
@@ -322,7 +322,7 @@ int restart_logging (ice_config_t *config)
 }
 
 
-int init_logging (ice_config_t *config)
+int init_logging (mc_config_t *config)
 {
     worker_logger_init();
 
@@ -334,7 +334,7 @@ int init_logging (ice_config_t *config)
 }
 
 
-int start_logging (ice_config_t *config)
+int start_logging (mc_config_t *config)
 {
     worker_logger (0);
     return 0;

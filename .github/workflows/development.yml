@@ -249,7 +249,9 @@ jobs:
             libssl3 \
             libyaml-0-2 \
             curl \
-            jq
+            jq \
+            procps \
+            net-tools
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -382,23 +384,26 @@ jobs:
           echo "Port: ${{ env.TEST_PORT }}"
           echo "User: mcaster1"
 
-          # Start server as mcaster1 user in background
-          # Use nohup to ensure it stays running after su exits
-          su mcaster1 -s /bin/sh -c "nohup ${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml > /tmp/mcaster1-stdout.log 2>&1 &"
+          # Start server as mcaster1 user
+          # Run in background, redirect output to log
+          echo "Launching server process..."
+          su mcaster1 -s /bin/sh << 'EOSU' > /tmp/mcaster1-stdout.log 2>&1 &
+          exec /opt/mcaster1dnas/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml
+EOSU
 
-          # Give it time to start
+          # Wait for process to start
           sleep 3
 
-          # Find the mcaster1 process PID
-          SERVER_PID=$(pgrep -u mcaster1 mcaster1 2>/dev/null || echo "")
+          # Find the server PID
+          SERVER_PID=$(pgrep -f "mcaster1.*test-ci.yaml" 2>/dev/null | head -1)
 
           if [ -n "$SERVER_PID" ]; then
-            echo "✓ Server started with PID: $SERVER_PID"
+            echo "✓ Server process started (PID: $SERVER_PID)"
             echo "$SERVER_PID" > /tmp/server.pid
           else
-            echo "✗ Server process not found"
-            echo "=== Process list ==="
-            ps aux | grep mcaster1 | grep -v grep || echo "No mcaster1 processes"
+            echo "✗ Server process not found after startup"
+            echo "=== All processes ==="
+            ps aux 2>/dev/null | head -20 || echo "ps command failed"
             echo "=== Server output ==="
             cat /tmp/mcaster1-stdout.log 2>/dev/null || echo "No output log"
             exit 1

@@ -339,6 +339,22 @@ jobs:
           echo "✓ Test environment ready"
           cat /tmp/mcaster1-test/test-ci.yaml
 
+      - name: Create non-root user for server
+        run: |
+          echo "=== Creating non-root user for Mcaster1DNAS ==="
+
+          # Create mcaster1 user if it doesn't exist
+          if ! id -u mcaster1 >/dev/null 2>&1; then
+            useradd -r -s /bin/false mcaster1
+            echo "✓ Created user: mcaster1"
+          fi
+
+          # Set ownership of test directories
+          chown -R mcaster1:mcaster1 /tmp/mcaster1-test
+          chown -R mcaster1:mcaster1 ${{ env.INSTALL_PREFIX }}
+
+          echo "✓ Permissions set for mcaster1 user"
+
       - name: Start Mcaster1DNAS server
         run: |
           echo "=== Starting Mcaster1DNAS server ==="
@@ -360,9 +376,10 @@ jobs:
           echo "Binary: ${{ env.INSTALL_PREFIX }}/bin/mcaster1"
           echo "Config: /tmp/mcaster1-test/test-ci.yaml"
           echo "Port: ${{ env.TEST_PORT }}"
+          echo "User: mcaster1"
 
-          # Start server in background and capture output
-          ${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml > /tmp/mcaster1-stdout.log 2>&1 &
+          # Start server as non-root user in background and capture output
+          su -s /bin/sh mcaster1 -c "${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml" > /tmp/mcaster1-stdout.log 2>&1 &
           SERVER_PID=$!
           echo "Server PID: $SERVER_PID"
           echo $SERVER_PID > /tmp/server.pid

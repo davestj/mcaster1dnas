@@ -133,7 +133,10 @@ jobs:
             libspeex-dev \
             libcurl4-openssl-dev \
             libssl-dev \
+            openssl \
             libyaml-dev \
+            libogg-dev \
+            libkate-dev \
             curl \
             vim \
             net-tools \
@@ -158,6 +161,7 @@ jobs:
           ./configure \
             --prefix=${{ env.INSTALL_PREFIX }} \
             --with-yaml \
+            --with-openssl \
             --sysconfdir=/etc
 
           echo ""

@@ -130,6 +130,153 @@
                         </span>
                     </h2>
 
+                    <!-- Now Playing Section (Always Visible) -->
+                    <div style="margin: 1.5rem 0;">
+                        <h3 style="margin-bottom: 1rem;"><i class="fas fa-music"></i> Now Playing</h3>
+                        <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius-md); border-left: 4px solid var(--mcaster-blue);">
+                            <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                                <xsl:choose>
+                                    <xsl:when test="title">
+                                        <xsl:value-of select="title"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <span style="color: var(--text-secondary); font-style: italic;">No track information available</span>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </div>
+                            <xsl:if test="artist">
+                                <div style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-user"></i> <xsl:value-of select="artist"/>
+                                </div>
+                            </xsl:if>
+                            <xsl:if test="server_description">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.75rem;">
+                                    <i class="fas fa-info-circle"></i> <xsl:value-of select="server_description"/>
+                                </div>
+                            </xsl:if>
+                        </div>
+                    </div>
+
+                    <!-- Stream Information -->
+                    <div style="margin: 1.5rem 0;">
+                        <h3 style="margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Stream Information</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <!-- Format/Codec -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Audio Format</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="server_type = 'audio/mpeg'">
+                                            <i class="fas fa-file-audio" style="color: var(--mcaster-blue);"></i> MP3
+                                        </xsl:when>
+                                        <xsl:when test="server_type = 'application/ogg'">
+                                            <i class="fas fa-file-audio" style="color: var(--dnas-green);"></i>
+                                            <xsl:choose>
+                                                <xsl:when test="subtype">
+                                                    <xsl:value-of select="subtype"/>
+                                                </xsl:when>
+                                                <xsl:otherwise>Ogg Vorbis</xsl:otherwise>
+                                            </xsl:choose>
+                                        </xsl:when>
+                                        <xsl:when test="server_type = 'audio/aac' or server_type = 'audio/aacp'">
+                                            <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="server_type"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+
+                            <!-- Bitrate -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Audio Quality</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="ice-bitrate">
+                                            <xsl:value-of select="ice-bitrate"/> kbps
+                                        </xsl:when>
+                                        <xsl:when test="bitrate">
+                                            <xsl:value-of select="bitrate"/> kbps
+                                        </xsl:when>
+                                        <xsl:otherwise>Unknown</xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+
+                            <!-- Sample Rate -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Sample Rate</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="ice-samplerate">
+                                            <xsl:value-of select="ice-samplerate"/> Hz
+                                        </xsl:when>
+                                        <xsl:when test="audio_samplerate">
+                                            <xsl:value-of select="audio_samplerate"/> Hz
+                                        </xsl:when>
+                                        <xsl:otherwise>Unknown</xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+
+                            <!-- Channels -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Channels</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="ice-channels = '2'">
+                                            <i class="fas fa-volume-up"></i> Stereo
+                                        </xsl:when>
+                                        <xsl:when test="ice-channels = '1'">
+                                            <i class="fas fa-volume-down"></i> Mono
+                                        </xsl:when>
+                                        <xsl:when test="ice-channels">
+                                            <xsl:value-of select="ice-channels"/> ch
+                                        </xsl:when>
+                                        <xsl:otherwise>Unknown</xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+
+                            <!-- Stream Uptime -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Stream Uptime</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="connected">
+                                            <xsl:value-of select="connected"/>s
+                                        </xsl:when>
+                                        <xsl:otherwise>N/A</xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+
+                            <!-- Peak Listeners -->
+                            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Peak Listeners</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    <xsl:choose>
+                                        <xsl:when test="listener_peak">
+                                            <i class="fas fa-chart-line" style="color: var(--dnas-green);"></i> <xsl:value-of select="listener_peak"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>0</xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Listeners Section -->
+                    <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">
+                        <i class="fas fa-headphones"></i> Current Listeners
+                        <xsl:if test="listeners">
+                            <span class="status-badge status-active" style="font-size: 0.875rem; margin-left: 0.5rem;">
+                                <xsl:value-of select="listeners"/> listening now
+                            </span>
+                        </xsl:if>
+                    </h3>
+
                     <table>
                         <xsl:if test="server_name">
                             <tr>
@@ -210,7 +357,10 @@
                                 <a href="./auth.xsl" class="btn btn-primary">Login to Listen</a>
                             </xsl:when>
                             <xsl:otherwise>
-                                <a href=".{@mount}.m3u" class="btn btn-primary">Listen (M3U)</a>
+                                <a href="javascript:void(0);" onclick="window.open('/webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=650,height=800,resizable=yes,scrollbars=yes'); return false;" class="btn btn-primary" title="Open web player in new window - bookmark for quick access" style="margin-right: 0.5rem;">
+                                    <i class="fas fa-play-circle"></i> Web Player
+                                </a>
+                                <a href=".{@mount}.m3u" class="btn btn-secondary">Listen (M3U)</a>
                                 <a href=".{@mount}.xspf" class="btn btn-secondary">Listen (XSPF)</a>
                             </xsl:otherwise>
                         </xsl:choose>

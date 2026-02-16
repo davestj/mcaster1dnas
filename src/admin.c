@@ -97,6 +97,7 @@ static struct admin_command admin_general[] =
     { "managerelays.xsl",   XSLT,   { command_manage_relay } },
     { "listmounts.xsl",     XSLT,   { command_list_mounts } },
     { "moveclients.xsl",    XSLT,   { command_list_mounts } },
+    { "webplayer.xsl",      XSLT,   { command_list_mounts } },
     { "function.xsl",       XSLT,   { command_admin_function } },
     { "response.xsl",       XSLT,   { NULL } },
     { NULL }
@@ -1307,10 +1308,8 @@ int command_list_mounts(client_t *client, int response)
     else
     {
         xmlDocPtr doc;
-        int show_listeners = httpp_get_query_param (client->parser, "with_listeners") ? 1 : 0;
-        avl_tree_rlock (global.source_tree);
-        doc = admin_build_sourcelist (NULL, show_listeners);
-        avl_tree_unlock (global.source_tree);
+        // Use full stats XML (same as stats.xsl) to include all metadata
+        doc = stats_get_xml (STATS_ALL, NULL);
 
         return admin_send_response (doc, client, response, "listmounts.xsl");
     }

@@ -25,3 +25,15 @@
 build/*
 ssl/*
 /ssl
+
+# CI/CD artifacts
+install-root/
+*.deb
+*.rpm
+*.tar.gz
+*.tar.bz2
+
+# Test files
+test-logs/
+*.test.yaml
+ci-test-*

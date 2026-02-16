@@ -37,6 +37,7 @@
                 <a href="credits.xsl"><i class="fas fa-info-circle"></i> Credits</a>
                 <a href="../status.xsl" target="_blank"><i class="fas fa-globe"></i> Public</a>
             </div>
+            </div>
         </div>
     </div>
 

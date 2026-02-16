@@ -943,3 +943,646 @@
 [2026-02-15  10:44:46] INFO fserve/open_fh lookup of "/style.css"
 [2026-02-15  10:44:46] INFO fserve/open_fh lookup of "/mcaster-utils.js"
 [2026-02-15  10:44:47] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  10:55:29] INFO thread/ lock abort set to 0
+[2026-02-15  10:55:29] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/access.log
+[2026-02-15  10:55:29] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/playlist.log
+[2026-02-15  10:55:29] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from mcaster1-production.yaml
+[2026-02-15  10:55:29] INFO connection/get_ssl_certificate SSL certificate found at /etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem
+[2026-02-15  10:55:29] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-15  10:55:29] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-15  10:55:29] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-15  10:55:29] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-15  10:55:29] INFO fserve/fserve_recheck_mime_types no mime types file defined, using defaults
+[2026-02-15  10:55:29] INFO fserve/fserve_initialize file serving started
+[2026-02-15  10:55:29] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-15  10:55:29] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-15  10:55:29] INFO client/workers_adjust requested worker count 2
+[2026-02-15  10:55:29] INFO client/worker_start starting incoming worker thread 0x55f23a3926e0
+[2026-02-15  10:55:29] INFO client/log_commit_thread started
+[2026-02-15  10:55:29] INFO yp/yp_recheck_config YP server "http://dir.xiph.org/cgi-bin/yp-cgi" logging to "/var/www/mcaster1.com/mcaster1dnas/build/logs/yp-health.log"
+[2026-02-15  10:55:29] INFO yp/yp_recheck_config Adding new YP server "http://dir.xiph.org/cgi-bin/yp-cgi" (timeout 10s, default interval 300s)
+[2026-02-15  10:55:29] INFO yp/yp_client_add Starting Directory client for YP processing
+[2026-02-15  10:55:29] INFO connection/connection_thread connection thread started
+[2026-02-15  10:55:40] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:55:40] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-15  10:55:40] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  10:55:40] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  10:55:41] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  10:56:12] INFO admin/admin_handle_general_request Bad or missing password on admin command request (stats.xsl)
+[2026-02-15  10:56:17] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:56:36] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  10:56:37] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  10:56:38] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-15  10:56:40] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  10:56:40] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/logs.xsl
+[2026-02-15  10:56:40] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/showlog.xsl
+[2026-02-15  10:56:48] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-15  10:57:41] WARN fserve/fserve_client_create req for file "/var/www/mcaster1.com/mcaster1dnas/web/robots.txt" No such file or directory
+[2026-02-15  12:33:24] INFO connection/connection_thread connection thread finished
+[2026-02-15  12:33:24] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-15  12:33:24] INFO slave/_slave_thread shutting down current relays
+[2026-02-15  12:33:24] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-15  12:33:24] INFO client/workers_adjust requested worker count 0
+[2026-02-15  12:33:24] INFO client/worker shutting down
+[2026-02-15  12:33:24] INFO client/worker shutting down
+[2026-02-15  12:33:24] INFO client/worker_stop stopping incoming worker thread
+[2026-02-15  12:33:24] INFO client/worker shutting down
+[2026-02-15  12:33:24] INFO main/server_process Shutting down
+[2026-02-15  12:33:24] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-15  12:33:24] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-15  12:33:24] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-15  12:33:24] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-15  12:33:24] INFO fserve/fserve_shutdown file serving stopped
+[2026-02-15  12:33:30] INFO thread/ lock abort set to 0
+[2026-02-15  12:33:30] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/access.log
+[2026-02-15  12:33:30] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/playlist.log
+[2026-02-15  12:33:30] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from mcaster1-production.yaml
+[2026-02-15  12:33:30] INFO connection/get_ssl_certificate SSL certificate found at /etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem
+[2026-02-15  12:33:30] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-15  12:33:30] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-15  12:33:30] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-15  12:33:30] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-15  12:33:30] INFO fserve/fserve_recheck_mime_types no mime types file defined, using defaults
+[2026-02-15  12:33:30] INFO fserve/fserve_initialize file serving started
+[2026-02-15  12:33:30] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-15  12:33:30] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-15  12:33:30] INFO client/workers_adjust requested worker count 2
+[2026-02-15  12:33:30] INFO client/log_commit_thread started
+[2026-02-15  12:33:30] INFO client/worker_start starting incoming worker thread 0x558f10f2aaf0
+[2026-02-15  12:33:30] INFO yp/yp_recheck_config YP server "http://dir.xiph.org/cgi-bin/yp-cgi" logging to "/var/www/mcaster1.com/mcaster1dnas/build/logs/yp-health.log"
+[2026-02-15  12:33:30] INFO yp/yp_recheck_config Adding new YP server "http://dir.xiph.org/cgi-bin/yp-cgi" (timeout 10s, default interval 300s)
+[2026-02-15  12:33:30] INFO yp/yp_client_add Starting Directory client for YP processing
+[2026-02-15  12:33:30] INFO connection/connection_thread connection thread started
+[2026-02-15  12:40:43] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-15  12:40:43] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  12:40:43] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  12:40:43] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  13:25:02] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  13:25:02] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-15  13:25:02] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  13:25:02] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  13:25:32] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/server_version.xsl
+[2026-02-15  13:25:33] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/credits.xsl
+[2026-02-15  13:41:04] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  13:41:04] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  13:41:05] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  13:41:20] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  13:41:35] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  13:41:35] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/logs.xsl
+[2026-02-15  13:41:35] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/showlog.xsl
+[2026-02-15  13:44:54] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  13:44:55] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  14:05:15] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  14:05:15] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  14:05:15] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  14:06:06] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset"
+[2026-02-15  14:06:06] INFO connection/_handle_source_request Source (/liveset) attempted to login with invalid or missing password
+[2026-02-15  14:06:46] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:06:46] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:06:48] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:06:48] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:06:51] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  14:07:03] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  14:08:01] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:01] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:08:33] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:33] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:08:34] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:34] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:08:35] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:35] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:08:36] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:36] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:08:37] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:08:37] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:10:10] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:10:10] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:10:12] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:10:12] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:10:17] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  14:10:18] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  14:10:18] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  14:10:18] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  14:11:04] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:11:04] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:11:12] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset.mp3"
+[2026-02-15  14:11:12] INFO connection/_handle_source_request Source (/liveset.mp3) attempted to login with invalid or missing password
+[2026-02-15  14:11:26] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset"
+[2026-02-15  14:11:26] INFO connection/_handle_source_request Source (/liveset) attempted to login with invalid or missing password
+[2026-02-15  14:11:29] INFO connection/_handle_source_request Source logging in at mountpoint "/liveset"
+[2026-02-15  14:11:29] INFO connection/_handle_source_request Source (/liveset) attempted to login with invalid or missing password
+[2026-02-15  14:15:43] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.mp3"
+[2026-02-15  14:15:43] INFO format-mp3/format_mp3_get_plugin Created format details for /stream.mp3
+[2026-02-15  14:15:43] INFO source/source_client_startup sources count is now 1
+[2026-02-15  14:15:43] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  14:15:43] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  14:15:43] INFO source/source_client_response source /stream.mp3 is ready to start
+[2026-02-15  14:15:43] INFO source/source_init Source /stream.mp3 initialised
+[2026-02-15  14:15:43] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  14:15:43] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Dave202 - Rain Against Her (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  14:15:43] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.ogg"
+[2026-02-15  14:15:43] INFO source/source_client_startup sources count is now 2
+[2026-02-15  14:15:43] INFO source/source_update_settings Generating listen url for /stream.ogg (http://15.204.91.208:9330/stream.ogg)
+[2026-02-15  14:15:43] INFO source/source_apply_mount Applying mount information for "/stream.ogg"
+[2026-02-15  14:15:43] INFO source/source_client_response source /stream.ogg is ready to start
+[2026-02-15  14:15:43] INFO source/source_init Source /stream.ogg initialised
+[2026-02-15  14:15:43] INFO source/source_read listener count on /stream.ogg now 0
+[2026-02-15  14:15:43] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  14:15:43] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  14:15:43] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  14:15:43] INFO mpeg/check_for_mp3 MPEG 1 Layer 3 Detected (44100 2 128 kbps) on 50.190.31.249
+[2026-02-15  14:15:44] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Dave202 - Rain Against Her (Original Mix) (PulsRadio TRANCE) - Win...
+[2026-02-15  14:15:50] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  14:15:50] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  14:15:50] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  14:15:51] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  14:15:52] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Matt Hardwick Vs Gulf - Impossible (Radio Edit) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  14:15:52] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Matt Hardwick Vs Gulf - Impossible (Radio Edit) (PulsRadio TRANCE)...
+[2026-02-15  14:15:52] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  14:15:52] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  14:16:03] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  14:16:03] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  14:16:03] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  14:16:03] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  14:16:03] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  14:16:03] WARN xml/parsing error
+[2026-02-15  14:16:03] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl
+[2026-02-15  14:16:03] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl"
+[2026-02-15  14:16:06] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  14:16:06] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  14:16:06] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  14:16:06] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  14:16:06] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  14:16:06] WARN xml/parsing error
+[2026-02-15  14:16:06] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl
+[2026-02-15  14:16:06] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl"
+[2026-02-15  14:16:09] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  14:16:09] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  14:16:09] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  14:16:09] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  14:16:09] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  14:16:09] WARN xml/parsing error
+[2026-02-15  14:16:09] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl
+[2026-02-15  14:16:09] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl"
+[2026-02-15  14:16:14] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  14:16:14] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  14:16:14] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  14:16:14] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  14:16:14] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  14:16:14] WARN xml/parsing error
+[2026-02-15  14:16:14] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/response.xsl
+[2026-02-15  14:16:14] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/response.xsl"
+[2026-02-15  14:16:14] INFO source/source_shutdown Source "/stream.mp3" exiting
+[2026-02-15  14:16:14] INFO source/source_client_read no more listeners on /stream.mp3
+[2026-02-15  14:16:14] INFO source/_free_source freeing source "/stream.mp3"
+[2026-02-15  14:16:27] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.mp3"
+[2026-02-15  14:16:27] INFO format-mp3/format_mp3_get_plugin Created format details for /stream.mp3
+[2026-02-15  14:16:27] INFO source/source_client_startup sources count is now 2
+[2026-02-15  14:16:27] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  14:16:27] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  14:16:27] INFO source/source_client_response source /stream.mp3 is ready to start
+[2026-02-15  14:16:27] INFO source/source_init Source /stream.mp3 initialised
+[2026-02-15  14:16:27] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  14:16:27] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Matt Hardwick Vs Gulf - Impossible (Radio Edit) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  14:16:27] INFO mpeg/check_for_mp3 MPEG 1 Layer 3 Detected (44100 2 128 kbps) on 50.190.31.249
+[2026-02-15  14:16:28] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Matt Hardwick Vs Gulf - Impossible (Radio Edit) (PulsRadio TRANCE)...
+[2026-02-15  14:16:43] INFO yp/response_header touch interval for /stream.ogg set to 200
+[2026-02-15  14:16:43] INFO yp/response_header message for /stream.ogg, Created successfully
+[2026-02-15  14:16:48] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  14:17:27] INFO yp/response_header touch interval for /stream.mp3 set to 200
+[2026-02-15  14:17:27] INFO yp/response_header message for /stream.mp3, Created successfully
+[2026-02-15  14:17:32] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  14:17:33] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: div line 20 and body
+[2026-02-15  14:17:33] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: body line 19 and html
+[2026-02-15  14:17:33] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: html line 5 and xsl:template
+[2026-02-15  14:17:33] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Opening and ending tag mismatch: template line 4 and stylesheet
+[2026-02-15  14:17:33] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl Premature end of data in tag stylesheet line 1
+[2026-02-15  14:17:33] WARN xml/parsing error
+[2026-02-15  14:17:33] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl
+[2026-02-15  14:17:33] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl"
+[2026-02-15  14:17:47] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  14:20:09] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  14:20:32] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Talla 2XLC with DJ TH And Cari - Just As You Are (PulsRadio TRANCE) - Winamp"
+[2026-02-15  14:20:32] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Talla 2XLC with DJ TH And Cari - Just As You Are (PulsRadio TRANCE...
+[2026-02-15  14:20:32] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  14:20:32] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  14:20:52] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  14:21:03] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  14:21:49] INFO source/_source_read End of Stream /stream.mp3
+[2026-02-15  14:21:49] INFO source/source_shutdown Source "/stream.mp3" exiting
+[2026-02-15  14:21:49] INFO source/source_client_read no more listeners on /stream.mp3
+[2026-02-15  14:21:49] INFO source/_free_source freeing source "/stream.mp3"
+[2026-02-15  14:21:50] INFO source/_source_read End of Stream /stream.ogg
+[2026-02-15  14:21:50] INFO source/source_shutdown Source "/stream.ogg" exiting
+[2026-02-15  14:21:50] INFO source/source_client_read no more listeners on /stream.ogg
+[2026-02-15  14:21:50] INFO source/_free_source freeing source "/stream.ogg"
+[2026-02-15  14:21:50] INFO yp/do_yp_remove clearing up YP entry for /stream.mp3
+[2026-02-15  14:21:50] INFO yp/response_header message for /stream.mp3, Successfully removed
+[2026-02-15  14:21:50] INFO yp/do_yp_remove clearing up YP entry for /stream.ogg
+[2026-02-15  14:21:50] INFO yp/response_header message for /stream.ogg, Successfully removed
+[2026-02-15  15:11:14] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.mp3"
+[2026-02-15  15:11:14] INFO format-mp3/format_mp3_get_plugin Created format details for /stream.mp3
+[2026-02-15  15:11:14] INFO source/source_client_startup sources count is now 1
+[2026-02-15  15:11:14] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  15:11:14] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  15:11:14] INFO source/source_client_response source /stream.mp3 is ready to start
+[2026-02-15  15:11:14] INFO source/source_init Source /stream.mp3 initialised
+[2026-02-15  15:11:14] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  15:11:14] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Claudiu Adam - For A Feeling (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:11:14] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.ogg"
+[2026-02-15  15:11:14] INFO source/source_client_startup sources count is now 2
+[2026-02-15  15:11:14] INFO source/source_update_settings Generating listen url for /stream.ogg (http://15.204.91.208:9330/stream.ogg)
+[2026-02-15  15:11:14] INFO source/source_apply_mount Applying mount information for "/stream.ogg"
+[2026-02-15  15:11:14] INFO source/source_client_response source /stream.ogg is ready to start
+[2026-02-15  15:11:14] INFO source/source_init Source /stream.ogg initialised
+[2026-02-15  15:11:14] INFO source/source_read listener count on /stream.ogg now 0
+[2026-02-15  15:11:14] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:11:14] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:11:14] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:11:14] INFO mpeg/check_for_mp3 MPEG 1 Layer 3 Detected (44100 2 128 kbps) on 50.190.31.249
+[2026-02-15  15:11:15] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Claudiu Adam - For A Feeling (Extended Mix) (PulsRadio TRANCE) - W...
+[2026-02-15  15:11:23] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  15:11:23] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  15:11:23] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  15:11:24] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:12:14] INFO yp/response_header touch interval for /stream.ogg set to 200
+[2026-02-15  15:12:14] INFO yp/response_header message for /stream.ogg, Created successfully
+[2026-02-15  15:12:14] INFO yp/response_header touch interval for /stream.mp3 set to 200
+[2026-02-15  15:12:14] INFO yp/response_header message for /stream.mp3, Created successfully
+[2026-02-15  15:12:19] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:12:19] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:13:57] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Aly And Fila Feat Jwaydan - Coming Home (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:13:57] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (7) StreamTitle=' Aly And Fila Feat Jwaydan - Coming Home (Original Mix) (PulsRadio ...
+[2026-02-15  15:13:57] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:13:57] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:13:57] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:13:58] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:15:50] INFO admin/admin_handle_general_request processing file stats.xml
+[2026-02-15  15:17:17] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:17:18] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:19:47] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:19:48] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  15:19:48] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  15:19:48] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:19:54] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:19:54] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-15  15:20:37] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:20:38] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:20:41] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-15  15:20:57] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:21:04] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listclients.xsl
+[2026-02-15  15:21:07] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/moveclients.xsl
+[2026-02-15  15:21:13] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/updatemetadata.xsl
+[2026-02-15  15:21:26] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/xspf.xsl
+[2026-02-15  15:21:32] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Dante - Memory Loss (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:21:32] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Dante - Memory Loss (Original Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  15:21:32] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:21:32] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:21:33] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:21:34] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:21:41] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/managerelays.xsl
+[2026-02-15  15:23:14] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:23:18] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:23:34] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:24:53] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:24:54] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:27:37] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:27:37] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  15:27:37] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  15:27:37] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:27:46] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:28:02] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:28:10] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Alex Shevchenko X Ithur And Hidden Tigress - Fill The Sky (Derek Palmer Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:28:10] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (8) StreamTitle=' Alex Shevchenko X Ithur And Hidden Tigress - Fill The Sky (Derek P...
+[2026-02-15  15:28:11] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:28:11] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:28:13] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:28:14] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:28:35] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:28:37] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:28:43] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:28:58] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: for-each line 71 and div
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: div line 51 and xsl:for-each
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: body line 19 and div
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: html line 5 and div
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: template line 4 and body
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Opening and ending tag mismatch: stylesheet line 1 and html
+[2026-02-15  15:30:28] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl Extra content at the end of the document
+[2026-02-15  15:30:28] WARN xml/parsing error
+[2026-02-15  15:30:28] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:30:28] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl"
+[2026-02-15  15:31:33] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:31:34] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:32:29] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:32:37] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:32:38] INFO admin/admin_handle_general_request processing file stats.xml
+[2026-02-15  15:32:48] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:33:13] INFO connection/wait_for_serversock HUP received, reread scheduled
+[2026-02-15  15:33:13] INFO event/event_config_read Re-reading XML
+[2026-02-15  15:33:13] INFO cfgfile/config_parse_file Detected YAML configuration format: mcaster1-production.yaml
+[2026-02-15  15:33:13] WARN config-yaml/yaml_get_port_value port out of range: -1
+[2026-02-15  15:33:13] INFO thread/ lock abort set to 0
+[2026-02-15  15:33:13] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-15  15:33:17] INFO connection/connection_thread connection thread finished
+[2026-02-15  15:33:17] INFO fserve/fserve_recheck_mime_types no mime types file defined, using defaults
+[2026-02-15  15:33:17] INFO client/workers_adjust requested worker count 2
+[2026-02-15  15:33:17] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-15  15:33:17] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-15  15:33:17] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  15:33:17] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  15:33:17] INFO source/source_update_settings Generating listen url for /stream.ogg (http://15.204.91.208:9330/stream.ogg)
+[2026-02-15  15:33:17] INFO source/source_apply_mount Applying mount information for "/stream.ogg"
+[2026-02-15  15:33:17] INFO connection/get_ssl_certificate SSL certificate found at /etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem
+[2026-02-15  15:33:17] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-15  15:33:17] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-15  15:33:17] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-15  15:33:17] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-15  15:33:17] INFO connection/connection_thread connection thread started
+[2026-02-15  15:33:45] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:33:45] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  15:33:46] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  15:33:46] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:33:54] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:34:00] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:34:53] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:34:54] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:35:07] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Armin van Buuren And Billen Ted Feat JC Stewart - Come Around Again (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:35:07] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:35:07] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:35:07] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (7) StreamTitle=' Armin van Buuren And Billen Ted Feat JC Stewart - Come Around Agai...
+[2026-02-15  15:35:09] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:35:20] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:35:37] INFO yp/response_header message for /stream.ogg, Successfully updated
+[2026-02-15  15:35:37] INFO yp/response_header message for /stream.mp3, Successfully updated
+[2026-02-15  15:35:46] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  15:36:17] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:36:18] INFO admin/admin_handle_general_request processing file listmounts.xml
+[2026-02-15  15:38:31] INFO admin/command_metadata Metadata song on /stream.mp3 set to " The Blizzard - Kalopsia (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:38:31] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' The Blizzard - Kalopsia (Original Mix) (PulsRadio TRANCE) - Winamp...
+[2026-02-15  15:38:31] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:38:31] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:38:48] INFO thread/ lock abort set to 0
+[2026-02-15  15:38:48] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/access.log
+[2026-02-15  15:38:48] INFO logging/recheck_log_file Using log file /var/www/mcaster1.com/mcaster1dnas/build/logs/playlist.log
+[2026-02-15  15:38:48] INFO main/server_proc_init Mcaster1DNAS 2.5.0 server reading configuration from /var/www/mcaster1.com/mcaster1dnas/mcaster1-production.yaml
+[2026-02-15  15:38:48] INFO connection/get_ssl_certificate SSL certificate found at /etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem
+[2026-02-15  15:38:48] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-15  15:38:48] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-15  15:38:48] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-15  15:38:48] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-15  15:38:48] INFO fserve/fserve_recheck_mime_types no mime types file defined, using defaults
+[2026-02-15  15:38:48] INFO fserve/fserve_initialize file serving started
+[2026-02-15  15:38:48] INFO main/server_process Mcaster1DNAS 2.5.0 server started
+[2026-02-15  15:38:48] WARN slave/slave_startup process has 1048576 max file descriptor limit
+[2026-02-15  15:38:48] INFO client/workers_adjust requested worker count 2
+[2026-02-15  15:38:48] INFO client/log_commit_thread started
+[2026-02-15  15:38:48] INFO client/worker_start starting incoming worker thread 0x562952cff6f0
+[2026-02-15  15:38:48] INFO yp/yp_recheck_config YP server "http://dir.xiph.org/cgi-bin/yp-cgi" logging to "/var/www/mcaster1.com/mcaster1dnas/build/logs/yp-health.log"
+[2026-02-15  15:38:48] INFO yp/yp_recheck_config Adding new YP server "http://dir.xiph.org/cgi-bin/yp-cgi" (timeout 10s, default interval 300s)
+[2026-02-15  15:38:48] INFO yp/yp_client_add Starting Directory client for YP processing
+[2026-02-15  15:38:48] INFO connection/connection_thread connection thread started
+[2026-02-15  15:38:50] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  15:39:00] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.mp3"
+[2026-02-15  15:39:00] INFO format-mp3/format_mp3_get_plugin Created format details for /stream.mp3
+[2026-02-15  15:39:00] INFO source/source_client_startup sources count is now 1
+[2026-02-15  15:39:00] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  15:39:00] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  15:39:00] INFO source/source_client_response source /stream.mp3 is ready to start
+[2026-02-15  15:39:00] INFO source/source_init Source /stream.mp3 initialised
+[2026-02-15  15:39:00] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  15:39:00] INFO admin/command_metadata Metadata song on /stream.mp3 set to " The Blizzard - Kalopsia (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:39:00] INFO mpeg/check_for_mp3 MPEG 1 Layer 3 Detected (44100 2 128 kbps) on 50.190.31.249
+[2026-02-15  15:39:01] INFO connection/_handle_source_request Source logging in at mountpoint "/stream.ogg"
+[2026-02-15  15:39:01] INFO source/source_client_startup sources count is now 2
+[2026-02-15  15:39:01] INFO source/source_update_settings Generating listen url for /stream.ogg (http://15.204.91.208:9330/stream.ogg)
+[2026-02-15  15:39:01] INFO source/source_apply_mount Applying mount information for "/stream.ogg"
+[2026-02-15  15:39:01] INFO source/source_client_response source /stream.ogg is ready to start
+[2026-02-15  15:39:01] INFO source/source_init Source /stream.ogg initialised
+[2026-02-15  15:39:01] INFO source/source_read listener count on /stream.ogg now 0
+[2026-02-15  15:39:01] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:39:01] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:39:01] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:39:01] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' The Blizzard - Kalopsia (Original Mix) (PulsRadio TRANCE) - Winamp...
+[2026-02-15  15:40:00] INFO yp/response_header message for /stream.mp3, Duplicate stream
+[2026-02-15  15:40:00] EROR yp/send_to_yp YP add on http://dir.xiph.org/cgi-bin/yp-cgi failed for /stream.mp3: Duplicate stream
+[2026-02-15  15:40:01] INFO yp/response_header message for /stream.ogg, Duplicate stream
+[2026-02-15  15:40:01] EROR yp/send_to_yp YP add on http://dir.xiph.org/cgi-bin/yp-cgi failed for /stream.ogg: Duplicate stream
+[2026-02-15  15:42:53] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  15:42:53] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  15:42:53] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  15:48:05] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Jak Aggas - Greyson (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:48:05] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Jak Aggas - Greyson (Extended Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  15:48:05] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:48:05] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  15:55:06] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Phalanx - I M Alive (Dj Manian Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  15:55:06] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Phalanx - I M Alive (Dj Manian Remix) (PulsRadio TRANCE) - Winamp'...
+[2026-02-15  15:55:07] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  15:55:07] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:02:38] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Ferry Tayle And Tonks - Vol De Nuit (Manuel Le Saux Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:02:38] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (7) StreamTitle=' Ferry Tayle And Tonks - Vol De Nuit (Manuel Le Saux Remix) (PulsRa...
+[2026-02-15  16:02:38] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:02:38] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:07:16] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/listmounts.xsl
+[2026-02-15  16:07:16] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  16:07:16] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  16:07:16] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:19] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:07:19] WARN xml/parsing error
+[2026-02-15  16:07:19] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl
+[2026-02-15  16:07:19] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl"
+[2026-02-15  16:07:29] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/status.xsl
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:07:40] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:07:40] WARN xml/parsing error
+[2026-02-15  16:07:40] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl
+[2026-02-15  16:07:40] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl"
+[2026-02-15  16:07:49] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/xspf.xsl
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:08:49] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:08:49] WARN xml/parsing error
+[2026-02-15  16:08:49] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl
+[2026-02-15  16:08:49] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl"
+[2026-02-15  16:09:07] INFO admin/admin_handle_general_request processing file logs.xsl
+[2026-02-15  16:09:07] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/logs.xsl
+[2026-02-15  16:09:07] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/showlog.xsl
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl xmlParseEntityRef: no name
+[2026-02-15  16:09:59] WARN xml/parsing /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl StartTag: invalid element name
+[2026-02-15  16:09:59] WARN xml/parsing error
+[2026-02-15  16:09:59] WARN xml/parsing xsltParseStylesheetFile : cannot parse /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl
+[2026-02-15  16:09:59] WARN xslt/xslt_apply_sheet problem reading stylesheet "/var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl"
+[2026-02-15  16:10:00] INFO admin/command_metadata Metadata song on /stream.mp3 set to " ARDI - I Am (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:10:00] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' ARDI - I Am (Extended Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  16:10:00] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:10:00] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:11:18] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl
+[2026-02-15  16:12:23] INFO connection/wait_for_serversock HUP received, reread scheduled
+[2026-02-15  16:12:23] INFO event/event_config_read Re-reading XML
+[2026-02-15  16:12:23] INFO cfgfile/config_parse_file Detected YAML configuration format: /var/www/mcaster1.com/mcaster1dnas/mcaster1-production.yaml
+[2026-02-15  16:12:23] WARN config-yaml/yaml_get_port_value port out of range: -1
+[2026-02-15  16:12:23] INFO thread/ lock abort set to 0
+[2026-02-15  16:12:23] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-15  16:12:27] INFO connection/connection_thread connection thread finished
+[2026-02-15  16:12:27] INFO fserve/fserve_recheck_mime_types no mime types file defined, using defaults
+[2026-02-15  16:12:27] INFO client/workers_adjust requested worker count 2
+[2026-02-15  16:12:27] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-15  16:12:27] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-15  16:12:27] INFO source/source_update_settings Generating listen url for /stream.mp3 (http://15.204.91.208:9330/stream.mp3)
+[2026-02-15  16:12:27] INFO source/source_apply_mount Applying mount information for "/stream.mp3"
+[2026-02-15  16:12:27] INFO source/source_update_settings Generating listen url for /stream.ogg (http://15.204.91.208:9330/stream.ogg)
+[2026-02-15  16:12:27] INFO source/source_apply_mount Applying mount information for "/stream.ogg"
+[2026-02-15  16:12:27] INFO connection/get_ssl_certificate SSL certificate found at /etc/ssl/mcaster1.com/dnas.mcaster1.com.fullchain.pem
+[2026-02-15  16:12:27] INFO connection/get_ssl_certificate SSL using ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+[2026-02-15  16:12:27] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9443 address 15.204.91.208
+[2026-02-15  16:12:27] INFO connection/connection_setup_sockets 1 listener socket(s) for port 9330 address 15.204.91.208
+[2026-02-15  16:12:27] INFO connection/connection_setup_sockets 2 listening sockets setup complete
+[2026-02-15  16:12:27] INFO connection/connection_thread connection thread started
+[2026-02-15  16:12:30] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl
+[2026-02-15  16:14:31] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/webplayer.xsl
+[2026-02-15  16:14:58] INFO admin/admin_handle_general_request processing file stats.xsl
+[2026-02-15  16:14:58] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/admin/stats.xsl
+[2026-02-15  16:15:04] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/webplayer.xsl
+[2026-02-15  16:15:51] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  16:15:51] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  16:15:51] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  16:15:57] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  16:15:58] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:16:16] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  16:16:21] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Cosmic Gate  Feat Jan Johnston - I Feel Wonderfull (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:16:21] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Cosmic Gate  Feat Jan Johnston - I Feel Wonderfull (PulsRadio TRAN...
+[2026-02-15  16:16:21] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:16:21] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:16:57] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  16:16:59] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:17:02] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  16:18:00] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  16:18:00] INFO source/source_read listener count on /stream.mp3 now 2
+[2026-02-15  16:18:03] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:19:07] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:20:07] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:21:12] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:22:12] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:23:17] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:24:17] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  16:24:36] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Sean Tyas - Momentum (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:24:36] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Sean Tyas - Momentum (Extended Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  16:24:37] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:24:37] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:24:59] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  16:25:02] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  16:25:02] INFO source/source_read listener count on /stream.mp3 now 3
+[2026-02-15  16:25:02] INFO source/source_read listener count on /stream.mp3 now 2
+[2026-02-15  16:25:02] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  16:25:11] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  16:25:19] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/server_version.xsl
+[2026-02-15  16:25:19] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  16:25:19] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  16:25:21] INFO xslt/xslt_apply_sheet loaded stylesheet /var/www/mcaster1.com/mcaster1dnas/web/credits.xsl
+[2026-02-15  16:32:52] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Sean Mathews - Together (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:32:52] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Sean Mathews - Together (Extended Mix) (PulsRadio TRANCE) - Winamp...
+[2026-02-15  16:32:52] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:32:52] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:40:35] INFO admin/command_metadata Metadata song on /stream.mp3 set to " ATB - Starfire (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:40:35] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (4) StreamTitle=' ATB - Starfire (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  16:40:35] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:40:35] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:45:00] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Monada - Turbulence (Original Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:45:00] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Monada - Turbulence (Original Mix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  16:45:00] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:45:00] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:52:14] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Kayu Vs Albert - Trace (Driftmoon Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:52:14] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Kayu Vs Albert - Trace (Driftmoon Remix) (PulsRadio TRANCE) - Wina...
+[2026-02-15  16:52:14] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:52:14] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  16:58:57] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Envio - For You (Sunlounger Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  16:58:57] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (5) StreamTitle=' Envio - For You (Sunlounger Remix) (PulsRadio TRANCE) - Winamp';...
+[2026-02-15  16:58:57] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  16:58:57] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  17:05:20] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  17:05:20] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  17:05:48] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  17:05:48] INFO source/source_read listener count on /stream.mp3 now 2
+[2026-02-15  17:05:49] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  17:05:51] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  17:06:51] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  17:07:44] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Paul Van Dyk And Roger Shah FeatDaphne Khoo - Louder (Ben Nicky Remix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  17:07:44] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (8) StreamTitle=' Paul Van Dyk And Roger Shah FeatDaphne Khoo - Louder (Ben Nicky Re...
+[2026-02-15  17:07:44] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  17:07:44] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  17:07:51] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  17:08:56] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  17:09:56] WARN xslt/xslt_apply_sheet Error checking for stylesheet file "/var/www/mcaster1.com/mcaster1dnas/web/status-json.xsl": No such file or directory
+[2026-02-15  17:10:11] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  17:10:11] INFO source/source_read listener count on /stream.mp3 now 2
+[2026-02-15  17:10:28] INFO source/source_read listener count on /stream.mp3 now 1
+[2026-02-15  17:10:28] INFO source/source_read listener count on /stream.mp3 now 0
+[2026-02-15  17:13:12] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Maarten De Jong - Reincarnation (Extended Mix) (PulsRadio TRANCE) - Winamp"
+[2026-02-15  17:13:12] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (6) StreamTitle=' Maarten De Jong - Reincarnation (Extended Mix) (PulsRadio TRANCE) ...
+[2026-02-15  17:13:13] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  17:13:13] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  17:14:53] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  17:14:53] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  17:14:53] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  17:15:04] INFO admin/command_metadata Metadata song on /stream.mp3 set to " Maarten De Jong - Reincarnation (Extended Mix) (PulsRadio TRANCE) - Winamp [Stopped]"
+[2026-02-15  17:15:04] INFO format-mp3/metadata_setup icy metadata on /stream.mp3 as (7) StreamTitle=' Maarten De Jong - Reincarnation (Extended Mix) (PulsRadio TRANCE) ...
+[2026-02-15  17:15:05] INFO format-ogg/process_initial_page new BOS page arrived, reset for detection
+[2026-02-15  17:15:05] INFO format-vorbis/initial_vorbis_page seen initial vorbis header
+[2026-02-15  17:15:13] INFO source/_source_read End of Stream /stream.mp3
+[2026-02-15  17:15:13] INFO source/source_shutdown Source "/stream.mp3" exiting
+[2026-02-15  17:15:13] INFO source/source_client_read no more listeners on /stream.mp3
+[2026-02-15  17:15:13] INFO source/_free_source freeing source "/stream.mp3"
+[2026-02-15  17:15:13] INFO source/_source_read End of Stream /stream.ogg
+[2026-02-15  17:15:13] INFO source/source_shutdown Source "/stream.ogg" exiting
+[2026-02-15  17:15:13] INFO source/source_client_read no more listeners on /stream.ogg
+[2026-02-15  17:15:13] INFO source/_free_source freeing source "/stream.ogg"
+[2026-02-15  17:18:09] INFO fserve/open_fh lookup of "/style.css"
+[2026-02-15  17:18:09] INFO fserve/open_fh lookup of "/mcaster-utils.js"
+[2026-02-15  17:18:09] INFO fserve/open_fh lookup of "/favicon.ico"
+[2026-02-15  17:30:05] INFO connection/connection_thread connection thread finished
+[2026-02-15  17:30:05] INFO connection/connection_thread_shutdown shutting down connection thread
+[2026-02-15  17:30:05] INFO slave/_slave_thread shutting down current relays
+[2026-02-15  17:30:05] INFO slave/_slave_thread Slave thread shutdown complete
+[2026-02-15  17:30:05] INFO client/workers_adjust requested worker count 0
+[2026-02-15  17:30:05] INFO client/worker shutting down
+[2026-02-15  17:30:05] INFO client/worker shutting down
+[2026-02-15  17:30:05] INFO client/worker_stop stopping incoming worker thread
+[2026-02-15  17:30:05] INFO client/worker shutting down
+[2026-02-15  17:30:05] INFO main/server_process Shutting down
+[2026-02-15  17:30:05] INFO auth/auth_shutdown Auth shutdown complete
+[2026-02-15  17:30:05] INFO connection/connection_listen_sockets_close Closing port 9443 on 15.204.91.208
+[2026-02-15  17:30:05] INFO connection/connection_listen_sockets_close Closing port 9330 on 15.204.91.208
+[2026-02-15  17:30:05] INFO yp/yp_shutdown YP cleanup complete
+[2026-02-15  17:30:05] INFO fserve/fserve_shutdown file serving stopped

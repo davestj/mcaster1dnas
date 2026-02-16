@@ -1,57 +1,213 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root {
+            --mcaster-blue: #0ea5e9;
+            --dnas-green: #22c55e;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-white: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-accent: #f1f5f9;
+            --border-light: #e2e8f0;
+            --shadow-soft: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --gradient-brand: linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));
+            --radius-lg: 0.75rem;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); line-height: 1.6; color: var(--text-primary); background: var(--bg-light); }
+
+        .breadcrumb { background: var(--bg-white); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; }
+        .breadcrumb a { color: var(--mcaster-blue); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .hero { background: var(--gradient-brand); color: white; padding: 4rem 0 2rem 0; }
+        .hero-content { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .hero p { font-size: 1.25rem; opacity: 0.95; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 3rem 1rem; }
+        .content-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-medium); margin-bottom: 2rem; }
+        .content-card h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem 0; display: flex; align-items: center; gap: 0.75rem; }
+        .content-card h2:first-child { margin-top: 0; }
+        .content-card h2 i { color: var(--mcaster-blue); }
+        .content-card h3 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin: 2rem 0 1rem 0; }
+        .content-card p { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem; }
+        .content-card ul { margin: 1rem 0 1.5rem 2rem; }
+        .content-card li { color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.5rem; }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0; }
+        .feature-box { background: var(--bg-light); border-left: 4px solid var(--mcaster-blue); padding: 1.5rem; border-radius: var(--radius-lg); }
+        .feature-box h4 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .feature-box h4 i { color: var(--mcaster-blue); }
+
+        .platform-list { list-style: none; margin: 1.5rem 0; }
+        .platform-list li { background: var(--bg-light); padding: 1rem 1.5rem; margin-bottom: 0.5rem; border-radius: var(--radius-lg); display: flex; align-items: center; gap: 0.75rem; }
+        .platform-list li i { color: var(--dnas-green); font-size: 1.25rem; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .content-card { padding: 2rem 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 Introduction</h1>
-<hr id='titlebar' />
-<br />
-<br />
-<br />
-<h2>What is Mcaster1 ?</h2>
-<p>Mcaster1 is a streaming media server which currently supports Ogg Vorbis and MP3 audio streams.  It can be used to create an Internet radio station or a privately running jukebox and many things in between.  It is very versatile in that new formats can be added relatively easily and supports open standards for commuincation and interaction.</p>
-<br />
-<p>There are two major parts to most streaming media servers: the component providing the content (what we call <b>source clients</b>) and the component which is responsible for serving that content to listeners (this is the function of mcaster1).
-</p>
-<br />
-<br />
-<br />
-<h2>What platforms are supported ?</h2>
-<p>Currently the following Unix platforms are supported:</p>
-<ul>
-<li>Linux (Most flavors including Redhat and Debian)</li>
-<li>FreeBSD</li>
-<li>OpenBSD</li>
-<li>Solaris</li>
-</ul>
-<p>Currently the following Windows platforms are supported:</p>
-<ul>
-<li>Windows NT</li>
-<li>Windows 2000</li>
-<li>Windows XP</li>
-</ul>
-<br />
-<br />
-<br />
-<h2>Where do I go for questions?</h2>
-<p>There are many ways to contact the mcaster1 development team</p>
-<h3>Best Ways</h3>
-<ul>
-<li>Mcaster1 mailing list <a href="http://www.xiph.org/archives">http://www.xiph.org/archives</a></li>
-<li>Mcaster1 Developers mailing list <a href="http://www.xiph.org/archives">http://www.xiph.org/archives</a></li>
-<li>Mcaster1 IRC chat room - irc.freenode.net : #mcaster1</li>
-</ul>
-<h3>Alternate Ways</h3>
-<ul>
-<li>team@mcaster1.org</li>
-</ul>
-<br />
-<br />
-<br />
-</div>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Introduction</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-rocket"></i> Introduction to Mcaster1DNAS</h1>
+            <p>Professional streaming media server for modern broadcasting</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content-card">
+            <h2><i class="fas fa-question-circle"></i> What is Mcaster1DNAS?</h2>
+            <p>
+                Mcaster1DNAS is a professional streaming media server designed for broadcasting audio content over the internet.
+                It supports multiple audio formats including MP3, AAC, Ogg Vorbis, Opus, Speex, and FLAC, making it one of the
+                most versatile streaming servers available.
+            </p>
+            <p>
+                Whether you're creating an internet radio station, podcasting platform, or a private streaming service,
+                Mcaster1DNAS provides the robust infrastructure you need. Built on the proven Icecast foundation and enhanced
+                with modern features, it's used by broadcasters worldwide for everything from small personal stations to
+                large-scale professional deployments.
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h4><i class="fas fa-broadcast-tower"></i> Source Clients</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Software that encodes and sends your audio content to the Mcaster1DNAS server. Popular options
+                        include Butt, Liquidsoap, SAM Broadcaster, and FFmpeg.
+                    </p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-server"></i> Streaming Server</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Mcaster1DNAS receives content from source clients and distributes it to listeners efficiently,
+                        handling thousands of concurrent connections.
+                    </p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-headphones"></i> Listeners</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Your audience connects using standard media players like VLC, iTunes, web browsers, or mobile apps
+                        to listen to your streams.
+                    </p>
+                </div>
+            </div>
+
+            <h2><i class="fas fa-desktop"></i> What Platforms are Supported?</h2>
+            <p>
+                Mcaster1DNAS runs on all major Unix-like operating systems and supports modern deployment methods
+                including containerization and orchestration platforms.
+            </p>
+
+            <h3>Linux Distributions</h3>
+            <ul class="platform-list">
+                <li><i class="fab fa-ubuntu"></i> Ubuntu (20.04+, 22.04+, 24.04+)</li>
+                <li><i class="fab fa-debian"></i> Debian (10+, 11+, 12+)</li>
+                <li><i class="fab fa-redhat"></i> Red Hat Enterprise Linux (7+, 8+, 9+)</li>
+                <li><i class="fab fa-centos"></i> CentOS / Rocky Linux / AlmaLinux (7+, 8+, 9+)</li>
+                <li><i class="fab fa-fedora"></i> Fedora (latest releases)</li>
+            </ul>
+
+            <h3>BSD Unix</h3>
+            <ul class="platform-list">
+                <li><i class="fab fa-freebsd"></i> FreeBSD (12+, 13+, 14+)</li>
+                <li><i class="fas fa-server"></i> OpenBSD (latest releases)</li>
+                <li><i class="fas fa-server"></i> NetBSD (latest releases)</li>
+            </ul>
+
+            <h3>Other Platforms</h3>
+            <ul class="platform-list">
+                <li><i class="fab fa-apple"></i> macOS (10.15+, 11+, 12+, 13+, 14+)</li>
+                <li><i class="fab fa-docker"></i> Docker (containerized deployments)</li>
+                <li><i class="fas fa-dharmachakra"></i> Kubernetes (orchestrated deployments)</li>
+                <li><i class="fas fa-cloud"></i> Cloud platforms (AWS, GCP, Azure, DigitalOcean)</li>
+            </ul>
+
+            <p style="margin-top: 2rem;">
+                <strong>Note:</strong> Windows support has been discontinued in favor of modern Unix-based platforms.
+                For Windows users, we recommend using Docker Desktop or WSL2 (Windows Subsystem for Linux) to run
+                Mcaster1DNAS on Windows 10/11.
+            </p>
+
+            <h2><i class="fas fa-key"></i> Key Features</h2>
+            <ul>
+                <li><strong>ICY-META v2.1+ Protocol:</strong> Enhanced metadata support with social media integration</li>
+                <li><strong>YAML Configuration:</strong> Modern, human-readable configuration (XML support for legacy compatibility)</li>
+                <li><strong>Multi-Format Support:</strong> MP3, AAC, Ogg Vorbis, Opus, Speex, and FLAC</li>
+                <li><strong>HTTPS Support:</strong> SSL/TLS encryption for secure streaming and encoder connections</li>
+                <li><strong>Advanced Authentication:</strong> Password, database, and custom authentication methods</li>
+                <li><strong>Stream Relaying:</strong> Load balancing and geographic distribution</li>
+                <li><strong>Real-time Statistics:</strong> Comprehensive monitoring and analytics</li>
+                <li><strong>YP Directory Logging:</strong> Detailed directory registration tracking</li>
+            </ul>
+
+            <h2><i class="fas fa-life-ring"></i> Where to Get Help?</h2>
+            <p>
+                The Mcaster1DNAS community provides multiple channels for support, questions, and collaboration.
+            </p>
+
+            <h3>Best Ways to Get Support</h3>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h4><i class="fab fa-github"></i> GitHub Discussions</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Ask questions, share ideas, and connect with the community at
+                        <a href="https://github.com/davestj/mcaster1dnas/discussions" target="_blank" style="color: var(--mcaster-blue);">GitHub Discussions</a>
+                    </p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-bug"></i> GitHub Issues</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Report bugs and request features at
+                        <a href="https://github.com/davestj/mcaster1dnas/issues" target="_blank" style="color: var(--mcaster-blue);">GitHub Issues</a>
+                    </p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-envelope"></i> Email Support</h4>
+                    <p style="margin: 0; color: var(--text-secondary);">
+                        Contact the maintainer directly at
+                        <a href="mailto:davestj@gmail.com" style="color: var(--mcaster-blue);">davestj@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+
+            <h3>Additional Resources</h3>
+            <ul>
+                <li><strong>GitHub Repository:</strong> <a href="https://github.com/davestj/mcaster1dnas" target="_blank" style="color: var(--mcaster-blue);">https://github.com/davestj/mcaster1dnas</a></li>
+                <li><strong>Documentation:</strong> This guide and additional resources in the repository</li>
+                <li><strong>Sample Configurations:</strong> YAML examples included in the source distribution</li>
+            </ul>
+
+            <div style="background: var(--bg-accent); border-left: 4px solid var(--dnas-green); padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 2rem;">
+                <p style="margin: 0;">
+                    <strong><i class="fas fa-lightbulb"></i> Next Steps:</strong> Ready to get started?
+                    Continue to the <a href="mcaster1dnas_basicsetup.html" style="color: var(--mcaster-blue); font-weight: 600;">Basic Setup guide</a>
+                    to install and configure your Mcaster1DNAS server.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

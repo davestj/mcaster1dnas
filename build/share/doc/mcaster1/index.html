@@ -1,86 +1,447 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mcaster1DNAS Documentation - Streaming Server Guide</title>
+    <meta name="description" content="Complete documentation for Mcaster1DNAS streaming server including setup, configuration, administration, and advanced features.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root {
+            --mcaster-blue: #0ea5e9;
+            --mcaster-cyan: #06b6d4;
+            --dnas-green: #22c55e;
+            --dnas-accent: #16a34a;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-white: #ffffff;
+            --bg-light: #f8fafc;
+            --border-light: #e2e8f0;
+            --shadow-soft: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-large: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --gradient-brand: linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-light);
+        }
+
+        .hero {
+            background: var(--gradient-brand);
+            color: white;
+            padding: 5rem 0 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="1.5" fill="white" fill-opacity="0.1"/></svg>');
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+        }
+
+        .intro-section {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 3rem;
+        }
+
+        .intro-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .intro-section h2 i {
+            color: var(--mcaster-blue);
+        }
+
+        .intro-section p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .doc-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            display: block;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-large);
+            border-color: var(--mcaster-blue);
+        }
+
+        .doc-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--gradient-brand);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .doc-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .doc-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .doc-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--mcaster-blue);
+            font-weight: 600;
+            transition: gap var(--transition-fast);
+        }
+
+        .doc-card:hover .doc-link {
+            gap: 0.75rem;
+        }
+
+        .quick-links {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 3rem;
+        }
+
+        .quick-links h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quick-links h2 i {
+            color: var(--dnas-green);
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
+        }
+
+        .quick-link-item:hover {
+            background: var(--bg-white);
+            border-color: var(--mcaster-blue);
+            transform: translateX(4px);
+        }
+
+        .quick-link-item i {
+            color: var(--mcaster-blue);
+            font-size: 1.25rem;
+        }
+
+        .footer {
+            background: var(--bg-white);
+            border-top: 2px solid var(--mcaster-blue);
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .footer a {
+            color: var(--mcaster-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.25rem;
+            }
+
+            .doc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .intro-section {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 Documentation Table of Contents</h1>
-<hr id='titlebar' />
-<ul>
-<li><a href="mcaster1dnas_introduction.html">Introduction</a></li>
-<li><a href="mcaster1dnas_basicsetup.html">Basic Setup</a></li>
-<li><a href="mcaster1dnas_config_file.html">Mcaster1 Config File</a></li>
-<li><a href="mcaster1dnas_admin.html">Admin Interface</a></li>
-<li><a href="mcaster1dnas_stats.html">Server Statistics</a></li>
-<li><a href="mcaster1dnas_relay.html">Relaying</a></li>
-<li><a href="mcaster1dnas_yp.html">Listing in a YP directory</a></li>
-<li><a href="mcaster1dnas_listenerauth.html">Listener Authentication</a></li>
-<li><a href="mcaster1dnas_win32.html">Win32 specific documentation</a></li>
-<li><a href="mcaster1dnas_glossary.html">Glossary</a></li>
-<li><a href="mcaster1dnas_faq.html">FAQ</a></li>
-</ul>
-<pre>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h1>Mcaster1DNAS Documentation</h1>
+            <p>Complete guide to setting up and managing your professional streaming server</p>
+        </div>
+    </div>
 
-mcaster1 2.x - README
----------------------------------------------------------------------
+    <div class="container">
+        <div class="intro-section">
+            <h2><i class="fas fa-info-circle"></i> About Mcaster1DNAS</h2>
+            <p>
+                Mcaster1DNAS is a professional streaming media server that supports multiple audio formats including
+                MP3, AAC, Ogg Vorbis, Opus, and FLAC. Built on the proven Icecast foundation and enhanced with modern
+                features including ICY-META v2.1+ protocol support, YAML configuration, and enterprise-grade security.
+            </p>
+            <p>
+                This documentation covers everything from basic installation to advanced configuration, administration,
+                and troubleshooting. Whether you're setting up your first stream or managing a large-scale broadcasting
+                infrastructure, you'll find the information you need here.
+            </p>
+            <p>
+                <strong>Platforms Supported:</strong> Linux (Ubuntu, Debian, CentOS, RHEL), BSD (FreeBSD, OpenBSD),
+                macOS, Docker, and Kubernetes deployments.
+            </p>
+        </div>
 
-Mcaster1 is a streaming media server which currently supports Ogg 
-Vorbis and MP3 audio streams. It can be used to create an Internet 
-radio station or a privately running jukebox and many things in 
-between. It is very versatile in that new formats can be added 
-relatively easily and supports open standards for commuincation and 
-interaction.
+        <div class="doc-grid">
+            <a href="mcaster1dnas_introduction.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Introduction</h3>
+                <p>Get started with Mcaster1DNAS. Learn about the server's capabilities, architecture, and what makes it the ideal choice for professional streaming.</p>
+                <span class="doc-link">Read Introduction <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-Mcaster1 is distributed under the GNU GPL, version 2. A copy of this
-license is included with this software in the COPYING file.
+            <a href="mcaster1dnas_basicsetup.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h3>Basic Setup</h3>
+                <p>Step-by-step installation and initial configuration guide. Get your streaming server up and running in minutes.</p>
+                <span class="doc-link">Start Setup <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-Prerequisites
----------------------------------------------------------------------
-mcaster1 requires the following packages :
+            <a href="mcaster1dnas_config_file.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <h3>Configuration File</h3>
+                <p>Complete reference for YAML and XML configuration options. Learn how to optimize your server for your specific needs.</p>
+                <span class="doc-link">View Configuration <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-* libxml2 - http://xmlsoft.org/downloads.html
-* libxslt - http://xmlsoft.org/XSLT/downloads.html
-* curl - http://curl.haxx.se/download.html (>= version 7.10 required)
-  NOTE: mcaster1 may be compiled without curl, however this will
-        disable all Directory server interaction (YP).
-* ogg/vorbis - http://www.vorbis.com/files (>= version 1.0 required)
+            <a href="mcaster1dnas_admin.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Admin Interface</h3>
+                <p>Master the web-based administration interface. Monitor, manage, and control your streaming server.</p>
+                <span class="doc-link">Learn Admin <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-A Note About RPMS
----------------------------------------------------------------------
-This section only applies to you if your operating system uses RPMS.
+            <a href="mcaster1dnas_stats.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Server Statistics</h3>
+                <p>Understand server statistics and monitoring. Track listeners, bandwidth, and performance metrics.</p>
+                <span class="doc-link">View Statistics <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-In order to build mcaster1, you will need to install the "devel" RPM
-packages for each of the prerequisite packages in addition to the
-normal RPMS for each package.
+            <a href="mcaster1dnas_relay.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <h3>Relaying</h3>
+                <p>Configure stream relaying for load balancing and geographic distribution. Scale your audience worldwide.</p>
+                <span class="doc-link">Setup Relaying <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-please check the websites for each of the prerequisite packages for
-appropriate download links for RPMS.
+            <a href="mcaster1dnas_yp.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <h3>YP Directory</h3>
+                <p>List your stream in public directories. Increase discoverability and reach new listeners through directory services.</p>
+                <span class="doc-link">YP Directory <i class="fas fa-arrow-right"></i></span>
+            </a>
 
+            <a href="mcaster1dnas_listenerauth.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Listener Authentication</h3>
+                <p>Secure your streams with authentication. Control access with passwords, databases, or custom authentication handlers.</p>
+                <span class="doc-link">Setup Auth <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-Build/Install
----------------------------------------------------------------------
-To build mcaster1 on a Unix platform, perform the following :
+            <a href="mcaster1dnas_faq.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3>FAQ</h3>
+                <p>Frequently asked questions and answers. Find quick solutions to common questions and issues.</p>
+                <span class="doc-link">View FAQ <i class="fas fa-arrow-right"></i></span>
+            </a>
 
-Run
-   ./configure
-   make
-   make install
+            <a href="mcaster1dnas_glossary.html" class="doc-card">
+                <div class="doc-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3>Glossary</h3>
+                <p>Streaming terminology and definitions. Understand the technical terms used throughout this documentation.</p>
+                <span class="doc-link">View Glossary <i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
 
-To build and install this release.
+        <div class="quick-links">
+            <h2><i class="fas fa-bolt"></i> Quick Links</h2>
+            <div class="link-grid">
+                <a href="https://github.com/davestj/mcaster1dnas" class="quick-link-item" target="_blank">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub Repository</span>
+                </a>
+                <a href="https://github.com/davestj/mcaster1dnas/issues" class="quick-link-item" target="_blank">
+                    <i class="fas fa-bug"></i>
+                    <span>Report Issues</span>
+                </a>
+                <a href="https://github.com/davestj/mcaster1dnas/discussions" class="quick-link-item" target="_blank">
+                    <i class="fas fa-comments"></i>
+                    <span>Community Discussions</span>
+                </a>
+                <a href="mailto:davestj@gmail.com" class="quick-link-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email Support</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
-A sample config file will be placed in /usr/local/etc (on UNIX) or in 
-the current working directory (on Win32) and is called mcaster1.xml
-
-Documentation for mcaster1 is available in the doc directory, by 
-viewing doc/index.html in a browser.
-
-Please email us at mcaster1@xiph.org or mcaster1-dev@xiph.org, or come and see
-us at irc.freenode.net, channel #mcaster1, if you have any troubles.
-
-</pre>
-</div>
+    <div class="footer">
+        <div class="footer-content">
+            <p>
+                <strong>Mcaster1DNAS</strong> - Professional Streaming Server
+            </p>
+            <p>
+                <a href="https://github.com/davestj/mcaster1dnas" target="_blank">GitHub</a> |
+                <a href="mailto:davestj@gmail.com">davestj@gmail.com</a> |
+                Released under GNU GPL v2
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.875rem;">
+                Documentation updated February 2026
+            </p>
+        </div>
+    </div>
 </body>
 </html>

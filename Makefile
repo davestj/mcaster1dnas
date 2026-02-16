@@ -200,10 +200,10 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/install-sh \
 	$(top_srcdir)/build-aux/ltmain.sh \
-	$(top_srcdir)/build-aux/missing AUTHORS COPYING ChangeLog NEWS \
-	README TODO build-aux/compile build-aux/config.guess \
-	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
-	build-aux/ltmain.sh build-aux/missing config.sub
+	$(top_srcdir)/build-aux/missing AUTHORS.md ChangeLog NEWS.md \
+	README.md build-aux/compile build-aux/config.guess \
+	build-aux/config.sub build-aux/install-sh build-aux/ltmain.sh \
+	build-aux/missing config.sub
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -416,6 +416,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
+AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = conf doc web admin src $(am__append_1)
 BUILT_SOURCES = git_hash.h
@@ -426,7 +427,10 @@ EXTRA_DIST = HACKING config.h.vc6 m4/acx_pthread.m4 m4/ogg.m4 \
     m4/xiph_compiler.m4 m4/xiph_curl.m4 m4/xiph_net.m4 \
     m4/xiph_types.m4 m4/xiph_xml2.m4 m4/xiph_openssl.m4 mcaster1.spec
 
-doc_DATA = README AUTHORS COPYING NEWS TODO
+doc_DATA = README.md ChangeLog TODO.md \
+	ICY2_PROTOCOL_SPEC.md YAML_IMPLEMENTATION.md YP_LOGGING_FEATURE.md \
+	FORK.md BUILD_AND_RUN.md
+
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

@@ -1,77 +1,405 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Setup - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root {
+            --mcaster-blue: #0ea5e9;
+            --dnas-green: #22c55e;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-white: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-accent: #f1f5f9;
+            --border-light: #e2e8f0;
+            --shadow-soft: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --gradient-brand: linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); line-height: 1.6; color: var(--text-primary); background: var(--bg-light); }
+
+        .breadcrumb { background: var(--bg-white); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; }
+        .breadcrumb a { color: var(--mcaster-blue); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .hero { background: var(--gradient-brand); color: white; padding: 4rem 0 2rem 0; }
+        .hero-content { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .hero p { font-size: 1.25rem; opacity: 0.95; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 3rem 1rem; }
+        .content-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-medium); margin-bottom: 2rem; }
+        .content-card h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem 0; display: flex; align-items: center; gap: 0.75rem; }
+        .content-card h2:first-child { margin-top: 0; }
+        .content-card h2 i { color: var(--mcaster-blue); }
+        .content-card h3 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin: 2rem 0 1rem 0; }
+        .content-card p { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem; }
+        .content-card ul, .content-card ol { margin: 1rem 0 1.5rem 2rem; }
+        .content-card li { color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.75rem; }
+
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: var(--radius-md); overflow-x: auto; margin: 1.5rem 0; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.6; }
+        .code-block pre { margin: 0; }
+
+        .alert-box { padding: 1.5rem; border-radius: var(--radius-md); margin: 1.5rem 0; display: flex; align-items: flex-start; gap: 1rem; }
+        .alert-info { background: #dbeafe; border: 1px solid #3b82f6; }
+        .alert-warning { background: #fef3c7; border: 1px solid #f59e0b; }
+        .alert-success { background: #dcfce7; border: 1px solid #22c55e; }
+        .alert-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 0.125rem; }
+        .alert-info .alert-icon { color: #1e40af; }
+        .alert-warning .alert-icon { color: #d97706; }
+        .alert-success .alert-icon { color: #16a34a; }
+        .alert-content { flex-grow: 1; }
+        .alert-info .alert-content { color: #1e3a8a; }
+        .alert-warning .alert-content { color: #92400e; }
+        .alert-success .alert-content { color: #14532d; }
+
+        .dir-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        .dir-table th, .dir-table td { padding: 1rem; text-align: left; border: 1px solid var(--border-light); }
+        .dir-table th { background: var(--bg-accent); font-weight: 600; color: var(--text-primary); }
+        .dir-table td { background: var(--bg-white); color: var(--text-secondary); }
+        .dir-table code { background: #1e293b; color: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.875rem; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .content-card { padding: 2rem 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 Basic Setup</h1>
-<hr id='titlebar' />
-<p>
-<br />
-<br />
-<br />
-</p>
-<h2>Basic Requirements</h2>
-<p>This section will describe the essential requirements in setting up a simple Internet radio station.  It is by no means a complete list but should give you enough to get started.</p>
-<p>There are two major components involved: the streaming server (mcaster1 in this case) and the source client.  The mcaster1 server will be the place where all listeners of your station will connect.  The source client (in general) runs on a separate machine than mcaster1, but does not necessarily need to.  Source clients send the content to mcaster1 and provide the stream data (encoded audio) that is then relayed out to listeners by mcaster1.</p>
-<p>It is important to note that not all source clients work with mcaster1dnas.  You will need to check to make sure that mcaster1dnas is supported by your chosen source client.</p>
-<p>
-<br />
-<br />
-<br />
-</p>
-<h2>The Basics</h2>
-<p>Each mcaster1 server can house multiple broadcasts (or mountpoints) each containing a separate stream of content.  A listener can only listen to a single mountpoint at a time.  This means you can have a single mcaster1 server contain either multiple broadcasts with different content, or possibly the same broadcast but with streams of different bitrates or qualities.  In this case each broadcast or stream is a separate mountpoint.</p>
-<p>At this point, the steps outlined here related to the Unix version or Win32 console version of mcaster1.  Mcaster1 is also available in a Win32 GUI version, and the steps are similar in setup, but not quite the same.</p>
-<p>The first step in the process is to find and install the mcaster1dnas server itself.  How to do this is not contained within this documentation.  After installation you should have and mcaster1 binary and 3 directories</p>
-<div style="text-align:center;">
-<table border="1" width="75%">
-<tr><td>conf</td><td>Contains the mcaster1 configuration file (mcaster1.xml) which defines all the configuration parameters for the server.</td></tr>
-<tr><td>admin</td><td>Contains xslt files which are used by the mcaster1 server to provide a web-based front end to the administration capabilities of the server.</td></tr>
-<tr><td>logs</td><td>This is a blank directory which (if specified in the config file) will contain all the logs (there are 2) for mcaster1.</td></tr>
-</table>
-</div>
-<p>The next step is to edit the mcaster1.xml file and set the appropriate values.  Most of the default values are fine as provided, and for a basic setup the following entries should be changed :
-<br /><br />
-</p>
-<pre>
-&lt;source-password&gt; - will be used by the source client
-&lt;admin-password&gt; - will be used to access admin features of mcaster1
-&lt;listen-socket&gt; (both port and bind-address)
-&lt;logdir&gt; - directory where log files will be placed
-&lt;webroot&gt; - any static content can be placed here (file serving root)
-&lt;adminroot&gt; - directory containing admin xslt files
-</pre>
-<p>Once the configuration file is modified, you should be able to start the server with the following command</p>
-<pre>
-mcaster1 -c /path/to/mcaster1.xml
-</pre>
-<p>If no error messages are generated, then check the error.log file for the 'server started'
-message, it will look something like :-</p>
-<pre>
-[2003-10-31  13:04:49] INFO main/main.c Mcaster1 2.3.0 server started
-</pre>
-<p>You may notice slight variations to the line above, the time will no doubt be different,
-and on some platforms the main.c is just main, but the key thing here is that the server is
-started, logging is working and the version is shown.
-</p>
-<p>You can also verify that it started by visiting the following URL : http://yourip:port/admin/stats.xml.  You should be prompted for a username and password.  Enter the username "admin" and the password you entered for &lt;admin-password&gt;.  If all is well, you should see an small XML tree which represents mcaster1 statistics (more about that later).</p>
-<p>Now that the mcaster1 server is started you must now configure your source client.  The information you will need for the source client is the following : <br />
-<br />
-IP address and Port of the mcaster1 server - both of these come from &lt;listen-socket&gt;<br />
-source password - from &lt;source-password&gt;
-</p>
-<p>Additionally, you will need to choose a mountpoint and specify this in the source client.  Mcaster1 does not need to know about each mount point (although you can configure settings for specific mountpoint - this is covered under Advanced configuration) there are, however, some points to mention regarding mountpoints.  All Ogg Vorbis streams should have mountpoints that end in .ogg (i,e. /mystream.ogg).  This is due to the lazy way most media players infer the type of stream.  MP3 streams usually do not contain an extension (/mystream).  Mount points also should not contain any spaces or odd characters (again due to the lazy way many of the media players are coded).</p>
-<p>Once you have configured your source client, you should be able to connect it to the mcaster1 server.  Verify that it is connected by hitting the stats.xml URL that was mentioned above.</p>
-<p>Now that you have the source connnected, listening to the stream involves simply opening the appropriate following URL in a browser: http://yourip:port/mounpointyouspecified.m3u.  So, for instance, if you attached your source client to an mcaster1 server located at 192.168.1.10:8000 with a mountpoint of /mystream.ogg, then you would open : http://192.168.1.10:8000/mystream.ogg.m3u.  Note that the .m3u extention will serve up a link that opens most media players.  Also it is important to note that m3u need not contain only MP3 stream, it can contain streams of arbitrary content-type and is used by mcaster1 to serve a playlist that represents your broadcast to listening clients.  Alternatively you can open up the stream URL directly within your media player (http://192.168.1.10:8000/mystream.ogg in this case)</p>
-<p>
-<br />
-<br />
-<br />
-</p>
-</div>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Basic Setup</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-play-circle"></i> Basic Setup Guide</h1>
+            <p>Get your Mcaster1DNAS streaming server up and running</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content-card">
+            <h2><i class="fas fa-clipboard-check"></i> Basic Requirements</h2>
+            <p>
+                This guide will walk you through the essential steps to set up a basic streaming server using Mcaster1DNAS v2.5.1-rc1.
+                Whether you're creating an internet radio station or a private streaming service, this guide covers everything
+                you need to get started.
+            </p>
+
+            <h3>System Components</h3>
+            <p>
+                A complete streaming setup consists of two major components working together:
+            </p>
+
+            <ol>
+                <li>
+                    <strong>The Streaming Server (Mcaster1DNAS):</strong> This is the server where all listeners connect.
+                    It receives audio from source clients and efficiently distributes it to multiple listeners simultaneously.
+                </li>
+                <li>
+                    <strong>The Source Client:</strong> This software encodes your audio and sends it to the Mcaster1DNAS server.
+                    Popular options include Butt (Broadcast Using This Tool), Liquidsoap, SAM Broadcaster, and FFmpeg.
+                    The source client can run on the same machine as Mcaster1DNAS or on a separate machine.
+                </li>
+            </ol>
+
+            <div class="alert-box alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Important:</strong> Not all source clients work with Mcaster1DNAS. Ensure your chosen source
+                    client supports Icecast/Shoutcast protocols. Most modern encoders that support "Icecast" will work
+                    with Mcaster1DNAS.
+                </div>
+            </div>
+
+            <h2><i class="fas fa-server"></i> Understanding Mountpoints</h2>
+            <p>
+                Each Mcaster1DNAS server can host multiple broadcasts simultaneously, each called a <strong>mountpoint</strong>.
+                A listener can only listen to one mountpoint at a time. This allows you to:
+            </p>
+            <ul>
+                <li>Host multiple stations with different content on the same server</li>
+                <li>Provide the same content at different bitrates (e.g., 128kbps and 320kbps versions)</li>
+                <li>Offer different audio formats (MP3, AAC, Ogg Vorbis, etc.) for the same content</li>
+            </ul>
+
+            <div class="alert-box alert-warning">
+                <i class="fas fa-exclamation-triangle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Mountpoint Naming Conventions:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>Ogg Vorbis/Opus streams should end in <code>.ogg</code> (e.g., <code>/stream.ogg</code>)</li>
+                        <li>MP3 streams typically have no extension (e.g., <code>/stream</code>) or <code>.mp3</code></li>
+                        <li>AAC streams should end in <code>.aac</code> or <code>.aacp</code></li>
+                        <li>Avoid spaces and special characters in mountpoint names</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2><i class="fas fa-cog"></i> Installation and Directory Structure</h2>
+            <p>
+                After installing Mcaster1DNAS (via source compilation, package manager, or Docker), you'll have the
+                following directory structure:
+            </p>
+
+            <table class="dir-table">
+                <thead>
+                    <tr>
+                        <th>Directory</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>bin/</code></td>
+                        <td>Contains the <code>mcaster1</code> server binary</td>
+                    </tr>
+                    <tr>
+                        <td><code>conf/</code></td>
+                        <td>Configuration files including <code>mcaster1.yaml</code> (recommended) or <code>mcaster1.xml</code> (legacy)</td>
+                    </tr>
+                    <tr>
+                        <td><code>admin/</code></td>
+                        <td>XSLT files for the web-based administration interface</td>
+                    </tr>
+                    <tr>
+                        <td><code>web/</code></td>
+                        <td>Static web content and status pages</td>
+                    </tr>
+                    <tr>
+                        <td><code>logs/</code></td>
+                        <td>Server log files (access.log and error.log)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2><i class="fas fa-file-code"></i> Basic Configuration (YAML Recommended)</h2>
+            <p>
+                Mcaster1DNAS v2.5.1 supports both YAML and XML configuration formats. <strong>YAML is strongly recommended</strong>
+                as XML support will be deprecated in future releases.
+            </p>
+
+            <div class="alert-box alert-warning">
+                <i class="fas fa-exclamation-triangle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Configuration Format Notice:</strong> While XML configuration is still supported for
+                    backward compatibility, all new deployments should use YAML. XML support will be removed in a
+                    future major release.
+                </div>
+            </div>
+
+            <h3>Essential Configuration Settings</h3>
+            <p>Edit your <code>mcaster1.yaml</code> file and configure these essential settings:</p>
+
+            <div class="code-block">
+<pre>server:
+  hostname: stream.example.com
+  location: Your City, Country
+  admin: admin@example.com
+
+authentication:
+  source_password: changeme_source    # Used by encoders to connect
+  admin_user: admin
+  admin_password: changeme_admin      # For admin interface access
+
+listen:
+  - socket:
+      port: 8000
+      bind_address: 0.0.0.0
+
+paths:
+  basedir: /usr/local/mcaster1dnas
+  logdir: /var/log/mcaster1
+  webroot: /usr/local/mcaster1dnas/web
+  adminroot: /usr/local/mcaster1dnas/admin
+
+mount:
+  - path: /stream
+    username: source
+    password: hackme
+    max_listeners: 100
+    stream_name: "My Radio Station"
+    stream_description: "24/7 Music"
+    stream_url: https://example.com
+    genre: Various
+    bitrate: 128
+    public: false</pre>
+            </div>
+
+            <h3>Key Settings to Change</h3>
+            <ul>
+                <li><strong>source_password:</strong> Password that source clients use to connect and stream</li>
+                <li><strong>admin_password:</strong> Password for accessing administrative features</li>
+                <li><strong>listen → port:</strong> Port number for the server (default: 8000)</li>
+                <li><strong>listen → bind_address:</strong> IP address to bind to (0.0.0.0 = all interfaces)</li>
+                <li><strong>logdir:</strong> Where to store log files</li>
+                <li><strong>webroot:</strong> Directory for static web content</li>
+                <li><strong>adminroot:</strong> Directory containing admin XSLT files</li>
+            </ul>
+
+            <h2><i class="fas fa-rocket"></i> Starting the Server</h2>
+            <p>Once your configuration file is ready, start Mcaster1DNAS with:</p>
+
+            <div class="code-block">
+<pre>mcaster1 -c /path/to/mcaster1.yaml</pre>
+            </div>
+
+            <p>For example, if your config is in <code>/etc/mcaster1/mcaster1.yaml</code>:</p>
+
+            <div class="code-block">
+<pre>/usr/local/mcaster1dnas/bin/mcaster1 -c /etc/mcaster1/mcaster1.yaml</pre>
+            </div>
+
+            <h3>Verifying Server Startup</h3>
+            <p>Check the error log for the startup message:</p>
+
+            <div class="code-block">
+<pre>tail -f /var/log/mcaster1/error.log</pre>
+            </div>
+
+            <p>You should see something like:</p>
+
+            <div class="code-block">
+<pre>[2026-02-15 12:00:00] INFO main/main Mcaster1DNAS 2.5.1-rc1 server started</pre>
+            </div>
+
+            <div class="alert-box alert-success">
+                <i class="fas fa-check-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Success Indicator:</strong> If you see the "server started" message with the version number,
+                    Mcaster1DNAS is running correctly.
+                </div>
+            </div>
+
+            <h3>Testing Server Access</h3>
+            <p>Verify the server is running by accessing the statistics page:</p>
+
+            <div class="code-block">
+<pre>http://yourserver:8000/admin/stats.xml</pre>
+            </div>
+
+            <p>
+                You'll be prompted for credentials. Use username <code>admin</code> and the password you set in
+                <code>admin_password</code>. You should see XML output showing server statistics.
+            </p>
+
+            <h2><i class="fas fa-broadcast-tower"></i> Configuring Your Source Client</h2>
+            <p>Now that the server is running, configure your source client (encoder) with these settings:</p>
+
+            <table class="dir-table">
+                <thead>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Server/Host</strong></td>
+                        <td>Your server IP or hostname</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Port</strong></td>
+                        <td>8000 (or your configured port)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protocol</strong></td>
+                        <td>Icecast or ICY</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mount Point</strong></td>
+                        <td>/stream (or your chosen mountpoint)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Username</strong></td>
+                        <td>source</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Password</strong></td>
+                        <td>Your source_password value</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2><i class="fas fa-headphones"></i> Listening to Your Stream</h2>
+            <p>Once your source client is connected and streaming, listeners can access your stream in several ways:</p>
+
+            <h3>Direct Stream URL</h3>
+            <div class="code-block">
+<pre>http://yourserver:8000/stream</pre>
+            </div>
+
+            <h3>Playlist File (M3U)</h3>
+            <div class="code-block">
+<pre>http://yourserver:8000/stream.m3u</pre>
+            </div>
+
+            <p>
+                The .m3u extension generates a playlist file that most media players can open. This works for any
+                audio format, not just MP3.
+            </p>
+
+            <h3>Media Player Examples</h3>
+            <ul>
+                <li><strong>VLC:</strong> Media → Open Network Stream → Enter stream URL</li>
+                <li><strong>iTunes/Music:</strong> File → Open Stream → Enter URL</li>
+                <li><strong>Web Browser:</strong> Simply paste the URL in the address bar</li>
+                <li><strong>Winamp:</strong> File → Play URL → Enter stream URL</li>
+                <li><strong>Mobile Apps:</strong> Use any internet radio app that supports custom URLs</li>
+            </ul>
+
+            <div class="alert-box alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Example:</strong> If your server is at <code>192.168.1.100:8000</code> with mountpoint
+                    <code>/stream.ogg</code>, listeners would use:
+                    <code>http://192.168.1.100:8000/stream.ogg.m3u</code>
+                </div>
+            </div>
+
+            <h2><i class="fas fa-check-circle"></i> Verifying Everything Works</h2>
+            <p>To confirm your setup is working correctly:</p>
+
+            <ol>
+                <li>Check the server is running: <code>http://yourserver:8000/admin/stats.xml</code></li>
+                <li>Verify your source client shows a successful connection</li>
+                <li>Check the access log for source connection: <code>tail -f /var/log/mcaster1/access.log</code></li>
+                <li>Open the stream URL in a media player and verify you hear audio</li>
+                <li>Check stats.xml again to see listener count increase</li>
+            </ol>
+
+            <div class="alert-box alert-success">
+                <i class="fas fa-check-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Setup Complete!</strong> If you can hear your stream and see statistics updating,
+                    your Mcaster1DNAS server is working correctly. You're now ready to explore advanced features.
+                </div>
+            </div>
+
+            <div style="background: var(--bg-accent); border-left: 4px solid var(--dnas-green); padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 2rem;">
+                <p style="margin: 0; color: var(--text-primary);">
+                    <strong><i class="fas fa-lightbulb"></i> Next Steps:</strong>
+                    Learn about advanced configuration options in the
+                    <a href="mcaster1dnas_config_file.html" style="color: var(--mcaster-blue); font-weight: 600;">Configuration File Reference</a>
+                    or explore the
+                    <a href="mcaster1dnas_admin.html" style="color: var(--mcaster-blue); font-weight: 600;">Admin Interface</a>.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

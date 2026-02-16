@@ -384,12 +384,14 @@ jobs:
           echo "Port: ${{ env.TEST_PORT }}"
           echo "User: mcaster1"
 
-          # Start server as mcaster1 user
-          # Run in background, redirect output to log
+          # Start server as mcaster1 user in background
           echo "Launching server process..."
-          su mcaster1 -s /bin/sh << 'EOSU' > /tmp/mcaster1-stdout.log 2>&1 &
-          exec /opt/mcaster1dnas/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml
-EOSU
+
+          # Write PID file location
+          echo "/tmp/mcaster1.pid" > /tmp/pidfile-location
+
+          # Start server (daemonize with setsid)
+          setsid su mcaster1 -s /bin/sh -c "${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml" > /tmp/mcaster1-stdout.log 2>&1 &
 
           # Wait for process to start
           sleep 3

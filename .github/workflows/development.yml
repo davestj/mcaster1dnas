@@ -343,29 +343,84 @@ jobs:
         run: |
           echo "=== Starting Mcaster1DNAS server ==="
 
-          # Start server in background
-          ${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml &
+          # Verify binary exists and is executable
+          if [ ! -x "${{ env.INSTALL_PREFIX }}/bin/mcaster1" ]; then
+            echo "✗ Binary not found or not executable"
+            ls -lh ${{ env.INSTALL_PREFIX }}/bin/ || true
+            exit 1
+          fi
+
+          # Verify config exists
+          if [ ! -f "/tmp/mcaster1-test/test-ci.yaml" ]; then
+            echo "✗ Config file not found"
+            exit 1
+          fi
+
+          echo "Starting server with config:"
+          echo "Binary: ${{ env.INSTALL_PREFIX }}/bin/mcaster1"
+          echo "Config: /tmp/mcaster1-test/test-ci.yaml"
+          echo "Port: ${{ env.TEST_PORT }}"
+
+          # Start server in background and capture output
+          ${{ env.INSTALL_PREFIX }}/bin/mcaster1 -c /tmp/mcaster1-test/test-ci.yaml > /tmp/mcaster1-stdout.log 2>&1 &
           SERVER_PID=$!
           echo "Server PID: $SERVER_PID"
           echo $SERVER_PID > /tmp/server.pid
 
-          # Wait for server to start
-          echo "Waiting for server to start..."
+          # Wait a moment for initial startup
+          sleep 2
+
+          # Check if process is still running
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "✗ Server process died immediately after start"
+            echo "=== Server stdout/stderr ==="
+            cat /tmp/mcaster1-stdout.log || true
+            echo "=== Error log ==="
+            cat /tmp/mcaster1-test/logs/error.log || true
+            exit 1
+          fi
+
+          # Wait for server to be ready
+          echo "Waiting for server to accept connections..."
           for i in {1..30}; do
             if curl -s http://localhost:${{ env.TEST_PORT }}/ > /dev/null 2>&1; then
               echo "✓ Server started successfully after ${i} seconds"
+              echo "Server is running with PID: $SERVER_PID"
               break
             fi
+
+            # Check if process died
+            if ! kill -0 $SERVER_PID 2>/dev/null; then
+              echo "✗ Server process died during startup"
+              echo "=== Server stdout/stderr ==="
+              cat /tmp/mcaster1-stdout.log || true
+              echo "=== Error log ==="
+              cat /tmp/mcaster1-test/logs/error.log || true
+              exit 1
+            fi
+
             if [ $i -eq 30 ]; then
-              echo "✗ Server failed to start within 30 seconds"
+              echo "✗ Server failed to accept connections within 30 seconds"
+              echo "Server process is running but not responding"
+              echo "=== Server stdout/stderr ==="
+              cat /tmp/mcaster1-stdout.log || true
+              echo "=== Error log ==="
               cat /tmp/mcaster1-test/logs/error.log || true
               exit 1
             fi
             sleep 1
           done
 
-          # Give it one more second to fully initialize
-          sleep 2
+          # Final health check
+          sleep 1
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "✗ Server died after initial startup"
+            cat /tmp/mcaster1-stdout.log || true
+            cat /tmp/mcaster1-test/logs/error.log || true
+            exit 1
+          fi
+
+          echo "✓ Server is healthy and ready for tests"
 
       - name: Test HTTP endpoints
         run: |

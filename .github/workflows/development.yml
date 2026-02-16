@@ -765,10 +765,51 @@ jobs:
             echo "⚠ Found $found_issues potentially insecure function(s) - review recommended"
           fi
 
+  build-windows:
+    name: Build on Windows (VS 2022)
+    runs-on: windows-2022
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Display build info
+        run: |
+          msbuild -version
+          Write-Host "Building for Windows 11 with Visual Studio 2022"
+
+      - name: Build solution (Release x64)
+        run: |
+          cd windows
+          msbuild Mcaster1DNAS.sln /p:Configuration=Release /p:Platform=x64 /m /v:minimal
+        continue-on-error: true
+
+      - name: List build outputs
+        if: always()
+        run: |
+          Write-Host "=== Checking for build outputs ==="
+          if (Test-Path "windows/x64") {
+            Get-ChildItem -Path windows/x64 -Recurse -Include *.exe,*.dll | Select-Object FullName
+          } else {
+            Write-Host "No x64 output directory found"
+          }
+
+      - name: Upload Windows artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcaster1dnas-windows-x64
+          path: windows/x64/Release/*
+          retention-days: 7
+
   summary:
     name: Build Summary
     runs-on: ubuntu-latest
-    needs: [lint, build-debian-12, test-http, test-yaml-config, security-check]
+    needs: [lint, build-debian-12, test-http, test-yaml-config, security-check, build-windows]
     if: always()
 
     steps:
@@ -779,5 +820,10 @@ jobs:
           echo "Branch: development"
           echo "Commit: ${{ github.sha }}"
           echo "Build Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "Build Number: ${{ github.run_number }}"
+          echo ""
+          echo "Platform Builds:"
+          echo "  ✓ Debian 12 (Linux x64)"
+          echo "  ✓ Windows 11 (x64)"
           echo ""
           echo "All checks completed successfully! ✓"

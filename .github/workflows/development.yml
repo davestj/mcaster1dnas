@@ -257,19 +257,48 @@ jobs:
           echo "=== Build Version Information ==="
           cat build-version.txt || echo "Version info not available"
 
+      - name: Extract and setup binary
+        run: |
+          echo "=== Extracting binary from artifact ==="
+
+          # The artifact contains: install-root/opt/mcaster1dnas/...
+          # We need to move it to the actual /opt location
+
+          if [ -d "install-root${{ env.INSTALL_PREFIX }}" ]; then
+            mkdir -p ${{ env.INSTALL_PREFIX }}
+            cp -r install-root${{ env.INSTALL_PREFIX }}/* ${{ env.INSTALL_PREFIX }}/
+            chmod +x ${{ env.INSTALL_PREFIX }}/bin/mcaster1
+            echo "✓ Binary installed to ${{ env.INSTALL_PREFIX }}/bin/mcaster1"
+            ls -lh ${{ env.INSTALL_PREFIX }}/bin/mcaster1
+          else
+            echo "✗ Binary not found in artifact"
+            ls -R
+            exit 1
+          fi
+
       - name: Setup test environment
         run: |
           echo "=== Setting up test environment ==="
 
           # Create necessary directories
-          mkdir -p /tmp/mcaster1-test/{logs,web,admin}
+          mkdir -p /tmp/mcaster1-test/logs
+          mkdir -p /tmp/mcaster1-test/web
+          mkdir -p /tmp/mcaster1-test/admin
 
-          # Copy web and admin files
-          cp -r web/* /tmp/mcaster1-test/web/
-          cp -r admin/* /tmp/mcaster1-test/admin/
+          # Copy web and admin files from source checkout
+          if [ -d "web" ] && [ "$(ls -A web 2>/dev/null)" ]; then
+            cp -r web/* /tmp/mcaster1-test/web/
+            echo "✓ Copied web files"
+          else
+            echo "⚠ No web directory found in source"
+          fi
 
-          # Make binary executable
-          chmod +x ${{ env.INSTALL_PREFIX }}/bin/mcaster1
+          if [ -d "admin" ] && [ "$(ls -A admin 2>/dev/null)" ]; then
+            cp -r admin/* /tmp/mcaster1-test/admin/
+            echo "✓ Copied admin files"
+          else
+            echo "⚠ No admin directory found in source"
+          fi
 
           # Create minimal test config
           cat > /tmp/mcaster1-test/test-ci.yaml <<EOF
@@ -491,6 +520,21 @@ jobs:
         with:
           name: mcaster1dnas-debian12-build
 
+      - name: Extract and setup binary
+        run: |
+          echo "=== Extracting binary from artifact ==="
+
+          # The artifact contains: install-root/opt/mcaster1dnas/...
+          if [ -d "install-root${{ env.INSTALL_PREFIX }}" ]; then
+            mkdir -p ${{ env.INSTALL_PREFIX }}
+            cp -r install-root${{ env.INSTALL_PREFIX }}/* ${{ env.INSTALL_PREFIX }}/
+            chmod +x ${{ env.INSTALL_PREFIX }}/bin/mcaster1
+            echo "✓ Binary installed"
+          else
+            echo "✗ Binary not found in artifact"
+            exit 1
+          fi
+
       - name: Test YAML config loading
         run: |
           echo "=== Testing YAML configuration parsing ==="
@@ -501,15 +545,12 @@ jobs:
           mkdir -p /tmp/yaml-test/admin
 
           # Copy web and admin files from source checkout
-          if [ -d "web" ]; then
-            cp -r web/* /tmp/yaml-test/web/ || echo "No web files to copy"
+          if [ -d "web" ] && [ "$(ls -A web 2>/dev/null)" ]; then
+            cp -r web/* /tmp/yaml-test/web/
           fi
-          if [ -d "admin" ]; then
-            cp -r admin/* /tmp/yaml-test/admin/ || echo "No admin files to copy"
+          if [ -d "admin" ] && [ "$(ls -A admin 2>/dev/null)" ]; then
+            cp -r admin/* /tmp/yaml-test/admin/
           fi
-
-          # Make binary executable
-          chmod +x ${{ env.INSTALL_PREFIX }}/bin/mcaster1
 
           # Test minimal YAML config
           cat > /tmp/yaml-test.yaml <<EOF

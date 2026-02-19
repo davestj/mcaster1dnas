@@ -1,7 +1,7 @@
 # Mcaster1DNAS - Digital Network Audio Server
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Version](https://img.shields.io/badge/version-2.6.0-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
+[![Version](https://img.shields.io/badge/version-2.5.1--rc1-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://github.com/davestj/mcaster1dnas)
 [![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
 [![Language](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
@@ -45,6 +45,10 @@
 - 🔐 **Advanced Authentication** - User management and stream protection
 - 🔄 **Relay Support** - Distribute streams across multiple servers
 - 📈 **Comprehensive Logging** - Detailed access, error, playlist, and YP connection logs
+- 🎶 **Song History API** - In-memory track play log exposed as XML at `/mcaster1songdata`
+- 📻 **Track History UI** - Browsable track history with music service lookup icons (MusicBrainz, Last.fm, Discogs, AllMusic)
+- 🎧 **Browser Audio Player** - Built-in HTML5 player with VU meters, volume control, and real-time metadata ([docs](WEBPLAYER_FEATURE.md))
+- 🔊 **Full Codec Stats** - Public exposure of bitrate, samplerate, channels, and codec for all formats including Opus
 
 ---
 
@@ -78,8 +82,31 @@ We maintain all original credits, licensing (GNU GPL v2), and acknowledgments wh
 - **💡 Interactive Help System** - Hover-activated tooltips explaining every feature
 - **⏰ Live Clock** - Real-time clock and date display in header (updates every second)
 - **⚡ Page Load Metrics** - Performance tracking showing page load times
-- **🎯 Intuitive Navigation** - Seamless navigation between admin and public interfaces
+- **🎯 Intuitive Navigation** - Seamless navigation between admin and public interfaces with shared header/footer templates
 - **🏆 Credits Page** - Comprehensive fork history and acknowledgments
+- **🎧 Integrated Browser Player** - One-click streaming from any page; VU meters, volume control, keyboard shortcuts ([docs](WEBPLAYER_FEATURE.md))
+
+### Song History & Track Lookup _(New in 2.5.1-rc1)_
+
+- **🎶 `/mcaster1songdata` XML API** - In-memory ring buffer of the last N played tracks (default: 25, configurable, 0 = unlimited) exposed as a machine-readable XML endpoint for third-party apps and dashboards
+- **📋 Track History Pages** - `/admin/songdata.xsl` (admin) and `/songdata.xsl` (public) show a rich table of recently played tracks with:
+  - Artist, title, mount point, and codec quality badge (codec / kbps / kHz / mono or stereo)
+  - Played-at timestamp and live "on air" duration counter (Xm Ys)
+  - Listener count at the moment the track played
+  - Animated pulsing green dot on the most recently added entry
+- **🔍 Music Service Lookup** - Every track row carries four one-click lookup icons linking directly to search results on:
+  - 🟠 **MusicBrainz** (`fa-database`) — open music encyclopedia
+  - 🔴 **Last.fm** (`fab fa-lastfm`) — scrobbling and artist radio
+  - ⚫ **Discogs** (`fa-record-vinyl`) — release/label database
+  - 🟢 **AllMusic** (`fa-music`) — editorial reviews and discographies
+- **🔁 Deduplication** - Consecutive identical titles on the same mount are silently ignored; `ended_at` is back-filled when the next track starts for accurate time-on-air calculation
+- **⚙️ Configurable limit** - Set `song-history-limit` in YAML or XML config; 0 means keep everything (memory-backed, no disk I/O)
+
+### Codec & Metadata Enhancements _(New in 2.5.1-rc1)_
+
+- **🔊 Full Public Codec Stats** - `audio_codecid`, `mpeg_samplerate`, `mpeg_channels` promoted from `STATS_HIDDEN` → `STATS_COUNTERS` so public status pages and third-party clients can read them
+- **🎼 Opus Now Playing** - `format_opus.c` now parses `OpusHead` to expose `audio_channels` and `audio_samplerate` stats; `opus_set_tag()` added to capture ICY title/artist metadata from Opus streams (previously untracked — Opus streams had no song-change events)
+- **📡 Max Listeners in Stats** - `max_listeners` from server config is now exposed in the global stats XML so public dashboards can show server capacity
 
 ### Enhanced Features
 
@@ -95,7 +122,7 @@ We maintain all original credits, licensing (GNU GPL v2), and acknowledgments wh
 
 - **🏢 Production-Ready** - Built for professional broadcasting environments
 - **⚡ High Concurrency** - Optimized for thousands of concurrent listeners
-- **🔧 Easy Configuration** - XML-based configuration with sensible defaults
+- **🔧 Dual Configuration** - YAML and XML config with sensible defaults
 - **📚 Complete Documentation** - Comprehensive guides and help system
 - **🛠️ Admin Tools** - Full-featured admin interface for server management
 
@@ -188,14 +215,18 @@ After starting the server, access the web interfaces:
 - **HTTP:** `http://your-server:9330/`
 - **HTTPS:** `https://your-server:9443/`
 - **Public Status:** `https://your-server:9443/status.xsl`
+- **Track History (public):** `https://your-server:9443/songdata.xsl`
+- **Song Data API (raw XML):** `https://your-server:9443/admin/songdata`
 - **Admin Interface:** `https://your-server:9443/admin/stats.xsl`
   - Default credentials: `admin` / `hackme` (⚠️ **CHANGE THESE!**)
+- **Admin Track History:** `https://your-server:9443/admin/songdata.xsl`
+- **Admin Web Player:** `https://your-server:9443/admin/webplayer.xsl`
 
 ---
 
 ## 🎯 ICY-META v2.1+ Protocol
 
-Mcaster1DNAS v2.6.0+ introduces the **ICY-META v2.1+ extended metadata protocol**, providing rich metadata support beyond legacy ICY 1.x.
+Mcaster1DNAS introduces the **ICY-META v2.1+ extended metadata protocol**, providing rich metadata support beyond legacy ICY 1.x.
 
 ### 🌟 Features
 
@@ -291,6 +322,7 @@ server:
     clients: 100
     sources: 10
     workers: 2
+    song-history-limit: 25   # tracks kept in memory for /songdata API (0 = unlimited)
 
 listen-sockets:
   - port: 9330
@@ -355,6 +387,7 @@ Comprehensive documentation is available:
 - **[YP_LOGGING_FEATURE.md](YP_LOGGING_FEATURE.md)** - YP directory logging implementation
 - **[ENTERPRISE_UI_ENHANCEMENTS.md](ENTERPRISE_UI_ENHANCEMENTS.md)** - UI modernization details
 - **[CLOCK_AND_LOADTIME.md](CLOCK_AND_LOADTIME.md)** - Live clock and performance metrics
+- **[WEBPLAYER_FEATURE.md](WEBPLAYER_FEATURE.md)** - ⭐ Integrated browser audio player documentation
 
 ### Implementation Plans
 - **[ICY2_SIMPLIFIED_PLAN.md](ICY2_SIMPLIFIED_PLAN.md)** - ICY2 implementation architecture
@@ -583,13 +616,21 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 
 ## 🌟 Features Roadmap
 
-### Current Version (2.5.0)
-✅ Modern HTML5/CSS3 web interface
+### Current Version (2.5.1-rc1)
+✅ Modern HTML5/CSS3 web interface with shared header/footer templates
 ✅ Interactive help tooltips
 ✅ Live clock and page load metrics
 ✅ HTTPS/SSL by default
 ✅ Enhanced admin dashboard
 ✅ Credits and fork information pages
+✅ ICY-META v2.1+ extended metadata protocol
+✅ YAML configuration support (alongside XML)
+✅ Song History API — in-memory ring buffer at `/mcaster1songdata`
+✅ Track History pages — admin + public with music service lookup icons
+✅ Integrated browser audio player — VU meters, volume control, keyboard shortcuts
+✅ Full public codec stats — bitrate, samplerate, channels, codec for all formats
+✅ Opus ICY metadata support — now playing, artist/title, song history tracking
+✅ Windows build support via MSBuild/Visual Studio 2022
 
 ### Upcoming Features
 - [ ] Real-time statistics dashboard (WebSocket/SSE)
@@ -598,7 +639,6 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 - [ ] Historical listener analytics with charts
 - [ ] Mobile app integration
 - [ ] Bulk operations for listener management
-- [ ] Stream preview with embedded audio players
 - [ ] Automated stream scheduling system
 - [ ] Interactive API documentation
 - [ ] Plugin architecture for extensibility

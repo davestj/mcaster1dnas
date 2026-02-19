@@ -36,7 +36,7 @@ function updateClock() {
     const date = now.getDate();
     const year = now.getFullYear();
 
-    const dateString = dayName + ', ' + monthName + ' ' + date + ', ' + year;
+    const dateString = dayName.slice(0, 3) + ' ' + monthName.slice(0, 3) + ' ' + date;
 
     // Update DOM elements
     const timeElement = document.getElementById('live-time');

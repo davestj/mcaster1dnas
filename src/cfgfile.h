@@ -313,6 +313,7 @@ typedef struct mc_config_tag
     int mc_login;
     int64_t max_bandwidth;
     int max_listeners;
+    int song_history_limit; /* max songs kept in memory for /songdata API; 0 = unlimited */
     int fileserve;
     int on_demand; /* global setting for all relays */
 

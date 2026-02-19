@@ -41,6 +41,7 @@
 
 #include "logging.h"
 #include "auth.h"
+#include "songdata_api.h"
 
 #define CATMODULE "admin"
 
@@ -62,6 +63,7 @@ static int command_updatemetadata(client_t *client, source_t *source, int respon
 static int command_admin_function (client_t *client, int response);
 static int command_list_log (client_t *client, int response);
 static int command_manage_relay (client_t *client, int response);
+static int command_songdata (client_t *client, int response);
 #ifdef MY_ALLOC
 static int command_alloc(client_t *client);
 #endif
@@ -100,6 +102,8 @@ static struct admin_command admin_general[] =
     { "webplayer.xsl",      XSLT,   { command_list_mounts } },
     { "function.xsl",       XSLT,   { command_admin_function } },
     { "response.xsl",       XSLT,   { NULL } },
+    { "songdata",           RAW,    { command_songdata } },
+    { "songdata.xsl",       XSLT,   { command_songdata } },
     { NULL }
 };
 
@@ -1282,6 +1286,14 @@ static int command_list_log (client_t *client, int response)
         mc_http_printf (&http, "Content-Type", 0, "text/plain");
         return client_http_send (&http);
     }
+}
+
+
+static int command_songdata (client_t *client, int response)
+{
+    const char *mount = httpp_get_query_param (client->parser, "mount");
+    xmlDocPtr doc = songdata_get_xml (mount);
+    return admin_send_response (doc, client, response, "songdata.xsl");
 }
 
 

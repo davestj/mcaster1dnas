@@ -66,6 +66,7 @@
 #include "xslt.h"
 #include "fserve.h"
 #include "auth.h"
+#include "songdata_api.h"
 
 #include <libxml/xmlmemory.h>
 
@@ -197,6 +198,8 @@ static int server_proc_init(void)
 
     if (init_logging (config) < 0)
         return 0;
+
+    songdata_init (config->song_history_limit);
 
     INFO2 ("%s server reading configuration from %s", ICECAST_VERSION_STRING, config->config_filename);
 

@@ -14,7 +14,8 @@ mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c connection.c global.c
     util.c slave.c source.c stats.c refbuf.c client.c params.c icy2_meta.c \
     xslt.c fserve.c event.c admin.c md5.c \
     format.c format_ogg.c format_mp3.c format_midi.c format_flac.c format_ebml.c format_opus.c \
-    auth.c auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c mpeg.c flv.c
+    auth.c auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c mpeg.c flv.c \
+    songdata_api.c songdata_api.h
 
 mcaster1_DEPENDENCIES = \
     net/libmcnet.la \

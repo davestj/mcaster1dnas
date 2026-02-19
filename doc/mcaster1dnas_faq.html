@@ -1,91 +1,164 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root{--mcaster-blue:#0ea5e9;--dnas-green:#22c55e;--text-primary:#1f2937;--text-secondary:#6b7280;--bg-white:#fff;--bg-light:#f8fafc;--bg-accent:#f1f5f9;--border-light:#e2e8f0;--shadow-medium:0 4px 6px -1px rgb(0 0 0 / 0.1);--gradient-brand:linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));--radius-lg:0.75rem;--font-sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-sans);line-height:1.6;color:var(--text-primary);background:var(--bg-light)}
+        .breadcrumb{background:var(--bg-white);padding:1rem 0;border-bottom:1px solid var(--border-light)}
+        .breadcrumb-container{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-size:0.875rem}
+        .breadcrumb a{color:var(--mcaster-blue);text-decoration:none}
+        .hero{background:var(--gradient-brand);color:white;padding:4rem 0 2rem 0}
+        .hero-content{max-width:1200px;margin:0 auto;padding:0 1rem}
+        .hero h1{font-size:3rem;font-weight:800;margin-bottom:0.5rem}
+        .hero p{font-size:1.25rem;opacity:0.95}
+        .container{max-width:1200px;margin:0 auto;padding:3rem 1rem}
+        .content-card{background:var(--bg-white);border-radius:var(--radius-lg);padding:3rem;box-shadow:var(--shadow-medium)}
+        .faq-item{margin-bottom:2rem;padding:1.5rem;background:var(--bg-light);border-radius:var(--radius-lg);border-left:4px solid var(--mcaster-blue)}
+        .faq-item h3{font-size:1.25rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+        .faq-item h3 i{color:var(--mcaster-blue)}
+        .faq-item p{color:var(--text-secondary);line-height:1.8;margin-bottom:0.75rem}
+        .faq-item ul{margin:0.5rem 0 0.5rem 2rem;color:var(--text-secondary)}
+        @media (max-width:768px){.hero h1{font-size:2rem}}
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 FAQ</h1>
-<hr id='titlebar' />
-<br />
-<br />
-<br />
-<h2>General Questions</h2>
-<h4>What is Mcaster1?</h4>
-<div class="indentedbox">
-<p>
-Mcaster1, the project, is a collection of programs and libraries for
-streaming audio over the Internet. This includes:
-</p>
-<ul>
-<li>mcaster1, a program that streams audio data to listeners</li>
-<li>libshout, a library for communicating with Mcaster1 servers</li>
-<li>IceS, a program that sends audio data to Mcaster1 servers</li>
-</ul>
-A source client is an external program which is responsible for sending content data to mcaster1.  Some source clients that support mcaster1dnas are Oddcast, ices2, ices0.3, and DarkIce.
-</div>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>FAQ</span>
+        </div>
+    </div>
 
-<h4>What is mcaster1, the program?</h4>
-<div class="indentedbox">
-<p>
-mcaster1 streams audio to listeners, and is compatible with Nullsoft`s Shoutcast.
-</p>
-</div>
-<h4>What is libshout ?</h4>
-<div class="indentedbox">
-<p>
-	From the README:
-</p>
-<blockquote>
-	<p>
-	libshout is a library for communicating with and sending data to an mcaster1 server.
-	It handles the socket connection, the timing of the data, and prevents bad data from getting to the mcaster1 server.
-	</p>
-</blockquote>
-</div>
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-question-circle"></i> Frequently Asked Questions</h1>
+            <p>Common questions and answers about Mcaster1DNAS</p>
+        </div>
+    </div>
 
-<h4>What is IceS?</h4>
-<div class="indentedbox">
-<p>
-	IceS is a program that sends audio data to an mcaster1 server to broadcast to clients.
-	IceS can either read audio data from disk,
-	such as from Ogg Vorbis files, or sample live audio from a sound card and encode it on the fly.
-</p>
-</div>
+    <div class="container">
+        <div class="content-card">
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> What is Mcaster1DNAS?</h3>
+                <p>Mcaster1DNAS is a professional streaming media server for broadcasting audio over the internet. It supports multiple formats (MP3, AAC, Ogg Vorbis, Opus, FLAC) and is compatible with Shoutcast protocol. The project includes:</p>
+                <ul>
+                    <li><strong>Mcaster1DNAS server:</strong> The core streaming server (v2.5.1-rc1)</li>
+                    <li><strong>libshout:</strong> Library for communicating with streaming servers</li>
+                    <li><strong>Source clients:</strong> Programs like Butt, Liquidsoap, FFmpeg, and IceS that send audio to the server</li>
+                </ul>
+            </div>
 
-<h4>How can I view the stream status page?</h4>
-<div class="indentedbox">
-		<p>
-			Check your mcaster1 configuration file for an element
-			called &lt;webroot&gt;. This directory contains web stuff.
-			In it, place a file called "status.xsl" that
-			transforms an <acronym>XML</acronym> file containing stream
-			data into a web page
-			(either <acronym>XHTML</acronym> or <acronym>HTML</acronym>).
-		</p>
-		<p>
-			There are sample <acronym>XSL</acronym> stylesheets available
-			in mcaster1/web/ in the CVS distribution
-			of mcaster1.
-		</p>
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> What source clients work with Mcaster1DNAS?</h3>
+                <p>Any source client that supports Icecast protocol will work with Mcaster1DNAS. Popular options include:</p>
+                <ul>
+                    <li><strong>Butt</strong> (Broadcast Using This Tool) - Cross-platform GUI encoder</li>
+                    <li><strong>Liquidsoap</strong> - Powerful automation and scripting</li>
+                    <li><strong>FFmpeg</strong> - Command-line encoding and streaming</li>
+                    <li><strong>SAM Broadcaster</strong> - Professional Windows broadcasting software</li>
+                    <li><strong>DarkIce</strong> - Live audio encoder for live streams</li>
+                    <li><strong>IceS</strong> - Official Icecast source client</li>
+                </ul>
+            </div>
 
-		<p>
-			In addition, the web directory can
-			hold multiple status transforms, if you can't decide which
-			one you want.
-		</p>
-</div>
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How do I view server statistics?</h3>
+                <p>Mcaster1DNAS provides multiple ways to view statistics:</p>
+                <ul>
+                    <li><strong>XML Stats:</strong> Access <code>http://yourserver:8000/admin/stats.xml</code> for raw XML data</li>
+                    <li><strong>Web Interface:</strong> The <code>web/</code> directory contains XSLT stylesheets that transform XML into HTML pages</li>
+                    <li><strong>Custom Views:</strong> Create your own XSLT transforms to customize the presentation</li>
+                </ul>
+                <p>You'll need admin credentials (username and admin_password from config) to access statistics.</p>
+            </div>
 
-<h4>What can I use to listen to an Mcaster1 stream?</h4>
-<div class="indentedbox">
-		<p>
-			We maintain a list of Mcaster1-compatible audio players at
-			http://www.mcaster1.org/
-		</p>
-</div>
-</div>
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> What media players can listen to Mcaster1DNAS streams?</h3>
+                <p>Virtually all modern media players support Mcaster1DNAS streams:</p>
+                <ul>
+                    <li><strong>Desktop:</strong> VLC, iTunes/Music, Winamp, Audacious, Clementine</li>
+                    <li><strong>Web Browsers:</strong> Chrome, Firefox, Safari, Edge (direct stream URLs)</li>
+                    <li><strong>Mobile:</strong> VLC, TuneIn Radio, RadioDroid, Simple Radio, custom apps</li>
+                    <li><strong>Smart Devices:</strong> Sonos, Amazon Echo, Google Home (via TuneIn or custom skills)</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> Should I use YAML or XML configuration?</h3>
+                <p><strong>Use YAML.</strong> Mcaster1DNAS v2.5.1-rc1 supports both formats, but:</p>
+                <ul>
+                    <li>YAML is modern, human-readable, and version-control friendly</li>
+                    <li>XML support is provided for backward compatibility only</li>
+                    <li>XML configuration will be deprecated in a future major release</li>
+                    <li>All new deployments should use YAML format</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How do I enable HTTPS/SSL streaming?</h3>
+                <p>Configure SSL in your YAML config file:</p>
+                <ol>
+                    <li>Obtain SSL certificates (use Let's Encrypt for free certs)</li>
+                    <li>Add SSL socket configuration in the <code>listen:</code> section</li>
+                    <li>Specify certificate paths in the <code>ssl:</code> section</li>
+                    <li>Restart the server</li>
+                </ol>
+                <p>See the <a href="mcaster1dnas_config_file.html" style="color:var(--mcaster-blue)">Configuration Reference</a> for details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How many listeners can Mcaster1DNAS handle?</h3>
+                <p>Mcaster1DNAS can handle thousands of concurrent listeners on modest hardware. Capacity depends on:</p>
+                <ul>
+                    <li><strong>Server resources:</strong> CPU, RAM, and network bandwidth</li>
+                    <li><strong>Stream bitrate:</strong> Lower bitrates = more listeners per Mbps</li>
+                    <li><strong>Configuration:</strong> Buffer sizes and connection limits</li>
+                </ul>
+                <p>Example: A server with 100 Mbps can serve ~780 listeners at 128 kbps (accounting for overhead).</p>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How do I list my stream in directories?</h3>
+                <p>Configure YP (Yellow Pages) directory settings in your config:</p>
+                <ul>
+                    <li>Set <code>public: true</code> in your mount configuration</li>
+                    <li>Configure YP directory servers (or use defaults)</li>
+                    <li>Ensure all required metadata is set (stream name, description, genre, URL)</li>
+                    <li>Mcaster1DNAS v2.5.1-rc1 includes enhanced YP logging for troubleshooting</li>
+                </ul>
+                <p>See <a href="mcaster1dnas_yp.html" style="color:var(--mcaster-blue)">YP Directory Documentation</a> for details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> Where can I get help?</h3>
+                <p>Multiple support channels are available:</p>
+                <ul>
+                    <li><strong>GitHub Discussions:</strong> <a href="https://github.com/davestj/mcaster1dnas/discussions" target="_blank" style="color:var(--mcaster-blue)">Community Q&A</a></li>
+                    <li><strong>GitHub Issues:</strong> <a href="https://github.com/davestj/mcaster1dnas/issues" target="_blank" style="color:var(--mcaster-blue)">Bug reports and feature requests</a></li>
+                    <li><strong>Email:</strong> <a href="mailto:davestj@gmail.com" style="color:var(--mcaster-blue)">davestj@gmail.com</a></li>
+                    <li><strong>Documentation:</strong> This guide and examples in the source repository</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> What's new in Mcaster1DNAS v2.5.1-rc1?</h3>
+                <p>This release candidate includes:</p>
+                <ul>
+                    <li><strong>ICY-META v2.1+ protocol:</strong> Enhanced metadata with social media integration</li>
+                    <li><strong>YAML configuration:</strong> Modern config format (XML deprecated)</li>
+                    <li><strong>YP directory logging:</strong> Detailed tracking of directory registrations</li>
+                    <li><strong>Performance improvements:</strong> Better memory management and connection handling</li>
+                    <li><strong>Security updates:</strong> Updated SSL/TLS support</li>
+                </ul>
+                <p>Note: v2.5.1-rc1 is a pre-release. Report any issues on GitHub.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-

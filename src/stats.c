@@ -43,6 +43,7 @@
 #include "xslt.h"
 #include "util.h"
 #include "fserve.h"
+#include "songdata_api.h"
 #define CATMODULE "stats"
 #include "logging.h"
 
@@ -1148,6 +1149,15 @@ int stats_transform_xslt (client_t *client, const char *uri)
     config_get_config ();
     char *xslpath = util_get_path_from_normalised_uri (uri, 0);
     config_release_config ();
+
+    /* Public song history page: serve songdata_get_xml instead of mcaster1stats */
+    if (strcmp (uri, "/songdata.xsl") == 0)
+    {
+        doc = songdata_get_xml (mount);
+        ret = xslt_transform (doc, xslpath, client);
+        free (xslpath);
+        return ret;
+    }
 
     if (mount == NULL && client->server_conn->shoutcast_mount && strcmp (uri, "/7.xsl") == 0)
         mount = client->server_conn->shoutcast_mount;

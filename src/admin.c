@@ -41,6 +41,7 @@
 
 #include "logging.h"
 #include "auth.h"
+#include "songdata_api.h"
 
 #define CATMODULE "admin"
 
@@ -62,6 +63,7 @@ static int command_updatemetadata(client_t *client, source_t *source, int respon
 static int command_admin_function (client_t *client, int response);
 static int command_list_log (client_t *client, int response);
 static int command_manage_relay (client_t *client, int response);
+static int command_songdata (client_t *client, int response);
 #ifdef MY_ALLOC
 static int command_alloc(client_t *client);
 #endif
@@ -97,8 +99,11 @@ static struct admin_command admin_general[] =
     { "managerelays.xsl",   XSLT,   { command_manage_relay } },
     { "listmounts.xsl",     XSLT,   { command_list_mounts } },
     { "moveclients.xsl",    XSLT,   { command_list_mounts } },
+    { "webplayer.xsl",      XSLT,   { command_list_mounts } },
     { "function.xsl",       XSLT,   { command_admin_function } },
     { "response.xsl",       XSLT,   { NULL } },
+    { "songdata",           RAW,    { command_songdata } },
+    { "songdata.xsl",       XSLT,   { command_songdata } },
     { NULL }
 };
 
@@ -1284,6 +1289,14 @@ static int command_list_log (client_t *client, int response)
 }
 
 
+static int command_songdata (client_t *client, int response)
+{
+    const char *mount = httpp_get_query_param (client->parser, "mount");
+    xmlDocPtr doc = songdata_get_xml (mount);
+    return admin_send_response (doc, client, response, "songdata.xsl");
+}
+
+
 int command_list_mounts(client_t *client, int response)
 {
     DEBUG0("List mounts request");
@@ -1307,10 +1320,8 @@ int command_list_mounts(client_t *client, int response)
     else
     {
         xmlDocPtr doc;
-        int show_listeners = httpp_get_query_param (client->parser, "with_listeners") ? 1 : 0;
-        avl_tree_rlock (global.source_tree);
-        doc = admin_build_sourcelist (NULL, show_listeners);
-        avl_tree_unlock (global.source_tree);
+        // Use full stats XML (same as stats.xsl) to include all metadata
+        doc = stats_get_xml (STATS_ALL, NULL);
 
         return admin_send_response (doc, client, response, "listmounts.xsl");
     }

@@ -1,5 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="html" indent="yes" encoding="UTF-8" doctype-system="about:legacy-compat"/>
+<xsl:include href="header.xsl"/>
+<xsl:include href="footer.xsl"/>
 
 <xsl:template match="/mcaster1stats">
 <html lang="en">
@@ -14,37 +16,17 @@
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
     <link rel="stylesheet" type="text/css" href="/style.css"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
     <script src="/mcaster-utils.js"></script>
 </head>
 <body>
-    <div class="mcaster-header">
-        <div class="mcaster-container">
-            <div class="mcaster-header-top">
-                <div class="mcaster-brand">
-                    <div class="brand-icon">M1</div>
-                    <div class="brand-text">
-                        <h1 style="margin: 0; font-size: 1.75rem;">
-                            <span class="brand-mcaster">Mcaster1</span>
-                            <span class="brand-dnas">DNAS</span>
-                        </h1>
-                    </div>
-                </div>
-                <div class="mcaster-clock">
-                    <div class="mcaster-clock-time">
-                        <i class="fas fa-clock mcaster-clock-icon"></i>
-                        <span id="live-time">Loading...</span>
-                    </div>
-                    <div class="mcaster-clock-date" id="live-date">Loading...</div>
-                </div>
-            </div>
-            <div class="mcaster-nav">
-                <a href="status.xsl" class="active"><i class="fas fa-home"></i> Status</a>
-                <a href="server_version.xsl"><i class="fas fa-info-circle"></i> Server Info</a>
-                <a href="credits.xsl"><i class="fas fa-award"></i> Credits</a>
-                <a href="/admin/stats.xsl"><i class="fas fa-shield-alt"></i> Admin</a>
-            </div>
-        </div>
-    </div>
+    <xsl:call-template name="web-header">
+        <xsl:with-param name="active-page" select="'status'"/>
+        <xsl:with-param name="title" select="'Stream Status - Mcaster1DNAS'"/>
+    </xsl:call-template>
 
     <div class="mcaster-main">
         <div class="mcaster-container">
@@ -169,17 +151,20 @@
                                         <xsl:when test="server_type = 'audio/mpeg'">
                                             <i class="fas fa-file-audio" style="color: var(--mcaster-blue);"></i> MP3
                                         </xsl:when>
-                                        <xsl:when test="server_type = 'application/ogg'">
+                                        <xsl:when test="server_type = 'audio/aacp'">
+                                            <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC+
+                                        </xsl:when>
+                                        <xsl:when test="server_type = 'audio/aac'">
+                                            <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC
+                                        </xsl:when>
+                                        <xsl:when test="server_type = 'audio/ogg' or server_type = 'application/ogg'">
                                             <i class="fas fa-file-audio" style="color: var(--dnas-green);"></i>
                                             <xsl:choose>
-                                                <xsl:when test="subtype">
-                                                    <xsl:value-of select="subtype"/>
-                                                </xsl:when>
-                                                <xsl:otherwise>Ogg Vorbis</xsl:otherwise>
+                                                <xsl:when test="subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
+                                                <xsl:when test="subtype">Ogg <xsl:value-of select="subtype"/></xsl:when>
+                                                
+                                                <xsl:otherwise>Opus</xsl:otherwise>
                                             </xsl:choose>
-                                        </xsl:when>
-                                        <xsl:when test="server_type = 'audio/aac' or server_type = 'audio/aacp'">
-                                            <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:value-of select="server_type"/>
@@ -209,13 +194,13 @@
                                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Sample Rate</div>
                                 <div style="font-weight: 600; color: var(--text-primary);">
                                     <xsl:choose>
-                                        <xsl:when test="ice-samplerate">
-                                            <xsl:value-of select="ice-samplerate"/> Hz
+                                        <xsl:when test="mpeg_samplerate">
+                                            <xsl:value-of select="mpeg_samplerate"/> Hz
                                         </xsl:when>
                                         <xsl:when test="audio_samplerate">
                                             <xsl:value-of select="audio_samplerate"/> Hz
                                         </xsl:when>
-                                        <xsl:otherwise>Unknown</xsl:otherwise>
+                                        <xsl:otherwise>N/A</xsl:otherwise>
                                     </xsl:choose>
                                 </div>
                             </div>
@@ -225,16 +210,19 @@
                                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Channels</div>
                                 <div style="font-weight: 600; color: var(--text-primary);">
                                     <xsl:choose>
-                                        <xsl:when test="ice-channels = '2'">
+                                        <xsl:when test="mpeg_channels = '2' or audio_channels = '2'">
                                             <i class="fas fa-volume-up"></i> Stereo
                                         </xsl:when>
-                                        <xsl:when test="ice-channels = '1'">
+                                        <xsl:when test="mpeg_channels = '1' or audio_channels = '1'">
                                             <i class="fas fa-volume-down"></i> Mono
                                         </xsl:when>
-                                        <xsl:when test="ice-channels">
-                                            <xsl:value-of select="ice-channels"/> ch
+                                        <xsl:when test="mpeg_channels">
+                                            <xsl:value-of select="mpeg_channels"/> ch
                                         </xsl:when>
-                                        <xsl:otherwise>Unknown</xsl:otherwise>
+                                        <xsl:when test="audio_channels">
+                                            <xsl:value-of select="audio_channels"/> ch
+                                        </xsl:when>
+                                        <xsl:otherwise>N/A</xsl:otherwise>
                                     </xsl:choose>
                                 </div>
                             </div>
@@ -379,15 +367,7 @@
         </div>
     </div>
 
-    <div class="mcaster-footer">
-        <div class="mcaster-container">
-            <p>Powered by <a href="https://mcaster1.com">Mcaster1DNAS</a> - Digital Network Audio Server
-                <span class="page-load-time" id="page-load-time">
-                    <i class="fas fa-spinner fa-spin"></i> Loading...
-                </span>
-            </p>
-        </div>
-    </div>
+    <xsl:call-template name="web-footer"/>
 </body>
 </html>
 </xsl:template>

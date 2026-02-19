@@ -1,128 +1,199 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Interface - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root{--mcaster-blue:#0ea5e9;--dnas-green:#22c55e;--text-primary:#1f2937;--text-secondary:#6b7280;--bg-white:#fff;--bg-light:#f8fafc;--bg-accent:#f1f5f9;--border-light:#e2e8f0;--shadow-medium:0 4px 6px -1px rgb(0 0 0 / 0.1);--gradient-brand:linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));--radius-md:0.5rem;--radius-lg:0.75rem;--font-sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;--font-mono:'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-sans);line-height:1.6;color:var(--text-primary);background:var(--bg-light)}
+        .breadcrumb{background:var(--bg-white);padding:1rem 0;border-bottom:1px solid var(--border-light)}
+        .breadcrumb-container{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-size:0.875rem}
+        .breadcrumb a{color:var(--mcaster-blue);text-decoration:none}
+        .hero{background:var(--gradient-brand);color:white;padding:4rem 0 2rem 0}
+        .hero-content{max-width:1200px;margin:0 auto;padding:0 1rem}
+        .hero h1{font-size:3rem;font-weight:800;margin-bottom:0.5rem}
+        .hero p{font-size:1.25rem;opacity:0.95}
+        .container{max-width:1200px;margin:0 auto;padding:3rem 1rem}
+        .content-card{background:var(--bg-white);border-radius:var(--radius-lg);padding:3rem;box-shadow:var(--shadow-medium);margin-bottom:2rem}
+        .content-card h2{font-size:2rem;font-weight:700;color:var(--text-primary);margin:2.5rem 0 1rem 0;display:flex;align-items:center;gap:0.75rem}
+        .content-card h2:first-child{margin-top:0}
+        .content-card h2 i{color:var(--mcaster-blue)}
+        .content-card h3{font-size:1.5rem;font-weight:600;color:var(--text-primary);margin:2rem 0 1rem 0}
+        .content-card p{font-size:1.125rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem}
+        .content-card ul{margin:1rem 0 1.5rem 2rem}
+        .content-card li{color:var(--text-secondary);line-height:1.8;margin-bottom:0.75rem}
+        .code-block{background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:var(--radius-md);overflow-x:auto;margin:1.5rem 0;font-family:var(--font-mono);font-size:0.875rem;line-height:1.6}
+        .admin-function{background:var(--bg-light);border-left:4px solid var(--mcaster-blue);padding:1.5rem;border-radius:var(--radius-lg);margin-bottom:1.5rem}
+        .admin-function h4{font-size:1.25rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem}
+        .alert-box{padding:1.5rem;border-radius:var(--radius-md);margin:1.5rem 0;display:flex;align-items:flex-start;gap:1rem;background:#dbeafe;border:1px solid #3b82f6}
+        .alert-icon{font-size:1.25rem;color:#1e40af}
+        .alert-content{color:#1e3a8a}
+        @media (max-width:768px){.hero h1{font-size:2rem}.content-card{padding:2rem 1.5rem}}
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 Admin Interface</h1>
-<hr id='titlebar' />
-<br />
-<br />
-<br />
-<h2>Overview</h2>
-<p>This section contains information about the admin interface of mcaster1.  Through this interface the user can manipulate many server features.  From it you can gather statistics, mov	e listeners from mountpoint to mountpoint, disconnect connected sources, disconnect connected listeners, and many other activities.  Each function is enumerated here as well as an example usage of the function.</p>
-<p>Each of these functions requires HTTP authentication via the appropriate username and password. For mount-specific functions, you may use either the &lt;admin-username&gt; and &lt;admin-password&gt; specified in the mcaster1 config file, or the username and password specified for that mountpoint (if any). For general functions (not specific to a single mountpoint), you must use the admin username and password. It is also important to note that in all the examples 192.168.1.10 is used as the example host and 8000 is used as the example port for the mcaster1 server.</p>
-<br />
-<br />
-<br />
-<h2>Admin Functions (mount specific)</h2>
-<p>All these admin functions are mount specific in that they only apply to a particular mountpoint (as opposed to applying to the entire server).  Each of these functions requires a mountpoint to be specified as input.
-</p>
-<h3>Metadata Update</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function provides the ability for either a source client or any external program to update the metadata information for a particular mountpoint.  Currently the only metadata supported is song title and only for MP3 streams.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/metadata?mount=/mystream&amp;mode=updinfo&amp;song=ACDC+Back+In+Black
-</pre>
-<br />
-<br />
-<h3>Fallback Update</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function provides the ability for either a source client or any external program to update the "fallback mountpoint" for a particular mountpoint.  Fallback mounts are those that are used in the even of a source client disconnection.  If a source client disconnects for some reason that all currently connected clients are sent immediately to the fallback mountpoint.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/fallbacks?mount=/mystream.ogg&amp;fallback=/myfallback.ogg
-</pre>
-<br />
-<br />
-<h3>List Clients</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function lists all the clients currently connected to a specific mountpoint.  The results are sent back in XML form.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/listclients?mount=/mystream.ogg
-</pre>
-<br />
-<br />
-<h3>Move Clients (Listeners)</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function provides the ability to migrate currently connected listeners from one mountpoint to another.  This function requires 2 mountpoints to be passed in: mount (the *from* mountpoint) and destination (the *to* mountpoint).  After processing this function all currently connected listeners on mount will be connected to destination.  Note that the destination mountpoint must exist and have a sounce client already feeding it a stream.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/moveclients?mount=/mystream.ogg&amp;destination=/mynewstream.ogg
-</pre>
-<br />
-<br />
-<h3>Kill Client (Listener)</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function provides the ability to disconnect a specific listener of a currently connected mountpoint.  Listeners are identified by a unique id that can be retrieved by via the "List Clients" admin function.  This id must be passed in to the request.  After processing this request, the listener will no longer be connected to the mountpoint.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/killclient?mount=/mystream.ogg&amp;id=21
-</pre>
-<br />
-<br />
-<h3>Kill Source</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This function will provide the ability to disconnect a specific mountpoint from the server.  The mountpoint to be disconnected is specified via the variable "mount".
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/killsource?mount=/mystream.ogg
-</pre>
-<br />
-<br />
-<br />
-<h2>Admin Functions (general)</h2>
-<h3>Stats</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This admin function provides the ability to query the internal statistics kept by the mcaster1 server.  Almost all information about the internal workings of the server such as the mountpoints connected, how many client requests have been served, how many listeners for each mountpoint, etc, are available via this admin function.<br />
-Note that this admin function can also be invoked via the http://server:port/admin/stats.xml syntax, however this syntax should not be used and will eventually become deprecated.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/stats
-</pre>
-<br />
-<br />
-<h3>List Mounts</h3>
-<h4>description</h4>
-<div class="indentedbox">
-This admin function provides the ability to view all the currently connected mountpoints.
-</div>
-<h4>example</h4>
-<pre>
-http://192.168.1.10:8000/admin/listmounts
-</pre>
-<br />
-<br />
-<br />
-<h2>Web-Based Admin Interface</h2>
-<p>As an alternative to manually invoking these URLs, a web-based admin interface was developed.  This interface provides the same functions that were identified and described above but presents them in a little nicer way.  The Web-Based Admin Interface to mcaster1 is shipped with mcaster1 provided in the "admin" directory and comes ready to use.  All the user needs to do is set the path to this directory in the config file via the &lt;adminroot&gt; config variable.</p>
-<p>The Web-Based Admin Interface is a series of XSLT files which are used to display all the XML obtained via the URL admin interface.  This can be changed and modified to suit the user's need.  Knowledge of XSLT and transformations from XML to HTML are required in order to make changes to these scripts.</p>
-<p>The main URL for the Web-Based Admin Interface is</p>
-<pre>
-http://192.168.1.10:8000/admin/stats.xsl
-</pre>
-<p>From this URL all of the other admin functions can be exercised.</p>
-<p>Modification of existing XSLT transforms in /admin is allowed, but new files cannot be created here. Creation of new XSLT transforms as well as modification of existing transforms is allowed in /web. These work using the document returned by /admin/stats.xml. To see the XML document that is applied to each admin XSLT, just change the .xsl to .xml in your request (i.e. /admin/listclients.xml). You can then code your XSLT transform accordingly.
-</p>
-</div>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Admin Interface</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-user-shield"></i> Admin Interface</h1>
+            <p>Master the web-based administration interface</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content-card">
+            <h2><i class="fas fa-info-circle"></i> Overview</h2>
+            <p>
+                The Mcaster1DNAS admin interface provides comprehensive control over your streaming server through a web-based interface.
+                From managing listeners and sources to updating metadata and monitoring statistics, the admin interface gives you complete
+                control over every aspect of your server.
+            </p>
+
+            <div class="alert-box">
+                <i class="fas fa-lock alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Authentication Required:</strong> All admin functions require HTTP authentication. Use the admin username
+                    and password from your configuration file. Mount-specific functions can use either admin credentials or
+                    mount-specific credentials if configured.
+                </div>
+            </div>
+
+            <h2><i class="fas fa-mountain"></i> Mount-Specific Admin Functions</h2>
+            <p>
+                These functions apply to specific mountpoints. Access them by specifying the mountpoint in the URL.
+                The examples use <code>192.168.1.10:8000</code> as the server address.
+            </p>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-tags"></i> Metadata Update</h4>
+                <p>Update the metadata (song information) for a mountpoint. Supports all audio formats with ICY-META v2.1+ protocol enhancements in Mcaster1DNAS v2.5.1-rc1.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/metadata?mount=/stream&mode=updinfo&song=Artist+-+Title</pre></div>
+                <p><strong>Parameters:</strong></p>
+                <ul>
+                    <li><code>mount</code> - The mountpoint to update (e.g., /stream, /live.ogg)</li>
+                    <li><code>mode</code> - Update mode (updinfo for song updates)</li>
+                    <li><code>song</code> - Song information (URL-encoded, use + for spaces)</li>
+                </ul>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-rotate"></i> Fallback Update</h4>
+                <p>Configure or update the fallback mountpoint for automatic listener transfer when a source disconnects.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/fallbacks?mount=/stream.ogg&fallback=/backup.ogg</pre></div>
+                <p><strong>Use Case:</strong> Prevent dead air by automatically moving listeners to a backup stream when the main source disconnects.</p>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-users"></i> List Clients</h4>
+                <p>Display all listeners currently connected to a specific mountpoint. Returns detailed XML data including IP addresses, connection times, and user agents.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/listclients?mount=/stream</pre></div>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-user-times"></i> Kill Client</h4>
+                <p>Disconnect a specific listener from a mountpoint. Useful for managing problem connections or enforcing listener limits.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/killclient?mount=/stream&id=12345</pre></div>
+                <p><strong>Note:</strong> Get the client ID from the listclients output.</p>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-people-arrows"></i> Move Clients</h4>
+                <p>Transfer all listeners from one mountpoint to another without disconnection.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/moveclients?mount=/old&destination=/new</pre></div>
+                <p><strong>Use Case:</strong> Switch between different quality streams or migrate listeners during server maintenance.</p>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-plug"></i> Kill Source</h4>
+                <p>Disconnect a source client from a mountpoint.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/killsource?mount=/stream</pre></div>
+                <p><strong>Warning:</strong> This will terminate the source connection immediately. All listeners will be moved to the fallback mountpoint if configured.</p>
+            </div>
+
+            <h2><i class="fas fa-server"></i> Server-Wide Admin Functions</h2>
+            <p>These functions affect the entire server and require admin credentials (not mount-specific credentials).</p>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-chart-bar"></i> Server Statistics</h4>
+                <p>Retrieve comprehensive server statistics in XML format.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/stats.xml</pre></div>
+                <p>Includes connection counts, source information, listener counts, and mountpoint details. See <a href="mcaster1dnas_stats.html" style="color:var(--mcaster-blue)">Server Statistics</a> for details.</p>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-list"></i> List Mounts</h4>
+                <p>Display all currently active mountpoints with their statistics.</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/listmounts</pre></div>
+            </div>
+
+            <div class="admin-function">
+                <h4><i class="fas fa-sync"></i> Reload Configuration</h4>
+                <p>Reload the YAML configuration file without restarting the server (v2.5.1-rc1 feature).</p>
+                <div class="code-block"><pre>http://192.168.1.10:8000/admin/reloadconfig</pre></div>
+                <p><strong>Note:</strong> Some settings require a full server restart. Configuration errors will be logged.</p>
+            </div>
+
+            <h2><i class="fas fa-desktop"></i> Web-Based Admin Interface</h2>
+            <p>
+                Mcaster1DNAS includes a web-based admin interface built with XSLT transformations. Access it at:
+            </p>
+            <div class="code-block"><pre>http://yourserver:8000/admin/stats.xsl</pre></div>
+
+            <h3>Features of the Web Interface</h3>
+            <ul>
+                <li><strong>Real-time Statistics:</strong> Live server and mountpoint statistics</li>
+                <li><strong>Listener Management:</strong> View and disconnect individual listeners</li>
+                <li><strong>Source Management:</strong> Monitor and control source connections</li>
+                <li><strong>Authentication Management:</strong> Manage listener authentication (htpasswd users)</li>
+                <li><strong>Metadata Updates:</strong> Update song information through web forms</li>
+                <li><strong>Custom Styling:</strong> Modify XSLT files in the admin/ directory to customize appearance</li>
+            </ul>
+
+            <h2><i class="fas fa-code"></i> Programmatic Access</h2>
+            <p>
+                The admin interface can be accessed programmatically using HTTP requests. This enables:
+            </p>
+            <ul>
+                <li>Automated metadata updates from playout systems</li>
+                <li>Custom monitoring and alerting scripts</li>
+                <li>Integration with broadcasting automation software</li>
+                <li>RESTful API development using the XML endpoints</li>
+                <li>Custom dashboards and status pages</li>
+            </ul>
+
+            <h3>Example: Automated Metadata Update</h3>
+            <div class="code-block"><pre>#!/bin/bash
+SONG="$(nowplaying-script)"
+curl -u admin:password \
+  "http://localhost:8000/admin/metadata?mount=/stream&mode=updinfo&song=${SONG}"</pre></div>
+
+            <h2><i class="fas fa-shield-alt"></i> Security Considerations</h2>
+            <ul>
+                <li><strong>HTTPS Recommended:</strong> Use SSL/TLS for admin interface access in production</li>
+                <li><strong>Strong Passwords:</strong> Use complex passwords for admin accounts</li>
+                <li><strong>IP Restrictions:</strong> Consider firewall rules to limit admin access</li>
+                <li><strong>Audit Logs:</strong> Monitor access.log for admin activity</li>
+                <li><strong>Mount Passwords:</strong> Use different passwords for each mountpoint</li>
+            </ul>
+
+            <div style="background:var(--bg-accent);border-left:4px solid var(--dnas-green);padding:1.5rem;border-radius:var(--radius-lg);margin-top:2rem">
+                <p style="margin:0;color:var(--text-primary)">
+                    <strong><i class="fas fa-lightbulb"></i> Next Steps:</strong>
+                    Learn about <a href="mcaster1dnas_stats.html" style="color:var(--mcaster-blue);font-weight:600">Server Statistics</a>
+                    or explore <a href="mcaster1dnas_listenerauth.html" style="color:var(--mcaster-blue);font-weight:600">Listener Authentication</a>.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

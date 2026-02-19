@@ -28,6 +28,7 @@
 
 #include "cfgfile.h"
 #include "logging.h"
+#include "songdata_api.h"
 #include "util.h"
 #include "errno.h"
 #include "global.h"
@@ -165,6 +166,7 @@ void logging_playlist(const char *mount, const char *metadata, long listeners)
              mount,
              listeners,
              metadata);
+    songdata_push (mount, metadata, listeners);
 }
 
 

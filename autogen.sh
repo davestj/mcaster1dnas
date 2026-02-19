@@ -99,7 +99,7 @@ libtoolize --automake --copy
 
 if test -n "$AUTOMAKE"; then
   echo "  $AUTOMAKE"
-  $AUTOMAKE --add-missing --copy
+  $AUTOMAKE --add-missing --copy --foreign
 fi
 
 echo "  autoconf"

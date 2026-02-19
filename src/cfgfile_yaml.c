@@ -623,6 +623,7 @@ int yaml_parse_limits(yaml_parse_ctx *ctx, yaml_node_t *node)
     yaml_node_t *header_timeout = yaml_get_mapping_value(ctx->document, node, "header-timeout");
     yaml_node_t *source_timeout = yaml_get_mapping_value(ctx->document, node, "source-timeout");
     yaml_node_t *inactivity = yaml_get_mapping_value(ctx->document, node, "inactivity-timeout");
+    yaml_node_t *song_hist  = yaml_get_mapping_value(ctx->document, node, "song-history-limit");
 
     if (max_bandwidth) yaml_get_bitrate_value(ctx->document, max_bandwidth, &config->max_bandwidth);
     if (max_listeners) yaml_get_int_value(ctx->document, max_listeners, &config->max_listeners);
@@ -636,6 +637,7 @@ int yaml_parse_limits(yaml_parse_ctx *ctx, yaml_node_t *node)
     if (header_timeout) yaml_get_int_value(ctx->document, header_timeout, &config->header_timeout);
     if (source_timeout) yaml_get_int_value(ctx->document, source_timeout, &config->source_timeout);
     if (inactivity) yaml_get_int_value(ctx->document, inactivity, &config->inactivity_timeout);
+    if (song_hist)  yaml_get_int_value(ctx->document, song_hist,  &config->song_history_limit);
 
     if (config->workers_count < 1) config->workers_count = 1;
     if (config->workers_count > 400) config->workers_count = 400;

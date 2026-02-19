@@ -1,5 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([Mcaster1DNAS], [2.5.0], [support@mcaster1.com])
+dnl Read version from VERSION file
+m4_define([MCASTER1_VERSION], m4_esyscmd_s([cat VERSION 2>/dev/null || echo "2.5.1"]))
+AC_INIT([Mcaster1DNAS], MCASTER1_VERSION, [support@mcaster1.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign])
 

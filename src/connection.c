@@ -749,6 +749,10 @@ void connection_stats (void)
     if (banned_ip.contents)
         banned_IPs = (long)banned_ip.contents->length;
     stats_event_args (NULL, "banned_IPs", "%ld", banned_IPs);
+
+    mc_config_t *config = config_get_config();
+    stats_event_args (NULL, "max_listeners", "%d", config->client_limit);
+    config_release_config();
 }
 
 

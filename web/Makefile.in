@@ -390,6 +390,7 @@ SUBDIRS = images
 webdir = $(pkgdatadir)/web
 dist_web_DATA = status.xsl \
                 status2.xsl \
+                webplayer.xsl \
                 style.css \
                 auth.xsl \
                 server_version.xsl \

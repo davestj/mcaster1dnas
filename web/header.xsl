@@ -6,7 +6,7 @@
                 <xsl:with-param name="active-page" select="'status'"/>
                 <xsl:with-param name="title" select="'Page Title - Mcaster1DNAS'"/>
             </xsl:call-template>
-     active-page values: status, version, credits
+     active-page values: status, version, credits, songdata
 -->
 <xsl:template name="web-header">
     <xsl:param name="active-page" select="'none'"/>
@@ -36,6 +36,12 @@
                             <xsl:attribute name="class">active</xsl:attribute>
                         </xsl:if>
                         <i class="fas fa-info-circle" aria-hidden="true"></i> Server Info
+                    </a>
+                    <a href="/songdata.xsl">
+                        <xsl:if test="$active-page = 'songdata'">
+                            <xsl:attribute name="class">active</xsl:attribute>
+                        </xsl:if>
+                        <i class="fas fa-history" aria-hidden="true"></i> Track History
                     </a>
                     <a href="/credits.xsl">
                         <xsl:if test="$active-page = 'credits'">

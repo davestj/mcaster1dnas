@@ -14,6 +14,7 @@
                 </span>
                 <span class="footer-links" role="navigation" aria-label="Footer navigation">
                     <a href="/status.xsl"><i class="fas fa-home" aria-hidden="true"></i> <strong>Status</strong></a>
+                    <a href="/songdata.xsl"><i class="fas fa-history" aria-hidden="true"></i> Track History</a>
                     <a href="/server_version.xsl"><i class="fas fa-info-circle" aria-hidden="true"></i> Server Info</a>
                     <a href="/credits.xsl"><i class="fas fa-award" aria-hidden="true"></i> Credits</a>
                     <a href="/admin/stats.xsl"><i class="fas fa-shield-alt" aria-hidden="true"></i> Admin</a>

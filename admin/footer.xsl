@@ -15,6 +15,7 @@
                 <span class="footer-links" role="navigation" aria-label="Footer navigation">
                     <a href="stats.xsl"><i class="fas fa-chart-line" aria-hidden="true"></i> <strong>Stats</strong></a>
                     <a href="listmounts.xsl"><i class="fas fa-stream" aria-hidden="true"></i> Mounts</a>
+                    <a href="songdata.xsl"><i class="fas fa-history" aria-hidden="true"></i> Track History</a>
                     <a href="logs.xsl"><i class="fas fa-file-alt" aria-hidden="true"></i> Logs</a>
                     <a href="../status.xsl" target="_blank" rel="noopener"><i class="fas fa-globe" aria-hidden="true"></i> Public</a>
                 </span>

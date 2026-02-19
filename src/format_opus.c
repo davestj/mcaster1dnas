@@ -29,6 +29,7 @@ typedef struct source_tag source_t;
 #include "client.h"
 #include "stats.h"
 #include "format_ogg.h"
+#include "logging.h"
 
 #define CATMODULE "format-opus"
 #include "logging.h"
@@ -43,7 +44,30 @@ static void opus_set_tag (format_plugin_t *plugin, const char *tag, const char *
         return;
 
     if (tag == NULL)
+    {
+        /* Commit signal — log title change to playlist log and songdata API */
+        if (ogg_info->title && ogg_info->title[0])
+        {
+            char *metadata;
+            if (ogg_info->artist && ogg_info->artist[0])
+            {
+                size_t len = strlen(ogg_info->artist) + strlen(ogg_info->title) + 4;
+                metadata = malloc(len);
+                snprintf(metadata, len, "%s - %s", ogg_info->artist, ogg_info->title);
+            }
+            else
+                metadata = strdup(ogg_info->title);
+
+            char *ls = stats_get_value(ogg_info->mount, "listeners");
+            long listeners = ls ? atol(ls) : 0;
+            free(ls);
+
+            logging_playlist(ogg_info->mount, metadata, listeners);
+            stats_event_time(ogg_info->mount, "metadata_updated", STATS_GENERAL);
+            free(metadata);
+        }
         return;
+    }
 
     if (strcmp (tag, "title") == 0 || strcmp (tag, "song") == 0)
     {

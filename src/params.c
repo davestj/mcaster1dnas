@@ -268,8 +268,24 @@ int mc_http_apply_block (mc_http_t *http, refbuf_t *ref)
 //
 int mc_params_printf (mc_params_t *pm, const char *name, int flags, const char *fmt, ...)
 {
-    int ret = 1023;
     if (fmt == NULL) return -1;
+#ifdef _MSC_VER
+    {   /* MSVC: no VLA support; use fixed 8001-byte buffer (max loop size) */
+        char content[8001];
+        va_list ap;
+        int ret;
+        va_start (ap, fmt);
+        ret = vsnprintf (content, sizeof content, fmt, ap);
+        va_end(ap);
+        if (ret >= 0 && ret < (int)sizeof content)
+        {
+            mc_param_t hdr = { NULL, (char*)name, content, flags };
+            return mc_params_apply (pm, &hdr);
+        }
+    }
+    return -1;
+#else
+    int ret = 1023;
     do {
         va_list ap;
         char content [ret + 1];
@@ -277,18 +293,35 @@ int mc_params_printf (mc_params_t *pm, const char *name, int flags, const char *
         ret = vsnprintf (content, sizeof content, fmt, ap);
         va_end(ap);
 
-        if (ret >= 0 && ret < sizeof content)
+        if (ret >= 0 && ret < (int)sizeof content)
         {
             mc_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
             return mc_params_apply (pm, &hdr);
         }
     } while (ret < 8000);        // loop to retry with a larger size, although not silly
     return -1;
+#endif
 }
 
 
 int mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fmt, ...)
 {
+#ifdef _MSC_VER
+    {   /* MSVC: no VLA support; use fixed 8001-byte buffer (max loop size) */
+        char content[8001];
+        va_list ap;
+        int ret;
+        va_start (ap, fmt);
+        ret = vsnprintf (content, sizeof content, fmt, ap);
+        va_end(ap);
+        if (ret >= 0 && ret < (int)sizeof content)
+        {
+            mc_param_t hdr = { NULL, (char*)name, content, flags };
+            return mc_http_apply (http, &hdr);
+        }
+    }
+    return -1;
+#else
     int ret = 1023;
     do
     {
@@ -297,13 +330,14 @@ int mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fm
         va_start (ap, fmt);
         ret = vsnprintf (content, sizeof content, fmt, ap);
         va_end(ap);
-        if (ret >= 0 && ret < sizeof content)
+        if (ret >= 0 && ret < (int)sizeof content)
         {
             mc_param_t hdr = { .next = NULL, .name = (char*)name, .value = content, .flags = flags };
             return mc_http_apply (http, &hdr);
         }
     } while (ret < 8000);
     return -1;
+#endif
 }
 
 

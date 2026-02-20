@@ -34,8 +34,9 @@
 #include "fnmatch_.h"
 #endif
 
-/* ugly hack needed in some win32 build cases */
-#ifdef WIN32
+/* ugly hack needed in some win32 build cases (MinGW / old MSVC only).
+ * VS2022 UCRT defines _pctype as a macro (__pctype_func()), so skip here. */
+#if defined(WIN32) && !defined(_MSC_VER)
 int __mb_cur_max;
 unsigned short* _pctype;
 #endif

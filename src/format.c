@@ -382,7 +382,11 @@ static int apply_client_tweaks (mc_http_t *http, format_plugin_t *plugin, client
                 const char *proto = not_ssl_connection (&client->connection) ? "http" : "https";
                 char sep = (args) ? '&' : '?';
                 unsigned plen = 40 + ((args) ? strlen (args) : 0);
+#ifdef _MSC_VER
+                char params[4096];
+#else
                 char params [plen];
+#endif
                 snprintf (params, sizeof params,"%s%c_ic2=%"PRId64, (args)?args:"", sep, timing_get_time());
                 mc_http_setup_flags (http, client, 302, 0, NULL);
                 mc_http_printf (http, "Location", 0, "%s://%s%s%s", proto, uhost, uri, params);
@@ -458,7 +462,11 @@ static int apply_client_tweaks (mc_http_t *http, format_plugin_t *plugin, client
             DEBUG3 ("client %" PRI_ConnID ", req %s range %" PRIu64 " requested\n", CONN_ID(client), client->mount, range);
             if (range <= 100 && client->parser->req_type != httpp_req_head)
             {
+#ifdef _MSC_VER
+                char line[101]; /* range <= 100 per if condition above */
+#else
                 char line [range+1];
+#endif
                 memset (line, 'F', range);
                 line[range] = 0;
                 mc_http_printf (http, NULL, 0, "%s", line);

@@ -63,6 +63,10 @@
 #define sock_writev writev
 #elif WIN32
 #include <ws2tcpip.h>
+# ifndef _SSIZE_T_DEFINED
+typedef signed __int64 ssize_t;
+#  define _SSIZE_T_DEFINED
+# endif
 #define IOVEC WSABUF
 ssize_t sock_readv (sock_t sock, WSABUF *iov, size_t count);
 ssize_t sock_writev (sock_t sock, WSABUF *iov, size_t count);

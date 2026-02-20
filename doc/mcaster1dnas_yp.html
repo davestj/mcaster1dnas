@@ -146,7 +146,7 @@ mount:
             </p>
 
             <h3>Via Statistics XML</h3>
-            <div class="code-block"><pre>http://yourserver:8000/admin/stats.xml</pre></div>
+            <div class="code-block"><pre>http://yourserver:9300/admin/stats.xml</pre></div>
             <p>
                 Look for YP-specific fields in the mountpoint section:
             </p>
@@ -156,21 +156,107 @@ mount:
                 <li><strong>&lt;yp-last-touch&gt;</strong> - Last successful YP update timestamp</li>
             </ul>
 
-            <h3>YP Logging (v2.5.1-rc1)</h3>
+            <h3 id="yp-logging">YP Health Log (v2.5.1-rc1)</h3>
             <p>
-                Enhanced logging provides detailed information about YP operations:
+                Mcaster1DNAS v2.5.1-rc1 writes every YP directory operation to a dedicated
+                <strong>per-server log file</strong> — separate from the main error log.
+                The default log path is <code>&lt;logdir&gt;/yp-health.log</code>, created automatically
+                when the first YP server initializes. You can override the path per directory entry
+                with <code>yp-logfile:</code> in your YAML config.
             </p>
-            <div class="code-block"><pre>tail -f /var/log/mcaster1/error.log | grep YP</pre></div>
+
+            <h4 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin:1.5rem 0 0.5rem 0;">Log File Format</h4>
+            <p>Each line is structured as:</p>
+            <div class="code-block"><pre>[YYYY-MM-DD HH:MM:SS] &lt;yp_server_url&gt; - &lt;action&gt;: &lt;mount&gt; - &lt;message&gt;</pre></div>
+
+            <p>Fields present depend on context:</p>
+            <ul>
+                <li>All four fields — mount + result message: <code>[...] http://dir.xiph.org/... - add: /stream - SUCCESS</code></li>
+                <li>Mount only — no outcome message: <code>[...] http://dir.xiph.org/... - remove: /stream</code></li>
+                <li>Message only — no mount: <code>[...] http://dir.xiph.org/... - health-check: SUCCESS - YP server alive and ready for live icy-metadata streams</code></li>
+                <li>Action only: <code>[...] http://dir.xiph.org/... - init</code></li>
+            </ul>
+
+            <h4 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin:1.5rem 0 0.5rem 0;">Actions Logged</h4>
+            <table style="width:100%;border-collapse:collapse;font-size:0.95rem;margin:0.5rem 0 1.5rem 0">
+                <thead>
+                    <tr style="background:var(--bg-accent)">
+                        <th style="padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border-light);font-weight:600">Action</th>
+                        <th style="padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border-light);font-weight:600">When it fires</th>
+                        <th style="padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border-light);font-weight:600">Typical message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--border-light)">
+                        <td style="padding:0.75rem 1rem"><code>init</code></td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)">Server starts up, log file opened</td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)"><em>YP health monitoring started</em></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-light)">
+                        <td style="padding:0.75rem 1rem"><code>health-check</code></td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)">Immediately at startup, then every <code>touch_interval</code> seconds (default 300 s). Runs even when no mounts are streaming.</td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)"><em>SUCCESS - YP server alive and ready for live icy-metadata streams</em> or <em>FAILED - YP server not responding: &lt;curl error&gt;</em></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-light)">
+                        <td style="padding:0.75rem 1rem"><code>add</code></td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)">First registration of a mountpoint with the directory</td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)"><em>SUCCESS</em> or directory error message / curl error</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-light)">
+                        <td style="padding:0.75rem 1rem"><code>touch</code></td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)">Keepalive update sent at <code>TouchFreq</code> interval (set by directory server, minimum 30 s)</td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)"><em>SUCCESS</em> or rejected session / network error</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.75rem 1rem"><code>remove</code></td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)">Source disconnects or mountpoint goes offline</td>
+                        <td style="padding:0.75rem 1rem;color:var(--text-secondary)"><em>Removing mount from YP</em></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin:1.5rem 0 0.5rem 0;">Sample Log Output</h4>
+            <div class="code-block"><pre>[2026-02-20 09:00:01] http://dir.xiph.org/cgi-bin/yp-cgi - init: YP health monitoring started
+[2026-02-20 09:00:01] http://dir.xiph.org/cgi-bin/yp-cgi - health-check: SUCCESS - YP server alive and ready for live icy-metadata streams
+[2026-02-20 09:01:32] http://dir.xiph.org/cgi-bin/yp-cgi - add: /stream - SUCCESS
+[2026-02-20 09:01:37] http://dir.xiph.org/cgi-bin/yp-cgi - touch: /stream - SUCCESS
+[2026-02-20 09:06:37] http://dir.xiph.org/cgi-bin/yp-cgi - touch: /stream - SUCCESS
+[2026-02-20 09:05:01] http://dir.xiph.org/cgi-bin/yp-cgi - health-check: SUCCESS - YP server alive and ready for live icy-metadata streams
+[2026-02-20 10:12:00] http://dir.xiph.org/cgi-bin/yp-cgi - remove: /stream - Removing mount from YP</pre></div>
+
+            <h4 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin:1.5rem 0 0.5rem 0;">Reading the Log</h4>
+            <div class="code-block"><pre># Follow the log in real time
+tail -f /var/log/mcaster1/yp-health.log
+
+# Show only failures
+grep FAILED /var/log/mcaster1/yp-health.log
+
+# Show registration events only
+grep -E " add:| remove:" /var/log/mcaster1/yp-health.log</pre></div>
 
             <p>
-                Log entries include:
+                The YP health log is also accessible through the admin interface:
             </p>
-            <ul>
-                <li>Registration attempts and responses</li>
-                <li>Update intervals and heartbeats</li>
-                <li>Error messages with specific failure reasons</li>
-                <li>Directory server response codes</li>
-            </ul>
+            <div class="code-block"><pre>http://yourserver:9300/admin/showlog?logname=yplog</pre></div>
+            <p>
+                This reads <code>yp-health.log</code> directly from disk and returns its full contents.
+                Requires admin credentials.
+            </p>
+
+            <h4 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin:1.5rem 0 0.5rem 0;">Configuring a Custom Log Path</h4>
+            <p>
+                Use <code>yp-logfile:</code> inside a directory entry to override the default log path.
+                This allows a separate log file per directory server if you register with multiple YP services:
+            </p>
+            <div class="code-block"><pre>yp:
+  directories:
+    - url: http://dir.xiph.org/cgi-bin/yp-cgi
+      timeout: 15
+      yp-logfile: /var/log/mcaster1/yp-xiph.log    # explicit path for this server
+
+    - url: http://dir2.xiph.org/cgi-bin/yp-cgi
+      timeout: 15
+      # no yp-logfile -> uses &lt;logdir&gt;/yp-health.log automatically</pre></div>
 
             <h2><i class="fas fa-search"></i> Finding Your Stream</h2>
             <p>

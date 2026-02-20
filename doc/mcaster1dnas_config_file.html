@@ -71,12 +71,12 @@
                 supports both YAML and XML configuration formats, with YAML being the recommended format going forward.
             </p>
 
-            <div class="alert-box alert-warning">
-                <i class="fas fa-exclamation-triangle alert-icon"></i>
+            <div class="alert-box alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
                 <div class="alert-content">
-                    <strong>XML Configuration Deprecated:</strong> While XML configuration is still supported in v2.5.1-rc1,
-                    it will be deprecated in future releases. We strongly recommend using YAML configuration for all new
-                    deployments. YAML is more readable, easier to maintain, and supports modern configuration patterns.
+                    <strong>Both formats fully supported:</strong> YAML and XML are both auto-detected by file extension
+                    and equally supported in v2.5.1-rc1. YAML is recommended for new deployments — it is more readable,
+                    easier to maintain, and version-control friendly. XML is retained for backward compatibility.
                 </div>
             </div>
 
@@ -84,7 +84,7 @@
                 <i class="fas fa-sync-alt alert-icon"></i>
                 <div class="alert-content">
                     <strong>Live Configuration Reload:</strong> Mcaster1DNAS v2.5.1-rc1 supports live configuration reloading
-                    via the admin interface. Access http://yourserver:8000/admin/reloadconfig to apply configuration changes
+                    via the admin interface. Access http://yourserver:9300/admin/reloadconfig to apply configuration changes
                     without restarting the server. Note that some settings require a full restart to take effect.
                 </div>
             </div>
@@ -100,6 +100,7 @@
                     <li><a href="#ssl">SSL/TLS Configuration</a></li>
                     <li><a href="#paths">File Paths</a></li>
                     <li><a href="#logging">Logging Configuration</a></li>
+                    <li><a href="#song-history">Song History Settings</a></li>
                     <li><a href="#yp">YP Directory Settings</a></li>
                     <li><a href="#relay">Relay Configuration</a></li>
                     <li><a href="#mount">Mount-Specific Settings</a></li>
@@ -138,9 +139,9 @@ authentication:
   admin_password: hackme
 
 listen:
-  - port: 8000
+  - port: 9300
     bind_address: 0.0.0.0
-  - port: 8001
+  - port: 9301
     bind_address: 0.0.0.0
     shoutcast_mount: /live
 
@@ -150,7 +151,7 @@ ssl:
   private_key: /etc/ssl/private/key.pem
   ca_file: /etc/ssl/certs/ca-bundle.pem
   listen:
-    - port: 8443
+    - port: 9443
       bind_address: 0.0.0.0
 
 paths:
@@ -178,7 +179,7 @@ relay:
   max_redirect_slaves: 5
   master:
     server: 192.168.1.11
-    port: 8001
+    port: 9301
     username: relay
     password: hackme
     update_interval: 120
@@ -333,15 +334,15 @@ mount:
 
             <div class="code-block"><pre># YAML format
 listen:
-  - port: 8000
+  - port: 9300
     bind_address: 0.0.0.0       # Listen on all interfaces
-  - port: 8001
+  - port: 9301
     bind_address: 127.0.0.1     # Listen only on localhost
     shoutcast_mount: /live      # Mount for Shoutcast source clients</pre></div>
 
             <div class="config-param">
                 <h4>port</h4>
-                <p>TCP port number to listen on. Standard streaming port is 8000.</p>
+                <p>TCP port number to listen on. Mcaster1DNAS defaults to <strong>9300</strong> for HTTP and <strong>9443</strong> for HTTPS. If migrating from Icecast, update encoders from port 8000 to 9300.</p>
             </div>
 
             <div class="config-param">
@@ -373,7 +374,7 @@ ssl:
   private_key: /etc/ssl/private/key.pem
   ca_file: /etc/ssl/certs/ca-bundle.pem
   listen:
-    - port: 8443
+    - port: 9443
       bind_address: 0.0.0.0</pre></div>
 
             <div class="config-param">
@@ -505,6 +506,34 @@ logging:
                 </p>
             </div>
 
+            <h2 id="song-history"><i class="fas fa-music"></i> Song History Settings</h2>
+            <p>
+                Mcaster1DNAS v2.5.1-rc1 automatically logs track metadata to an in-memory ring buffer whenever a
+                source client updates the ICY-META title. No additional configuration is required to enable this
+                feature — it is always on.
+            </p>
+
+            <div class="code-block"><pre># YAML format — top-level setting (not nested under any section)
+song-history-limit: 25   # Number of tracks to keep (0 = unlimited, default 25)</pre></div>
+
+            <div class="config-param">
+                <h4>song-history-limit</h4>
+                <p>
+                    Maximum number of tracks stored in the in-memory ring buffer. When the buffer is full, the oldest
+                    entry is discarded. Consecutive plays of the same track are deduplicated automatically.
+                    Set to <code>0</code> for unlimited history (bounded only by available RAM).
+                    Default: <code>25</code>.
+                </p>
+                <p>
+                    Access the track history at:
+                </p>
+                <ul>
+                    <li><strong>Raw API:</strong> <code>GET /mcaster1songdata</code> — XML response</li>
+                    <li><strong>Public page:</strong> <code>/songdata.xsl</code> — human-readable table with MusicBrainz, Last.fm, Discogs, and AllMusic lookup icons</li>
+                    <li><strong>Admin page:</strong> <code>/admin/songdata.xsl</code> — same table plus listener counts (requires admin login)</li>
+                </ul>
+            </div>
+
             <h2 id="yp"><i class="fas fa-list"></i> YP Directory Settings</h2>
             <p>
                 Configure YP (Yellow Pages) directory servers for public stream listing. Mcaster1DNAS v2.5.1-rc1 includes
@@ -516,8 +545,11 @@ yp:
   directories:
     - url: http://dir.xiph.org/cgi-bin/yp-cgi
       timeout: 15
+      yp-logfile: /var/log/mcaster1/yp-xiph.log   # optional: per-server log path
+
     - url: http://dir2.xiph.org/cgi-bin/yp-cgi
-      timeout: 15</pre></div>
+      timeout: 15
+      # no yp-logfile -> uses &lt;logdir&gt;/yp-health.log automatically</pre></div>
 
             <div class="config-param">
                 <h4>url</h4>
@@ -535,6 +567,17 @@ yp:
                 </p>
             </div>
 
+            <div class="config-param">
+                <h4>yp-logfile</h4>
+                <p>
+                    Optional path to a dedicated log file for this directory server's operations. When omitted,
+                    all YP events are written to <code>&lt;logdir&gt;/yp-health.log</code> automatically.
+                    Useful when registering with multiple directories and you want per-server logs.
+                    See <a href="mcaster1dnas_yp.html#yp-logging" style="color:var(--mcaster-blue)">YP Logging documentation</a>
+                    for the full log format and action reference.
+                </p>
+            </div>
+
             <h2 id="relay"><i class="fas fa-network-wired"></i> Relay Configuration</h2>
             <p>
                 Configure stream relaying for load distribution and geographic redundancy. See the
@@ -546,7 +589,7 @@ yp:
   max_redirect_slaves: 5
   master:
     server: 192.168.1.11
-    port: 8001
+    port: 9301
     username: relay
     password: hackme
     update_interval: 120
@@ -556,7 +599,7 @@ yp:
             <div class="code-block"><pre>relay:
   relays:
     - server: 192.168.1.11
-      port: 8001
+      port: 9301
       mount: /example.ogg
       local_mount: /different.ogg
       username: relay

@@ -132,14 +132,121 @@
             50% { opacity: 0.5; }
         }
 
-        .current-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #ffffff;
+        /* ===== LED Media Ticker Display ===== */
+        .np-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .media-display {
+            position: relative;
+            background: #010b0f;
+            border: 1px solid rgba(8, 145, 178, 0.35);
+            border-radius: 5px;
             overflow: hidden;
-            text-overflow: ellipsis;
+            margin: 0.75rem 0 0.4rem;
+            box-shadow:
+                inset 0 0 30px rgba(0,0,0,0.95),
+                0 0 10px rgba(8, 145, 178, 0.14),
+                0 2px 6px rgba(0,0,0,0.55);
+        }
+
+        /* CRT scanline texture */
+        .media-display::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .display-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.28rem 0.75rem;
+            border-bottom: 1px solid rgba(8, 145, 178, 0.12);
+        }
+
+        .display-label {
+            font-size: 0.58rem;
+            font-family: 'Courier New', monospace;
+            color: var(--mcaster-teal);
+            text-shadow: 0 0 7px var(--mcaster-teal);
+            letter-spacing: 0.18em;
+        }
+
+        .display-clock {
+            font-size: 0.58rem;
+            font-family: 'Courier New', monospace;
+            color: rgba(20, 184, 166, 0.5);
+            letter-spacing: 0.06em;
+        }
+
+        .ticker-wrap {
+            overflow: hidden;
+            padding: 0.45rem 0;
+        }
+
+        /* Amber LED glow — public player style */
+        .ticker-text {
+            display: inline-block;
             white-space: nowrap;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            text-shadow:
+                0 0 14px rgba(251,191,36,0.95),
+                0 0  6px rgba(251,191,36,0.6),
+                0 0 28px rgba(251,191,36,0.25);
+            letter-spacing: 0.07em;
+            padding-left: 100%;
+            animation: ticker-scroll 18s linear infinite;
+        }
+
+        @keyframes ticker-scroll {
+            0%   { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .display-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-top: 1px solid rgba(8, 145, 178, 0.1);
+        }
+
+        .eq-dots { display: flex; gap: 0.3rem; align-items: center; }
+
+        .eq-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: eq-bounce 1.2s ease-in-out infinite;
+        }
+        .eq-dot:nth-child(1) { background: #10b981; box-shadow: 0 0 5px #10b981; }
+        .eq-dot:nth-child(2) { background: #14b8a6; box-shadow: 0 0 5px #14b8a6; animation-delay: 0.15s; }
+        .eq-dot:nth-child(3) { background: #0891b2; box-shadow: 0 0 5px #0891b2; animation-delay: 0.30s; }
+        .eq-dot:nth-child(4) { background: #fbbf24; box-shadow: 0 0 5px #fbbf24; animation-delay: 0.45s; }
+
+        @keyframes eq-bounce {
+            0%, 100% { opacity: 0.2;  transform: scale(0.7); }
+            50%       { opacity: 1;   transform: scale(1.35); }
+        }
+
+        .display-meta {
+            font-size: 0.56rem;
+            font-family: 'Courier New', monospace;
+            color: rgba(8, 145, 178, 0.4);
+            letter-spacing: 0.1em;
         }
 
         .current-artist {
@@ -532,22 +639,37 @@
         <div class="player-body">
             <!-- Now Playing -->
             <div class="now-playing">
-                <div class="playing-indicator" id="playingIndicator">
-                    <i class="fas fa-circle"></i> <span id="statusText">READY</span>
+                <div class="np-topbar">
+                    <div class="playing-indicator" id="playingIndicator">
+                        <i class="fas fa-circle"></i> <span id="statusText">READY</span>
+                    </div>
+                    <div class="status-live">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </div>
                 </div>
 
-                <div class="status-live">
-                    <span class="live-dot"></span>
-                    LIVE
-                </div>
-
-                <div class="current-title" id="currentTitle">
-                    <xsl:choose>
-                        <xsl:when test="//source/title">
-                            <xsl:value-of select="//source/title"/>
-                        </xsl:when>
-                        <xsl:otherwise>No Title Available</xsl:otherwise>
-                    </xsl:choose>
+                <!-- LED Ticker Display -->
+                <div class="media-display">
+                    <div class="display-header">
+                        <span class="display-label">&#9834; NOW PLAYING</span>
+                        <span class="display-clock" id="displayClock">--:--:--</span>
+                    </div>
+                    <div class="ticker-wrap">
+                        <span class="ticker-text" id="currentTitle"><xsl:choose>
+                            <xsl:when test="//source/title"><xsl:value-of select="//source/title"/></xsl:when>
+                            <xsl:otherwise>Connecting to Stream&#x2026;</xsl:otherwise>
+                        </xsl:choose></span>
+                    </div>
+                    <div class="display-footer">
+                        <div class="eq-dots">
+                            <span class="eq-dot"></span>
+                            <span class="eq-dot"></span>
+                            <span class="eq-dot"></span>
+                            <span class="eq-dot"></span>
+                        </div>
+                        <span class="display-meta">MCASTER1DNAS &#183; LIVE RADIO</span>
+                    </div>
                 </div>
 
                 <xsl:if test="//source/artist">
@@ -731,6 +853,11 @@
             streamTitle = titleEl ? titleEl.textContent.trim() : '';
             stationName = stationEl ? stationEl.textContent.trim() : 'Mcaster1DNAS';
 
+            // Kick off ticker and clock
+            restartTicker(streamTitle || 'Connecting to Stream\u2026');
+            setInterval(updateDisplayClock, 1000);
+            updateDisplayClock();
+
             const savedVolume = localStorage.getItem('mcaster1_volume');
             if (savedVolume) {
                 document.getElementById('volumeSlider').value = savedVolume;
@@ -742,9 +869,9 @@
             // Set up audio event listeners
             setupAudioEvents();
 
-            // Poll metadata immediately then every 5 seconds
+            // Poll metadata immediately then every 2.5 seconds
             updateMetadata();
-            setInterval(updateMetadata, 5000);
+            setInterval(updateMetadata, 2500);
         });
 
         function setupAudioEvents() {
@@ -753,17 +880,20 @@
                 document.getElementById('playingIndicator').style.color = '#10b981';
                 hideBuffering();
                 startVUMeters();
+                if (streamTitle) startTabTicker(streamTitle);
             });
 
             audioElement.addEventListener('pause', function() {
                 document.getElementById('statusText').textContent = 'PAUSED';
                 document.getElementById('playingIndicator').style.color = '#fbbf24';
                 stopVUMeters();
+                stopTabTicker();
             });
 
             audioElement.addEventListener('ended', function() {
                 document.getElementById('statusText').textContent = 'STOPPED';
                 stopVUMeters();
+                stopTabTicker();
             });
 
             audioElement.addEventListener('waiting', function() {
@@ -794,7 +924,8 @@
                 alert('Unable to play stream. Please check your browser settings.');
             });
             isPlaying = true;
-            updateDocumentTitle();
+            if (streamTitle) startTabTicker(streamTitle);
+            else updateDocumentTitle();
         }
 
         function pauseStream() {
@@ -841,11 +972,53 @@
         }
 
         function updateDocumentTitle() {
+            if (_titleInterval) return; // tab ticker is handling it
             if (streamTitle) {
-                document.title = (isPlaying ? '▶ ' : '') + streamTitle + ' — ' + stationName;
+                document.title = (isPlaying ? '\u25b6 ' : '') + streamTitle + ' \u2014 ' + stationName;
             } else {
-                document.title = 'Mcaster1DNAS Player — ' + stationName;
+                document.title = 'Mcaster1DNAS Player \u2014 ' + stationName;
             }
+        }
+
+        // ===== Ticker helpers =====
+        function restartTicker(text) {
+            var el = document.getElementById('currentTitle');
+            if (!el || !text) return;
+            var dur = Math.max(10, Math.round(text.length * 0.28 + 9));
+            el.style.animation = 'none';
+            void el.offsetWidth; // force reflow to reset
+            el.style.animation = 'ticker-scroll ' + dur + 's linear infinite';
+        }
+
+        function updateDisplayClock() {
+            var cl = document.getElementById('displayClock');
+            if (!cl) return;
+            var d = new Date();
+            cl.textContent =
+                String(d.getHours()).padStart(2, '0') + ':' +
+                String(d.getMinutes()).padStart(2, '0') + ':' +
+                String(d.getSeconds()).padStart(2, '0');
+        }
+
+        // Browser window/tab title ticker
+        var _titlePos = 0;
+        var _titleStr = '';
+        var _titleInterval = null;
+
+        function startTabTicker(text) {
+            if (_titleInterval) clearInterval(_titleInterval);
+            _titleStr = text + '   \u25cf   ';
+            _titlePos = 0;
+            _titleInterval = setInterval(function() {
+                var r = _titleStr.slice(_titlePos) + _titleStr.slice(0, _titlePos);
+                document.title = '\u25b6 ' + r.slice(0, 60);
+                _titlePos = (_titlePos + 1) % _titleStr.length;
+            }, 160);
+        }
+
+        function stopTabTicker() {
+            if (_titleInterval) { clearInterval(_titleInterval); _titleInterval = null; }
+            updateDocumentTitle();
         }
 
         function updateMetadata() {
@@ -860,12 +1033,14 @@
                     const currentSource = sources.find(s => s.mount === streamUrl);
                     if (!currentSource) return;
 
-                    // Update song title
+                    // Update song title + ticker
                     const newTitle = currentSource.title || currentSource.yp_currently_playing || '';
                     const titleElement = document.getElementById('currentTitle');
                     if (titleElement && newTitle && titleElement.textContent !== newTitle) {
                         titleElement.textContent = newTitle;
                         streamTitle = newTitle;
+                        restartTicker(newTitle);
+                        if (isPlaying) startTabTicker(newTitle);
                     }
                     if (newTitle && !streamTitle) streamTitle = newTitle;
                     updateDocumentTitle();

@@ -34,7 +34,6 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
-#include <unistd.h>
 #endif
 #ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>

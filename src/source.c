@@ -1961,7 +1961,11 @@ int source_apply_preroll (mount_proxy *mountinfo, source_t *source)
         struct error_log *preroll = &mountinfo->preroll_log;
         unsigned int len = 4096;
         int ret;
+#ifdef _MSC_VER
+        char buffer[4096];
+#else
         char buffer [len];
+#endif
 
         ret = snprintf (buffer, len, "%s" PATH_SEPARATOR, config->log_dir);
         if (ret < 0 || ret >= len)

@@ -38,6 +38,16 @@
 
 #include "log.h"
 
+/* On Windows (and other systems without POSIX localtime_r), util.c provides the
+ * implementation; declare it here so the compiler knows the correct 64-bit return type.
+ * Without this declaration MSVC treats it as returning int, truncating the pointer. */
+#ifndef HAVE_LOCALTIME_R
+struct tm *localtime_r(const time_t *timep, struct tm *result);
+#endif
+#ifndef HAVE_GMTIME_R
+struct tm *gmtime_r(const time_t *timep, struct tm *result);
+#endif
+
 #define LOG_MAXLOGS logs_allocated
 #define LOG_MAXLINELEN 1000
 
@@ -886,6 +896,12 @@ static int do_log_run (int log_id)
         if (loglist [log_id].level >= next->priority)
         {
             _unlock_q (log_id);
+            if (loglist [log_id].logfile == NULL)
+            {
+                _lock_q (log_id);
+                next = next->next;
+                continue;
+            }
             char preline [64] = "";
             _log_expand_preline (next, preline, sizeof preline);
 

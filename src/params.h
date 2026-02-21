@@ -106,10 +106,18 @@ int  mc_http_apply_block (mc_http_t *http, refbuf_t *ref);
 void mc_http_clear (mc_http_t *http);
 int  mc_http_complete (mc_http_t *http);
 int  mc_http_send (mc_http_t *http);
-int  mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
+int  mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fmt, ...)
+#ifdef __GNUC__
+        __attribute__ ((format (printf, 4, 5)))
+#endif
+        ;
 
 int  mc_params_setup (mc_params_t *p, const char *divider, const char *separator, unsigned int flags);
-int  mc_params_printf (mc_params_t *p, const char *name, int flags, const char *fmt, ...) __attribute__ ((format (printf, 4, 5)));
+int  mc_params_printf (mc_params_t *p, const char *name, int flags, const char *fmt, ...)
+#ifdef __GNUC__
+        __attribute__ ((format (printf, 4, 5)))
+#endif
+        ;
 int  mc_params_apply (mc_params_t *pm, const mc_param_t *header);
 void mc_params_clear (mc_params_t *params);
 refbuf_t *mc_params_complete (mc_params_t *pm);

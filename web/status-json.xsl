@@ -28,18 +28,42 @@
 </xsl:template>
 
 <!-- Escape a string value for safe JSON output -->
+<!-- Handles: backslash, double-quote, tab, newline, carriage-return -->
 <xsl:template name="json-string">
   <xsl:param name="str"/>
+  <!-- Outermost: escape tab (&#9;) → \t -->
   <xsl:call-template name="str-replace">
     <xsl:with-param name="str">
+      <!-- escape newline (&#10;) → \n -->
       <xsl:call-template name="str-replace">
-        <xsl:with-param name="str" select="$str"/>
-        <xsl:with-param name="find" select="'\'"/>
-        <xsl:with-param name="replace" select="'\\'"/>
+        <xsl:with-param name="str">
+          <!-- escape carriage-return (&#13;) → \r -->
+          <xsl:call-template name="str-replace">
+            <xsl:with-param name="str">
+              <!-- escape double-quote -->
+              <xsl:call-template name="str-replace">
+                <xsl:with-param name="str">
+                  <!-- escape backslash first -->
+                  <xsl:call-template name="str-replace">
+                    <xsl:with-param name="str" select="$str"/>
+                    <xsl:with-param name="find" select="'\'"/>
+                    <xsl:with-param name="replace" select="'\\'"/>
+                  </xsl:call-template>
+                </xsl:with-param>
+                <xsl:with-param name="find" select="'&quot;'"/>
+                <xsl:with-param name="replace" select="'\&quot;'"/>
+              </xsl:call-template>
+            </xsl:with-param>
+            <xsl:with-param name="find" select="'&#13;'"/>
+            <xsl:with-param name="replace" select="'\r'"/>
+          </xsl:call-template>
+        </xsl:with-param>
+        <xsl:with-param name="find" select="'&#10;'"/>
+        <xsl:with-param name="replace" select="'\n'"/>
       </xsl:call-template>
     </xsl:with-param>
-    <xsl:with-param name="find" select="'&quot;'"/>
-    <xsl:with-param name="replace" select="'\&quot;'"/>
+    <xsl:with-param name="find" select="'&#9;'"/>
+    <xsl:with-param name="replace" select="'\t'"/>
   </xsl:call-template>
 </xsl:template>
 

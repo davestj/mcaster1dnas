@@ -33,6 +33,11 @@
 #include "global.h"
 
 #define CATMODULE "config-yaml"
+#ifdef WIN32
+#define YAML_TRACE(msg) do { FILE *_yt=fopen("mcaster1win_start.log","a"); if(_yt){fprintf(_yt,"[yaml] " msg "\n");fclose(_yt);} } while(0)
+#else
+#define YAML_TRACE(msg) do {} while(0)
+#endif
 
 extern mc_config_http_header_t default_headers[];
 
@@ -1679,24 +1684,66 @@ int config_parse_yaml_file(const char *filename, mc_config_t *configuration)
     yaml_parser_t parser;
     yaml_document_t document;
     yaml_node_t *root;
+    unsigned char *file_buf = NULL;
+    size_t file_size = 0;
     int ret = CONFIG_EPARSE;
 
+    YAML_TRACE("entry");
     if (!filename || filename[0] == '\0')
         return CONFIG_EINSANE;
 
-    fp = fopen(filename, "r");
+    /* Read the file into memory using the exe's own CRT FILE* so we never
+     * pass a FILE* across the DLL boundary into yaml.dll (different CRTs on
+     * Windows have incompatible FILE struct layouts, causing a crash inside
+     * yaml_parser_load when it tries to read through the alien FILE*). */
+    YAML_TRACE("fopen");
+    fp = fopen(filename, "rb");
     if (!fp) {
         ERROR2("Cannot open YAML config file %s: %s", filename, strerror(errno));
         return CONFIG_EPARSE;
     }
+    YAML_TRACE("fopen ok");
 
-    if (!yaml_parser_initialize(&parser)) {
-        ERROR0("Failed to initialize YAML parser");
+    fseek(fp, 0, SEEK_END);
+    long flen = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    if (flen <= 0) {
+        ERROR1("YAML config file is empty or unreadable: %s", filename);
         fclose(fp);
         return CONFIG_EPARSE;
     }
 
-    yaml_parser_set_input_file(&parser, fp);
+    file_size = (size_t)flen;
+    file_buf = malloc(file_size + 1);
+    if (!file_buf) {
+        ERROR0("Out of memory reading YAML config file");
+        fclose(fp);
+        return CONFIG_EPARSE;
+    }
+
+    size_t bytes_read = fread(file_buf, 1, file_size, fp);
+    fclose(fp);
+    fp = NULL;
+
+    if (bytes_read != file_size) {
+        ERROR2("Short read on YAML config file %s: read %lu bytes", filename, (unsigned long)bytes_read);
+        free(file_buf);
+        return CONFIG_EPARSE;
+    }
+    YAML_TRACE("file read into memory");
+
+    YAML_TRACE("yaml_parser_initialize");
+    if (!yaml_parser_initialize(&parser)) {
+        ERROR0("Failed to initialize YAML parser");
+        free(file_buf);
+        return CONFIG_EPARSE;
+    }
+    YAML_TRACE("yaml_parser_initialize ok");
+
+    /* Use in-memory string input - avoids passing FILE* to yaml.dll */
+    yaml_parser_set_input_string(&parser, file_buf, bytes_read);
+    YAML_TRACE("yaml_parser_load");
 
     if (!yaml_parser_load(&parser, &document)) {
         ERROR3("YAML parse error in %s at line %lu: %s",
@@ -1704,28 +1751,34 @@ int config_parse_yaml_file(const char *filename, mc_config_t *configuration)
                (unsigned long)parser.problem_mark.line + 1,
                parser.problem);
         yaml_parser_delete(&parser);
-        fclose(fp);
+        free(file_buf);
         return CONFIG_EPARSE;
     }
+    YAML_TRACE("yaml_parser_load ok");
+
+    free(file_buf);
+    file_buf = NULL;
 
     root = yaml_document_get_root_node(&document);
     if (!root) {
         ERROR1("No root node in YAML config: %s", filename);
         yaml_document_delete(&document);
         yaml_parser_delete(&parser);
-        fclose(fp);
         return CONFIG_ENOROOT;
     }
+    YAML_TRACE("root node ok");
 
     if (root->type != YAML_MAPPING_NODE) {
         ERROR1("YAML root must be a mapping in %s", filename);
         yaml_document_delete(&document);
         yaml_parser_delete(&parser);
-        fclose(fp);
         return CONFIG_EBADROOT;
     }
+    YAML_TRACE("root is mapping");
 
+    YAML_TRACE("config_init_configuration");
     config_init_configuration(configuration);
+    YAML_TRACE("config_init_configuration ok");
     configuration->config_filename = strdup(filename);
 
     yaml_parse_ctx ctx = {
@@ -1734,12 +1787,13 @@ int config_parse_yaml_file(const char *filename, mc_config_t *configuration)
         .filename = filename
     };
 
+    YAML_TRACE("yaml_parse_root");
     if (yaml_parse_root(&ctx, root) == 0)
         ret = 0;
+    YAML_TRACE("yaml_parse_root done");
 
     yaml_document_delete(&document);
     yaml_parser_delete(&parser);
-    fclose(fp);
 
     return ret;
 }

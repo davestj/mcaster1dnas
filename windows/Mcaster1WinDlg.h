@@ -4,6 +4,7 @@
 #if !defined(AFX_MCASTER1WINDLG_H__23B4DA8B_C9BC_49C8_A62C_37FC6BC5E54A__INCLUDED_)
 #define AFX_MCASTER1WINDLG_H__23B4DA8B_C9BC_49C8_A62C_37FC6BC5E54A__INCLUDED_
 
+#include "ResizableDialog.h"
 #include "TabCtrlSSL.h"
 #include "TabPageSSL.h"
 
@@ -19,7 +20,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CMcaster1WinDlg dialog
 
-class CMcaster1WinDlg : public CDialog
+class CMcaster1WinDlg : public CResizableDialog
 {
 // Construction
 public:
@@ -101,7 +102,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnSelchangeMaintab(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnFileExit();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnFileStartserver();
 	afx_msg void OnFileStopserver();
 	afx_msg void OnStart();
@@ -110,12 +111,14 @@ protected:
 	afx_msg void OnHidesystray();
 	afx_msg void OnHide();
 	afx_msg void OnBlankRestore();
-	afx_msg LONG OnTrayNotify ( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnTrayNotify ( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnDestroy();
 	afx_msg void OnFileEditconfiguration();
 	afx_msg void OnAboutHelp();
 	afx_msg void OnAboutCredits();
+	afx_msg void OnBnClickedAutostart();
 	//}}AFX_MSG
+	afx_msg LRESULT OnPostInit(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

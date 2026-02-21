@@ -56,7 +56,7 @@
             </p>
 
             <h3>Accessing Statistics</h3>
-            <div class="code-block"><pre>http://yourserver:8000/admin/stats.xml</pre></div>
+            <div class="code-block"><pre>http://yourserver:9300/admin/stats.xml</pre></div>
             <p>Authentication required: Use admin username and password from your configuration.</p>
 
             <h3>Example Statistics XML</h3>
@@ -238,7 +238,7 @@
 import requests
 import xml.etree.ElementTree as ET
 
-response = requests.get('http://localhost:8000/admin/stats.xml',
+response = requests.get('http://localhost:9300/admin/stats.xml',
                        auth=('admin', 'password'))
 root = ET.fromstring(response.content)
 listeners = root.find('.//listeners').text
@@ -251,7 +251,7 @@ print(f"Current listeners: {listeners}")</pre></div>
             <h3>Monitor with Scripts</h3>
             <div class="code-block"><pre>#!/bin/bash
 # Simple monitoring script
-LISTENERS=$(curl -s -u admin:password http://localhost:8000/admin/stats.xml | \
+LISTENERS=$(curl -s -u admin:password http://localhost:9300/admin/stats.xml | \
             grep -oP '&lt;listeners&gt;\K[^&lt;]+' | head -1)
 echo "Current listeners: $LISTENERS"
 
@@ -260,12 +260,42 @@ if [ "$LISTENERS" -gt 100 ]; then
 fi</pre></div>
 
             <h2><i class="fas fa-chart-bar"></i> Enhanced Statistics in v2.5.1-rc1</h2>
-            <p>Mcaster1DNAS v2.5.1-rc1 includes additional statistics for:</p>
+            <p>Mcaster1DNAS v2.5.1-rc1 includes additional statistics and new public fields:</p>
             <ul>
+                <li><strong>Full Codec Stats (public):</strong> <code>audio_codecid</code>, <code>mpeg_samplerate</code>, <code>mpeg_channels</code>, and codec name are now publicly visible in the stats XML — no admin credentials required. Third-party players, dashboards, and status pages can read codec, bitrate, sample rate, and channel count for all formats including Opus.</li>
+                <li><strong>Opus Now-Playing:</strong> Opus streams now expose <code>audio_channels</code> and <code>audio_samplerate</code> via <code>OpusHead</code> parsing; <code>opus_set_tag()</code> captures ICY title/artist metadata for song-change events (previously untracked).</li>
+                <li><strong>Max Listeners Exposed:</strong> <code>max_listeners</code> from server config is now included in global stats XML so public dashboards can display server capacity.</li>
                 <li><strong>YP Directory Logging:</strong> Detailed registration attempt logs and status</li>
                 <li><strong>Connection Metrics:</strong> Enhanced connection tracking and performance data</li>
-                <li><strong>ICY-META v2.1+:</strong> Extended metadata fields for social media integration</li>
+                <li><strong>ICY-META v2.1+:</strong> Extended metadata fields — podcast, video, social media — visible through the stats and metadata endpoints</li>
                 <li><strong>Relay Statistics:</strong> Improved relay connection and bandwidth metrics</li>
+            </ul>
+
+            <h2><i class="fas fa-music"></i> Song History API</h2>
+            <p>
+                Beyond the per-mountpoint now-playing title in <code>/admin/stats.xml</code>, Mcaster1DNAS v2.5.1
+                adds a dedicated track history endpoint that returns the last <em>N</em> played tracks across all mounts:
+            </p>
+            <div style="background:var(--bg-accent);border-radius:var(--radius-lg);padding:1.5rem;margin:1rem 0;font-family:monospace;font-size:0.9rem">
+                <strong>GET</strong> <code>http://yourserver:9300/mcaster1songdata</code> &nbsp;(no auth required)
+            </div>
+            <p>Example response snippet:</p>
+            <div style="background:#1e1e1e;color:#d4d4d4;border-radius:var(--radius-lg);padding:1.5rem;margin:1rem 0;font-family:monospace;font-size:0.875rem;overflow-x:auto">
+<pre>&lt;mcaster1songdata&gt;
+  &lt;song&gt;
+    &lt;mount&gt;/stream.mp3&lt;/mount&gt;
+    &lt;title&gt;Daft Punk - Get Lucky&lt;/title&gt;
+    &lt;played_at&gt;2026-02-19T03:15:00Z&lt;/played_at&gt;
+    &lt;ended_at&gt;2026-02-19T03:19:42Z&lt;/ended_at&gt;
+    &lt;listeners&gt;42&lt;/listeners&gt;
+    &lt;codec&gt;MP3 / 320kbps / 44100Hz / stereo&lt;/codec&gt;
+  &lt;/song&gt;
+&lt;/mcaster1songdata&gt;</pre>
+            </div>
+            <ul>
+                <li>Configure depth with <code>song-history-limit</code> in YAML/XML (default 25, 0 = unlimited)</li>
+                <li>Consecutive identical titles on the same mount are silently deduplicated</li>
+                <li>Use with <code>/songdata.xsl</code> (public) or <code>/admin/songdata.xsl</code> for human-readable track history with MusicBrainz, Last.fm, Discogs, and AllMusic lookup icons</li>
             </ul>
 
             <div style="background:var(--bg-accent);border-left:4px solid var(--dnas-green);padding:1.5rem;border-radius:var(--radius-lg);margin-top:2rem">

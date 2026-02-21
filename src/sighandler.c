@@ -48,12 +48,14 @@ void sighandler_initialize(void)
 }
 #else
 
+#ifndef _WIN32
 void _sig_hup(int signo)
 {
     global . schedule_config_reread = 1;
     /* some OSes require us to reattach the signal handler */
     signal(SIGHUP, _sig_hup);
 }
+#endif
 
 
 void _sig_ignore(int signo)
@@ -63,10 +65,14 @@ void _sig_ignore(int signo)
 
 void sighandler_initialize(void)
 {
+#ifndef _WIN32
     signal(SIGHUP, _sig_hup);
+#endif
     signal(SIGINT, _sig_die);
     signal(SIGTERM, _sig_die);
+#ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif
 #ifdef SIGCHLD
     signal(SIGCHLD, _sig_ignore);
 #endif

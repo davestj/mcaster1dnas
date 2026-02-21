@@ -71,13 +71,13 @@
             <h2><i class="fas fa-mountain"></i> Mount-Specific Admin Functions</h2>
             <p>
                 These functions apply to specific mountpoints. Access them by specifying the mountpoint in the URL.
-                The examples use <code>192.168.1.10:8000</code> as the server address.
+                The examples use <code>192.168.1.10:9300</code> as the server address.
             </p>
 
             <div class="admin-function">
                 <h4><i class="fas fa-tags"></i> Metadata Update</h4>
                 <p>Update the metadata (song information) for a mountpoint. Supports all audio formats with ICY-META v2.1+ protocol enhancements in Mcaster1DNAS v2.5.1-rc1.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/metadata?mount=/stream&mode=updinfo&song=Artist+-+Title</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/metadata?mount=/stream&mode=updinfo&song=Artist+-+Title</pre></div>
                 <p><strong>Parameters:</strong></p>
                 <ul>
                     <li><code>mount</code> - The mountpoint to update (e.g., /stream, /live.ogg)</li>
@@ -89,34 +89,34 @@
             <div class="admin-function">
                 <h4><i class="fas fa-rotate"></i> Fallback Update</h4>
                 <p>Configure or update the fallback mountpoint for automatic listener transfer when a source disconnects.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/fallbacks?mount=/stream.ogg&fallback=/backup.ogg</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/fallbacks?mount=/stream.ogg&fallback=/backup.ogg</pre></div>
                 <p><strong>Use Case:</strong> Prevent dead air by automatically moving listeners to a backup stream when the main source disconnects.</p>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-users"></i> List Clients</h4>
                 <p>Display all listeners currently connected to a specific mountpoint. Returns detailed XML data including IP addresses, connection times, and user agents.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/listclients?mount=/stream</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/listclients?mount=/stream</pre></div>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-user-times"></i> Kill Client</h4>
                 <p>Disconnect a specific listener from a mountpoint. Useful for managing problem connections or enforcing listener limits.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/killclient?mount=/stream&id=12345</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/killclient?mount=/stream&id=12345</pre></div>
                 <p><strong>Note:</strong> Get the client ID from the listclients output.</p>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-people-arrows"></i> Move Clients</h4>
                 <p>Transfer all listeners from one mountpoint to another without disconnection.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/moveclients?mount=/old&destination=/new</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/moveclients?mount=/old&destination=/new</pre></div>
                 <p><strong>Use Case:</strong> Switch between different quality streams or migrate listeners during server maintenance.</p>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-plug"></i> Kill Source</h4>
                 <p>Disconnect a source client from a mountpoint.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/killsource?mount=/stream</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/killsource?mount=/stream</pre></div>
                 <p><strong>Warning:</strong> This will terminate the source connection immediately. All listeners will be moved to the fallback mountpoint if configured.</p>
             </div>
 
@@ -126,38 +126,112 @@
             <div class="admin-function">
                 <h4><i class="fas fa-chart-bar"></i> Server Statistics</h4>
                 <p>Retrieve comprehensive server statistics in XML format.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/stats.xml</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/stats.xml</pre></div>
                 <p>Includes connection counts, source information, listener counts, and mountpoint details. See <a href="mcaster1dnas_stats.html" style="color:var(--mcaster-blue)">Server Statistics</a> for details.</p>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-list"></i> List Mounts</h4>
                 <p>Display all currently active mountpoints with their statistics.</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/listmounts</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/listmounts</pre></div>
             </div>
 
             <div class="admin-function">
                 <h4><i class="fas fa-sync"></i> Reload Configuration</h4>
                 <p>Reload the YAML configuration file without restarting the server (v2.5.1-rc1 feature).</p>
-                <div class="code-block"><pre>http://192.168.1.10:8000/admin/reloadconfig</pre></div>
+                <div class="code-block"><pre>http://192.168.1.10:9300/admin/reloadconfig</pre></div>
                 <p><strong>Note:</strong> Some settings require a full server restart. Configuration errors will be logged.</p>
             </div>
 
-            <h2><i class="fas fa-desktop"></i> Web-Based Admin Interface</h2>
+            <h2><i class="fas fa-music"></i> Song History API</h2>
             <p>
-                Mcaster1DNAS includes a web-based admin interface built with XSLT transformations. Access it at:
+                Mcaster1DNAS maintains an in-memory ring buffer of recently played tracks, exposed as a machine-readable XML endpoint.
+                Updated automatically every time a source client pushes new ICY-META title information.
             </p>
-            <div class="code-block"><pre>http://yourserver:8000/admin/stats.xsl</pre></div>
-
-            <h3>Features of the Web Interface</h3>
+            <div class="code-block"><pre>http://yourserver:9300/mcaster1songdata</pre></div>
+            <h3>Response Format</h3>
+            <div class="code-block"><pre>&lt;mcaster1songdata&gt;
+  &lt;song&gt;
+    &lt;mount&gt;/stream.mp3&lt;/mount&gt;
+    &lt;title&gt;Artist - Track Title&lt;/title&gt;
+    &lt;played_at&gt;2026-02-19T03:15:00Z&lt;/played_at&gt;
+    &lt;ended_at&gt;2026-02-19T03:19:42Z&lt;/ended_at&gt;
+    &lt;listeners&gt;42&lt;/listeners&gt;
+    &lt;codec&gt;MP3 / 320kbps / 44100Hz / stereo&lt;/codec&gt;
+  &lt;/song&gt;
+  ...
+&lt;/mcaster1songdata&gt;</pre></div>
             <ul>
-                <li><strong>Real-time Statistics:</strong> Live server and mountpoint statistics</li>
-                <li><strong>Listener Management:</strong> View and disconnect individual listeners</li>
-                <li><strong>Source Management:</strong> Monitor and control source connections</li>
-                <li><strong>Authentication Management:</strong> Manage listener authentication (htpasswd users)</li>
-                <li><strong>Metadata Updates:</strong> Update song information through web forms</li>
-                <li><strong>Custom Styling:</strong> Modify XSLT files in the admin/ directory to customize appearance</li>
+                <li>Configurable depth via <code>song-history-limit</code> in config (default: 25, set to 0 for unlimited)</li>
+                <li>Consecutive identical titles on the same mount are silently deduplicated</li>
+                <li><code>ended_at</code> is back-filled when the next track starts for accurate time-on-air calculation</li>
+                <li>No disk I/O — all data is memory-backed for zero latency</li>
             </ul>
+
+            <h2><i class="fas fa-list-ul"></i> Track History Pages</h2>
+            <p>
+                Human-readable track history pages are available at both public and admin URLs,
+                with one-click music service lookup icons for every track entry.
+            </p>
+            <table style="width:100%;border-collapse:collapse;margin:1rem 0">
+                <tr style="background:var(--bg-accent)">
+                    <th style="padding:0.75rem;text-align:left;border-bottom:2px solid var(--border-light)">URL</th>
+                    <th style="padding:0.75rem;text-align:left;border-bottom:2px solid var(--border-light)">Access</th>
+                    <th style="padding:0.75rem;text-align:left;border-bottom:2px solid var(--border-light)">Features</th>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/songdata.xsl</code></td>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Public (no auth)</td>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Full track table with lookup icons, animated "on air" dot</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/admin/songdata.xsl</code></td>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Admin credentials</td>
+                    <td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Full track table + listener counts + admin nav</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem"><code>/mcaster1songdata</code></td>
+                    <td style="padding:0.75rem">Public (no auth)</td>
+                    <td style="padding:0.75rem">Raw XML for third-party apps and dashboards</td>
+                </tr>
+            </table>
+            <p>Each track row includes one-click lookup icons: <strong>MusicBrainz</strong> (open music encyclopedia),
+            <strong>Last.fm</strong> (scrobbling &amp; radio), <strong>Discogs</strong> (release/label database),
+            and <strong>AllMusic</strong> (editorial reviews).</p>
+
+            <h2><i class="fas fa-headphones"></i> Built-in Web Player</h2>
+            <p>
+                Mcaster1DNAS includes a browser-based HTML5 audio player that lets listeners tune in directly
+                from the admin or public web interface — no external app required.
+            </p>
+            <div class="code-block"><pre>http://yourserver:9300/admin/webplayer.xsl   (admin, no HTTPS warning)
+http://yourserver:9443/webplayer.php         (public, HTTPS recommended)</pre></div>
+            <ul>
+                <li><strong>VU meters:</strong> Real-time left/right audio level visualisation using the Web Audio API</li>
+                <li><strong>Volume control:</strong> Slider with mute toggle</li>
+                <li><strong>Keyboard shortcuts:</strong> Space = play/pause, M = mute, &uarr;/&darr; = volume</li>
+                <li><strong>Now-playing metadata:</strong> Artist/title from ICY-META updated in real time</li>
+                <li><strong>Mobile-friendly:</strong> Responsive layout works on phones and tablets</li>
+            </ul>
+
+            <h2><i class="fas fa-desktop"></i> Web-Based Admin Interface &amp; XSL Pages</h2>
+            <p>
+                Mcaster1DNAS includes a fully redesigned HTML5/CSS3 web interface built on XSLT transformations
+                with FontAwesome 6.4.0 icons, live clock, and interactive tooltips. Available pages:
+            </p>
+            <table style="width:100%;border-collapse:collapse;margin:1rem 0">
+                <tr style="background:var(--bg-accent)">
+                    <th style="padding:0.75rem;text-align:left;border-bottom:2px solid var(--border-light)">URL</th>
+                    <th style="padding:0.75rem;text-align:left;border-bottom:2px solid var(--border-light)">Description</th>
+                </tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/status.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Public status page — all mounts, listeners, codec stats</td></tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/status2.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Alternate public status — compact single-mount view</td></tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/admin/stats.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Full admin dashboard — all server stats and controls</td></tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/admin/songdata.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Admin track history with music service lookups</td></tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/admin/webplayer.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Admin browser player</td></tr>
+                <tr><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)"><code>/songdata.xsl</code></td><td style="padding:0.75rem;border-bottom:1px solid var(--border-light)">Public track history page</td></tr>
+                <tr><td style="padding:0.75rem"><code>/auth.xsl</code></td><td style="padding:0.75rem">Listener authentication page</td></tr>
+            </table>
 
             <h2><i class="fas fa-code"></i> Programmatic Access</h2>
             <p>
@@ -175,7 +249,7 @@
             <div class="code-block"><pre>#!/bin/bash
 SONG="$(nowplaying-script)"
 curl -u admin:password \
-  "http://localhost:8000/admin/metadata?mount=/stream&mode=updinfo&song=${SONG}"</pre></div>
+  "http://localhost:9300/admin/metadata?mount=/stream&mode=updinfo&song=${SONG}"</pre></div>
 
             <h2><i class="fas fa-shield-alt"></i> Security Considerations</h2>
             <ul>

@@ -71,7 +71,7 @@
                 <h3><i class="fas fa-circle-question"></i> How do I view server statistics?</h3>
                 <p>Mcaster1DNAS provides multiple ways to view statistics:</p>
                 <ul>
-                    <li><strong>XML Stats:</strong> Access <code>http://yourserver:8000/admin/stats.xml</code> for raw XML data</li>
+                    <li><strong>XML Stats:</strong> Access <code>http://yourserver:9300/admin/stats.xml</code> for raw XML data</li>
                     <li><strong>Web Interface:</strong> The <code>web/</code> directory contains XSLT stylesheets that transform XML into HTML pages</li>
                     <li><strong>Custom Views:</strong> Create your own XSLT transforms to customize the presentation</li>
                 </ul>
@@ -150,13 +150,64 @@
                 <h3><i class="fas fa-circle-question"></i> What's new in Mcaster1DNAS v2.5.1-rc1?</h3>
                 <p>This release candidate includes:</p>
                 <ul>
-                    <li><strong>ICY-META v2.1+ protocol:</strong> Enhanced metadata with social media integration</li>
-                    <li><strong>YAML configuration:</strong> Modern config format (XML deprecated)</li>
+                    <li><strong>ICY-META v2.1+ protocol:</strong> Extended metadata — podcast, video, social media fields, backward-compatible with ICY 1.x</li>
+                    <li><strong>YAML &amp; XML configuration:</strong> Both formats fully supported and auto-detected (use either, neither is deprecated)</li>
+                    <li><strong>Song History API:</strong> In-memory track log at <code>/mcaster1songdata</code> — ring buffer, deduplication, configurable depth</li>
+                    <li><strong>Track History UI:</strong> Public (<code>/songdata.xsl</code>) and admin (<code>/admin/songdata.xsl</code>) pages with MusicBrainz, Last.fm, Discogs, and AllMusic lookup icons per track</li>
+                    <li><strong>Built-in Web Player:</strong> Browser HTML5 player with VU meters, volume control, and keyboard shortcuts at <code>/webplayer.php</code> and <code>/admin/webplayer.xsl</code></li>
+                    <li><strong>Full codec stats public:</strong> Bitrate, sample rate, channels, and codec name now visible in the public stats XML — no admin credentials needed</li>
+                    <li><strong>Opus ICY metadata:</strong> Now-playing tracking for Opus streams (previously untracked)</li>
+                    <li><strong>New XSL page themes:</strong> Complete HTML5/CSS3 redesign — <code>status.xsl</code>, <code>status2.xsl</code>, <code>auth.xsl</code> — with FontAwesome 6.4.0 and live clock</li>
+                    <li><strong>Windows native GUI (beta):</strong> <code>mcaster1win.exe</code> rebuilt for Visual Studio 2022 with resizable dialogs (ResizableLib), CLI flags, auto-versioning, and full Mcaster1DNAS branding</li>
                     <li><strong>YP directory logging:</strong> Detailed tracking of directory registrations</li>
                     <li><strong>Performance improvements:</strong> Better memory management and connection handling</li>
-                    <li><strong>Security updates:</strong> Updated SSL/TLS support</li>
+                    <li><strong>Security updates:</strong> Updated SSL/TLS support with dual HTTP (9300) + HTTPS (9443) ports</li>
                 </ul>
                 <p>Note: v2.5.1-rc1 is a pre-release. Report any issues on GitHub.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> What port does Mcaster1DNAS use?</h3>
+                <p>Mcaster1DNAS defaults to <strong>port 9300</strong> for HTTP and <strong>port 9443</strong> for HTTPS/SSL — not port 8000 (the old Icecast default). Both ports run simultaneously from the same config:</p>
+                <ul>
+                    <li><strong>HTTP:</strong> <code>http://yourserver:9300/</code> — unencrypted, for encoders on your local network</li>
+                    <li><strong>HTTPS:</strong> <code>https://yourserver:9443/</code> — TLS encrypted, use this for public-facing streams and admin access</li>
+                </ul>
+                <p>You can change these in your config under <code>listen-sockets</code>. If you are migrating from Icecast, update your encoder source URL from port 8000 to 9300.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How do I use the Song History / Track History feature?</h3>
+                <p>Song history is automatic — no configuration needed beyond the server running normally. Every time a source client updates the ICY-META title, the track is logged internally.</p>
+                <ul>
+                    <li><strong>API:</strong> <code>GET /mcaster1songdata</code> — raw XML with the last 25 tracks (configurable)</li>
+                    <li><strong>Public page:</strong> <code>/songdata.xsl</code> — human-readable table with music service lookup icons</li>
+                    <li><strong>Admin page:</strong> <code>/admin/songdata.xsl</code> — same table plus listener counts, requires admin login</li>
+                    <li><strong>Limit:</strong> Set <code>song-history-limit: 50</code> in your YAML config (0 = unlimited, default 25)</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> How do I use the built-in web player?</h3>
+                <p>The web player lets listeners stream directly from their browser — no separate app needed.</p>
+                <ul>
+                    <li>Navigate to <code>https://yourserver:9443/webplayer.php</code> for the public player</li>
+                    <li>Or <code>https://yourserver:9443/admin/webplayer.xsl</code> for the admin-side player</li>
+                    <li>Features: HTML5 audio, VU meters (Web Audio API), volume slider, mute toggle, now-playing metadata</li>
+                    <li>Keyboard shortcuts: <strong>Space</strong> = play/pause, <strong>M</strong> = mute, <strong>&uarr;/&darr;</strong> = volume</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3><i class="fas fa-circle-question"></i> Is there a native Windows application?</h3>
+                <p>Yes. Mcaster1DNAS ships a native Windows GUI application — <code>mcaster1win.exe</code> — rebuilt from the ground up for <strong>Visual Studio 2022 (v17)</strong> targeting Windows 10/11 x64.</p>
+                <ul>
+                    <li><strong>Fully resizable window</strong> — drag any edge, maximize, restore; all controls reflow correctly (powered by ResizableLib)</li>
+                    <li><strong>CLI flags:</strong> <code>-c &lt;file&gt;</code> specify config, <code>-s</code> auto-start, <code>-m</code> minimise to tray, <code>-v</code> version, <code>-h</code> help</li>
+                    <li><strong>Auto-versioning:</strong> Build stamps git commit hash into window title (<code>v2.5.1-dev.c2bad3c</code>)</li>
+                    <li><strong>Both YAML and XML configs</strong> work with the Windows GUI — auto-detected by file extension</li>
+                    <li>See the <a href="mcaster1dnas_win32.html" style="color:var(--mcaster-blue)">Windows documentation</a> for full details and build instructions</li>
+                </ul>
             </div>
         </div>
     </div>

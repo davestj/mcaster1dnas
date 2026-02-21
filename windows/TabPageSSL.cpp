@@ -17,7 +17,7 @@ CTabPageSSL::CTabPageSSL () {
 }
 
 CTabPageSSL::CTabPageSSL (UINT nIDTemplate, CWnd* pParent /*=NULL*/)
-	: CDialog(nIDTemplate, pParent) {
+	: CResizableDialog(nIDTemplate, pParent) {
 #ifndef _AFX_NO_OCC_SUPPORT
 	AfxEnableControlContainer ();
 #endif // !_AFX_NO_OCC_SUPPORT

@@ -106,6 +106,12 @@ static mutex_t _connection_lock;
 static uint64_t _current_id = 0;
 thread_type *conn_tid;
 int sigfd;
+#ifdef _MSC_VER
+/* Per-server-socket WSA events registered at socket setup time to avoid
+ * missing FD_ACCEPT events that arrive before WSAWaitForMultipleEvents. */
+static WSAEVENT _server_accept_events[64];
+static int      _server_accept_event_count = 0;
+#endif
 
 static int ssl_ok;
 #ifdef HAVE_OPENSSL
@@ -1072,36 +1078,31 @@ static sock_t wait_for_serversock (void)
         return SOCK_ERROR;
     }
 #else
-    fd_set rfds;
-    struct timeval tv;
-    int i, ret;
-    sock_t max = SOCK_ERROR;
+    /* On Windows, use pre-registered WSAEventSelect events (set up at socket creation time
+     * in connection_setup_sockets) so we don't miss FD_ACCEPT events that arrived before
+     * we call WSAWaitForMultipleEvents. select() and WSAPoll are unreliable for this. */
+    int i;
+    int nsocks = _server_accept_event_count;
 
-    FD_ZERO(&rfds);
+    if (nsocks <= 0) { thread_sleep (333000); return SOCK_ERROR; }
 
-    for(i=0; i < global.server_sockets; i++) {
-        FD_SET(global.serversock[i], &rfds);
-        if (max == SOCK_ERROR || global.serversock[i] > max)
-            max = global.serversock[i];
-    }
+    DWORD wret = WSAWaitForMultipleEvents ((DWORD)nsocks, _server_accept_events, FALSE, 333, FALSE);
 
-    tv.tv_sec = 0;
-    tv.tv_usec = 333000;
-
-    ret = select(max+1, &rfds, NULL, NULL, &tv);
-    if(ret < 0) {
-        return SOCK_ERROR;
-    }
-    else if(ret == 0) {
-        return SOCK_ERROR;
-    }
-    else {
-        for(i=0; i < global.server_sockets; i++) {
-            if(FD_ISSET(global.serversock[i], &rfds))
+    if (wret >= WSA_WAIT_EVENT_0 && wret < WSA_WAIT_EVENT_0 + (DWORD)nsocks)
+    {
+        i = (int)(wret - WSA_WAIT_EVENT_0);
+        SOCKET s = (SOCKET)(UINT_PTR)(unsigned int)global.serversock[i];
+        WSANETWORKEVENTS netev;
+        memset (&netev, 0, sizeof netev);
+        if (WSAEnumNetworkEvents (s, _server_accept_events[i], &netev) == 0)
+        {
+            if (netev.lNetworkEvents & FD_ACCEPT)
+            {
                 return global.serversock[i];
+            }
         }
-        return SOCK_ERROR; /* Should be impossible, stop compiler warnings */
     }
+    return SOCK_ERROR;
 #endif
 }
 
@@ -2038,6 +2039,28 @@ int connection_setup_sockets (mc_config_t *config)
             sock_set_blocking (sock, 0);
             global.serversock [count] = sock;
             global.server_conn [count] = listener;
+#ifdef _MSC_VER
+            /* Register FD_ACCEPT event NOW (before any connections arrive) so
+             * WSAWaitForMultipleEvents in wait_for_serversock doesn't miss events. */
+            if (count < 64)
+            {
+                WSAEVENT ev = WSACreateEvent ();
+                if (ev != WSA_INVALID_EVENT)
+                {
+                    if (WSAEventSelect ((SOCKET)(UINT_PTR)(unsigned int)sock, ev, FD_ACCEPT) == 0)
+                    {
+                        _server_accept_events[count] = ev;
+                        _server_accept_event_count = count + 1;
+                    }
+                    else
+                    {
+                        ERROR2 ("WSAEventSelect failed for sock=%d, wsa error=%d", (int)sock, WSAGetLastError());
+                        WSACloseEvent (ev);
+                        _server_accept_events[count] = WSA_INVALID_EVENT;
+                    }
+                }
+            }
+#endif
             listener->refcount++;
             socket_count++;
             count++;

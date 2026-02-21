@@ -73,6 +73,12 @@
 #undef CATMODULE
 #define CATMODULE "main"
 
+#ifdef WIN32
+#define SI_TRACE(msg) do { FILE *_t=fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[si] " msg "\n");fclose(_t);} } while(0)
+#else
+#define SI_TRACE(msg) do {} while(0)
+#endif
+
 static void _ch_root_uid_setup(void);
 
 static int background;
@@ -82,7 +88,9 @@ static char *pidfile = NULL;
 void fatal_error (const char *perr)
 {
 #if defined(WIN32)
-    MessageBox(NULL, perr, NULL, MB_SERVICE_NOTIFICATION);
+    /* MB_SERVICE_NOTIFICATION is invalid in non-service GUI processes on Win10/11.
+     * Use MB_OK | MB_ICONERROR so the message actually appears. */
+    MessageBox(NULL, perr, "Mcaster1DNAS Error", MB_OK | MB_ICONERROR);
 #else
     ERROR1("%s", perr);
 #endif
@@ -196,15 +204,22 @@ static int server_proc_init(void)
 {
     mc_config_t *config = config_get_config_unlocked();
 
+    SI_TRACE("init_logging");
     if (init_logging (config) < 0)
         return 0;
+    SI_TRACE("init_logging ok");
 
     songdata_init (config->song_history_limit);
 
     INFO2 ("%s server reading configuration from %s", ICECAST_VERSION_STRING, config->config_filename);
 
+    SI_TRACE("connection_setup_sockets");
     if (connection_setup_sockets (config) == 0)
+    {
+        SI_TRACE("connection_setup_sockets FAILED");
         return 0;
+    }
+    SI_TRACE("connection_setup_sockets ok");
 
     _ch_root_uid_setup(); /* Change user id and root if requested/possible */
 
@@ -366,6 +381,7 @@ int server_init (int argc, char *argv[])
     char filename[512];
     char pbuf[1024];
 
+    SI_TRACE("_parse_config_opts");
     switch (_parse_config_opts (argc, argv, filename, 512))
     {
         case -1:
@@ -373,12 +389,13 @@ int server_init (int argc, char *argv[])
             return -1;
         default:
             /* parse the config file */
+            SI_TRACE("config_initial_parse_file");
             config_get_config();
             ret = config_initial_parse_file(filename);
             config_release_config();
             if (ret < 0)
             {
-                snprintf (pbuf, sizeof(pbuf), 
+                snprintf (pbuf, sizeof(pbuf),
                         "FATAL: error parsing config file (%s)", filename);
                 _fatal_error (pbuf);
                 switch (ret)
@@ -400,18 +417,21 @@ int server_init (int argc, char *argv[])
             }
     }
 
+    SI_TRACE("config_parse_cmdline");
     /* override config file options with commandline options */
     config_parse_cmdline(argc, argv);
 
+    SI_TRACE("server_proc_init");
     /* Bind socket, before we change userid */
     if (server_proc_init() == 0)
     {
         _fatal_error("Server startup failed. Exiting");
         return -1;
     }
+    SI_TRACE("fserve_initialize");
     fserve_initialize();
 
-#ifdef CHUID 
+#ifdef CHUID
     /* We'll only have getuid() if we also have setuid(), it's reasonable to
      * assume */
     if (getuid() == 0) /* Running as root! Don't allow this */
@@ -421,28 +441,56 @@ int server_init (int argc, char *argv[])
         return -1;
     }
 #endif
+    SI_TRACE("sighandler_initialize");
     /* setup default signal handlers */
     sighandler_initialize();
 
+    SI_TRACE("start_logging");
     if (start_logging (config_get_config_unlocked()) < 0)
     {
         _fatal_error("FATAL: Could not start logging");
         return -1;
     }
+    SI_TRACE("server_init done -> returning 0");
     return 0;
 }
 
 
-#ifndef _WIN32
 int main (int argc, char *argv[])
 {
+#ifdef WIN32
+    { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[1] initialize_subsystems\n");fclose(_t);} }
+#endif
     initialize_subsystems();
 
+#ifdef WIN32
+    { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[2] server_init\n");fclose(_t);} }
+#endif
     if (server_init (argc, argv) == 0)
+    {
+#ifdef WIN32
+        { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[3] server_process starting\n");fclose(_t);} }
+#endif
         server_process();
+#ifdef WIN32
+        { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[4] server_process done\n");fclose(_t);} }
+#endif
+    }
+    else
+    {
+#ifdef WIN32
+        { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[2b] server_init failed\n");fclose(_t);} }
+#endif
+    }
 
+#ifdef WIN32
+    { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[5] shutdown_subsystems\n");fclose(_t);} }
+#endif
     shutdown_subsystems();
 
+#ifdef WIN32
+    { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[6] main done\n");fclose(_t);} }
+#endif
     if (pidfile)
     {
         remove (pidfile);
@@ -450,5 +498,4 @@ int main (int argc, char *argv[])
     }
     return 0;
 }
-#endif
 

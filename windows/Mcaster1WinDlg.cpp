@@ -13,6 +13,9 @@
 #include <curl/curl.h>
 
 extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "thread/thread.h"
 #include "avl/avl.h"
 #include "log/log.h"
@@ -27,6 +30,20 @@ extern "C" {
 }
 
 #include <afxinet.h>
+#include <signal.h>
+#include <git_hash.h>
+
+static void mcaster1_sigabrt_handler(int sig)
+{
+	FILE *tf = fopen("mcaster1win_start.log", "a");
+	if (tf) {
+		fprintf(tf, "[SIGABRT] abort() called in server thread!\n");
+		fclose(tf);
+	}
+	// Reset to default so the process terminates normally after we logged
+	signal(SIGABRT, SIG_DFL);
+	raise(SIGABRT);
+}
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,7 +51,7 @@ extern "C" {
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define ICECAST_VERSION "2.x"
+/* Window title version comes from git_hash.h GIT_VERSION (auto-generated each build) */
 CEdit	*g_accessControl;
 CEdit	*g_errorControl;
 CMcaster1WinDlg	*g_mainDialog;
@@ -212,7 +229,7 @@ END_MESSAGE_MAP()
 // CMcaster1WinDlg dialog
 
 CMcaster1WinDlg::CMcaster1WinDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMcaster1WinDlg::IDD, pParent)
+	: CResizableDialog(CMcaster1WinDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CMcaster1WinDlg)
 	m_AccessEdit = _T("");
@@ -231,7 +248,7 @@ CMcaster1WinDlg::CMcaster1WinDlg(CWnd* pParent /*=NULL*/)
 
 void CMcaster1WinDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	CResizableDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CMcaster1WinDlg)
 	DDX_Control(pDX, IDC_STATIC_SS, m_SS);
 	DDX_Control(pDX, IDC_SERVERSTATUS, m_ServerStatusBitmap);
@@ -241,7 +258,7 @@ void CMcaster1WinDlg::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 }
 
-BEGIN_MESSAGE_MAP(CMcaster1WinDlg, CDialog)
+BEGIN_MESSAGE_MAP(CMcaster1WinDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CMcaster1WinDlg)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -262,6 +279,8 @@ BEGIN_MESSAGE_MAP(CMcaster1WinDlg, CDialog)
 	ON_COMMAND(ID_ABOUT_HELP, OnAboutHelp)
 	ON_COMMAND(ID_ABOUT_CREDITS, OnAboutCredits)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_AUTOSTART, &CMcaster1WinDlg::OnBnClickedAutostart)
+	ON_MESSAGE(WM_APP + 100, OnPostInit)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -272,7 +291,7 @@ END_MESSAGE_MAP()
 
 BOOL CMcaster1WinDlg::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+	CResizableDialog::OnInitDialog();
 
 	// Add "About..." menu item to system menu.
 
@@ -328,20 +347,23 @@ BOOL CMcaster1WinDlg::OnInitDialog()
 
 	LoadConfig();
 
-//	AddAnchor(IDC_MAINTAB, TOP_LEFT, BOTTOM_RIGHT);
-//	AddAnchor(IDC_STATICBLACK, TOP_LEFT, TOP_RIGHT);
-
-//	EnableSaveRestore("mcaster1win", "positions");
+	AddAnchor(IDC_MAINTAB, TOP_LEFT, BOTTOM_RIGHT);
+	// IDC_STATICBLACK not in dialog resource (banner uses IDC_STATIC); skip anchor
+	EnableSaveRestore("mcaster1win");
 
 	m_pTray = NULL;
 
-	char	version[255] = "";
-	sprintf(version, "Mcaster1DNAS Version %s", ICECAST_VERSION);
+	char version[512] = "";
+	sprintf(version, "Mcaster1DNAS %s", GIT_VERSION);
 	SetWindowText(version);
 
 	if (m_Autostart) {
 		OnStart();
 	}
+
+	// Handle command-line flags (-s, -m) after the dialog is fully visible
+	PostMessage(WM_APP + 100, 0, 0);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -585,10 +607,10 @@ void StartStats(void *dummy)
 	}
 	_endthread();
 }
-void CMcaster1WinDlg::OnTimer(UINT nIDEvent) 
+void CMcaster1WinDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
-	if (nIDEvent == 0) {
+	if (nIDEvent == 1) {
 		if (global.running == MC_RUNNING) {
 			char	buffer[255] = "";
 			CString	tmp;
@@ -620,11 +642,11 @@ void CMcaster1WinDlg::OnTimer(UINT nIDEvent)
 			CTimeSpan runningFor(runningTime);
 
 			char	timespan[1024] = "";
-			sprintf(timespan, "%d Days, %d Hours, %d Minutes, %d Seconds", runningFor.GetDays(), runningFor.GetHours(), runningFor.GetMinutes(), runningFor.GetSeconds());
+			sprintf(timespan, "%lld Days, %d Hours, %d Minutes, %d Seconds", (long long)runningFor.GetDays(), runningFor.GetHours(), runningFor.GetMinutes(), runningFor.GetSeconds());
 			statusTab.m_RunningFor = timespan;
 			statusTab.UpdateData(FALSE);
 
-			SetTimer(0, 500, NULL);
+			SetTimer(1, 500, NULL);
 		}
 		else {
 			statusTab.m_Sources = "0";
@@ -648,22 +670,40 @@ void StartServer(void *configfile)
 {
 	int		argc = 3;
 	char*	argv[3];
+	int     ret = -1;
 
-	strcpy(g_configFile, (char *)configfile);
+	// Catch abort() which is NOT caught by __try/__except
+	signal(SIGABRT, mcaster1_sigabrt_handler);
 
-	argv[0] = g_progName;
-	argv[1] = "-c";
-	argv[2] = g_configFile;
-	time(&(g_mainDialog->serverStart));
+	__try {
+		strcpy(g_configFile, (char *)configfile);
 
-	int ret = main(argc, (char **)argv);
+		argv[0] = g_progName;
+		argv[1] = (char*)"-c";
+		argv[2] = g_configFile;
+		time(&(g_mainDialog->serverStart));
+
+		FILE *tf = fopen("mcaster1win_start.log", "w");
+		if (tf) { fprintf(tf, "StartServer: config=%s\n", g_configFile); fclose(tf); }
+
+		ret = main(argc, (char **)argv);
+
+		tf = fopen("mcaster1win_start.log", "a");
+		if (tf) { fprintf(tf, "main() returned %d, running=%d\n", ret, (int)global.running); fclose(tf); }
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER) {
+		char emsg[256];
+		sprintf(emsg, "StartServer crashed: exception code 0x%08X", (unsigned)GetExceptionCode());
+		MessageBox(NULL, emsg, "Mcaster1DNAS Crash", MB_OK | MB_ICONERROR);
+		FILE *tf = fopen("mcaster1win_start.log", "a");
+		if (tf) { fprintf(tf, "%s\n", emsg); fclose(tf); }
+	}
+
 	if (ret) {
-		MessageBox(NULL, "Unable to start server", NULL, MB_OK);
+		MessageBox(NULL, "Server exited with error (check mcaster1win_start.log)", NULL, MB_OK);
 	}
 	global.running = MC_HALTING;
 	_endthread();
-
-
 }
 void CMcaster1WinDlg::OnFileStartserver() 
 {
@@ -680,7 +720,7 @@ void CMcaster1WinDlg::OnFileStartserver()
 	else {
 		m_ConfigEditCtrl.SetReadOnly(TRUE);
 		LoadConfig();
-		SetTimer(0, 500, NULL);
+		SetTimer(1, 500, NULL);
 		_beginthread(StartServer, 0, (void *)(LPCSTR)myApp->m_configFile);
 		_beginthread(StartStats, 0, (void *)NULL);
 	}
@@ -696,7 +736,7 @@ bool infocus = false;
 
 void CMcaster1WinDlg::StopServer()
 {
-	KillTimer(0);
+	KillTimer(1);
 	global.running = MC_HALTING;
 	m_StartButton.SetWindowText("Start Server");
 	m_StartButton.SetState(0);
@@ -719,7 +759,7 @@ void CMcaster1WinDlg::OnStart()
 		StopServer();
 	}
 	else {
-		SetTimer(0, 500, NULL);
+		SetTimer(1, 500, NULL);
 		_beginthread(StartServer, 0, (void *)(LPCSTR)myApp->m_configFile);
 		_beginthread(StartStats, 0, (void *)NULL);
 	}
@@ -749,7 +789,7 @@ void CMcaster1WinDlg::UpdateStatsLists()
 			lvi.iItem = statsTab.m_SourceListCtrl.GetItemCount();
 			lvi.iSubItem = 0;
 			//lvi.pszText = (LPTSTR)(LPCTSTR)gStats[0].source;
-			lvi.pszText = "Global Stat";
+			lvi.pszText = (LPSTR)"Global Stat";
 			statusTab.m_GlobalStatList.InsertItem(&lvi);
 			lvi.iSubItem = 1;
 			lvi.pszText = (LPTSTR)(LPCTSTR)gStats[0].stats[k].name;
@@ -955,7 +995,8 @@ void CMcaster1WinDlg::config_write()
 	sprintf(buf, "%d", gAdditionalGlobalStats.numStats);
 	WritePrivateProfileString(gAppName, "numAdditionalStats", buf, gConfigFile);
 
-	for (int i=0;i<gAdditionalGlobalStats.numStats;i++) {
+	int i;
+	for (i=0;i<gAdditionalGlobalStats.numStats;i++) {
 		memset(buf, '\000', sizeof(buf));
 		sprintf(buf2, "AdditionalStatsSource%d", i);
 		WritePrivateProfileString(gAppName, buf2, gAdditionalGlobalStats.stats[i].source, gConfigFile);
@@ -965,14 +1006,14 @@ void CMcaster1WinDlg::config_write()
 		WritePrivateProfileString(gAppName, buf2, gAdditionalGlobalStats.stats[i].name, gConfigFile);
 
 		if (gAdditionalGlobalStats.stats[i].titleFlag) {
-			sprintf(buf2, "%s|%s", gAdditionalGlobalStats.stats[i].source, gAdditionalGlobalStats.stats[i].name);
+			sprintf(buf2, "%s|%s", (LPCSTR)gAdditionalGlobalStats.stats[i].source, (LPCSTR)gAdditionalGlobalStats.stats[i].name);
 			WritePrivateProfileString(gAppName, "TitleName", buf2, gConfigFile);
 		}
 	}
 	for (i=0;i<numMainStats;i++) {
 		for (int k=0;k < gStats[i].numStats;k++) {
 			if (gStats[i].stats[k].titleFlag) {
-				sprintf(buf2, "%s|%s", gStats[i].source, gStats[i].stats[k].name);
+				sprintf(buf2, "%s|%s", (LPCSTR)gStats[i].source, (LPCSTR)gStats[i].stats[k].name);
 				WritePrivateProfileString(gAppName, "TitleName", buf2, gConfigFile);
 			}
 		}
@@ -1036,43 +1077,28 @@ void CMcaster1WinDlg::config_read()
 
 }
 
-void CMcaster1WinDlg::OnClose() 
+void CMcaster1WinDlg::OnClose()
 {
-	// TODO: Add your message handler code here and/or call default
 	config_write();
-	CDialog::OnClose();
+	DestroyWindow();
 }
 
-void CMcaster1WinDlg::OnSize(UINT nType, int cx, int cy) 
+void CMcaster1WinDlg::OnSize(UINT nType, int cx, int cy)
 {
-	CDialog::OnSize(nType, cx, cy);
-	
-	int border1 = 0;
-	int border2 = 78;
-	// TODO: Add your message handler code here
-	if (m_MainTab.m_hWnd) {
-		CRect rect;
-		GetClientRect (&rect);
-		int x = rect.Width()-border1;
-		int y = rect.Width()-border2;
+	CResizableDialog::OnSize(nType, cx, cy);   // Repositions IDC_MAINTAB via anchor
 
-		statusTab.SetWindowPos(NULL, 4, 22, cx, cy, SWP_NOZORDER);
-		statsTab.SetWindowPos(NULL, 4, 22, cx, cy, SWP_NOZORDER);
-		statusTab.m_GlobalStatList.SetWindowPos(NULL, 14, 55, cx-40, cy-180, SWP_NOZORDER);
-		statsTab.m_StatsListCtrl.SetWindowPos(NULL, 213, 55, cx-243, cy-180, SWP_NOZORDER);
-		statsTab.m_SourceListCtrl.SetWindowPos(NULL, 14, 55, 166, cy-180, SWP_NOZORDER);
-//			CListCtrl	m_StatsListCtrl;
-//	CListCtrl	m_SourceListCtrl;
-		m_MainTab.SetWindowPos(NULL, 0, 80, cx, cy, SWP_NOZORDER);
-
-		//m_MainTab.ResizeDialog(0, rect.Width()-border1, rect.Height()-border2);
-		//m_MainTab.ResizeDialog(1, rect.Width()-border1, rect.Height()-border2);
-	}
-
+	// Propagate resize to active tab page so its ResizableLib anchors fire
+	if (nType == SIZE_MINIMIZED || !m_MainTab.m_hWnd)
+		return;
+	CRect tabRect;
+	m_MainTab.GetClientRect(&tabRect);
+	int active = m_MainTab.GetSSLActivePage();
+	if (active >= 0)
+		m_MainTab.ResizeDialog(active, tabRect.Width(), tabRect.Height());
 }
 
 
-LONG CMcaster1WinDlg::OnTrayNotify ( WPARAM wParam, LPARAM lParam )
+LRESULT CMcaster1WinDlg::OnTrayNotify ( WPARAM wParam, LPARAM lParam )
 {
 	switch (lParam) {
 	case WM_RBUTTONDOWN:
@@ -1100,9 +1126,14 @@ LONG CMcaster1WinDlg::OnTrayNotify ( WPARAM wParam, LPARAM lParam )
 	//////////////////////////////////
 	// Unhide our Window
 		if (m_bHidden) {
-			ShowWindow (SW_RESTORE);
+			m_bHidden = FALSE;
+			ShowWindow(SW_SHOW);
+			SetForegroundWindow();
+			// Force OnSize to re-layout tab pages with correct client dimensions
+			CRect rect;
+			GetClientRect(&rect);
+			OnSize(SIZE_RESTORED, rect.Width(), rect.Height());
 		}
-	//OnUnHide() ;
 		break ;
 	}
 
@@ -1126,13 +1157,17 @@ void CMcaster1WinDlg::OnHide()
 	
 }
 
-void CMcaster1WinDlg::OnBlankRestore() 
+void CMcaster1WinDlg::OnBlankRestore()
 {
-	// TODO: Add your command handler code here
-		if (m_bHidden) {
-			ShowWindow (SW_RESTORE);
-		}
-	
+	if (m_bHidden) {
+		m_bHidden = FALSE;
+		ShowWindow(SW_SHOW);
+		SetForegroundWindow();
+		// Force layout refresh after restoring from systray
+		CRect rect;
+		GetClientRect(&rect);
+		OnSize(SIZE_RESTORED, rect.Width(), rect.Height());
+	}
 }
 
 void CMcaster1WinDlg::OnDestroy() 
@@ -1164,9 +1199,12 @@ void CMcaster1WinDlg::OnFileEditconfiguration()
 		MessageBox("I'm sorry, but you cannot edit the configuration file while the server is running", NULL, MB_OK);
 	}
 	else {
-		// Start the child process. 
-		if( !CreateProcess( NULL, // No module name (use command line). 
-			"notepad mcaster1.xml", // Command line. 
+		CMcaster1WinApp *myApp2 = (CMcaster1WinApp *)AfxGetApp();
+		char editCmd[1280];
+		sprintf(editCmd, "notepad \"%s\"", myApp2->m_configFile);
+		// Start the child process.
+		if( !CreateProcess( NULL, // No module name (use command line).
+			editCmd, // Command line.
 			NULL,             // Process handle not inheritable. 
 			NULL,             // Thread handle not inheritable. 
 			FALSE,            // Set handle inheritance to FALSE. 
@@ -1205,5 +1243,31 @@ void CMcaster1WinDlg::OnAboutCredits()
 
 void CMcaster1WinDlg::OnCancel()
 {
+    DestroyWindow();
 }
 
+
+void CMcaster1WinDlg::OnBnClickedAutostart()
+{
+	// TODO: Add your control notification handler code here
+}
+
+// Fired via PostMessage(WM_APP+100) at the end of OnInitDialog so that
+// command-line -s (auto-start) and -m (minimize) take effect after the
+// dialog is fully visible and the message loop is running.
+LRESULT CMcaster1WinDlg::OnPostInit(WPARAM, LPARAM)
+{
+	CMcaster1WinApp *myApp = (CMcaster1WinApp *)AfxGetApp();
+
+	// -s: start server (only if not already started by the IDC_AUTOSTART checkbox)
+	if (myApp->m_bAutoStart && !m_Autostart && global.running != MC_RUNNING) {
+		OnStart();
+	}
+
+	// -m: hide to system tray
+	if (myApp->m_bMinimize) {
+		OnHidesystray();
+	}
+
+	return 0;
+}

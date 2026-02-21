@@ -189,16 +189,17 @@
 
             <h2><i class="fas fa-file-code"></i> Basic Configuration (YAML Recommended)</h2>
             <p>
-                Mcaster1DNAS v2.5.1 supports both YAML and XML configuration formats. <strong>YAML is strongly recommended</strong>
-                as XML support will be deprecated in future releases.
+                Mcaster1DNAS v2.5.1 supports both YAML and XML configuration formats. <strong>YAML is recommended</strong>
+                for all new deployments — it is human-readable, version-control friendly, and the format used in all
+                examples throughout this documentation. XML is fully supported for backward compatibility.
             </p>
 
-            <div class="alert-box alert-warning">
-                <i class="fas fa-exclamation-triangle alert-icon"></i>
+            <div class="alert-box alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
                 <div class="alert-content">
-                    <strong>Configuration Format Notice:</strong> While XML configuration is still supported for
-                    backward compatibility, all new deployments should use YAML. XML support will be removed in a
-                    future major release.
+                    <strong>Configuration Format:</strong> Both YAML (<code>.yaml</code>) and XML (<code>.xml</code>)
+                    are auto-detected by file extension and fully supported. Use whichever format your team prefers.
+                    YAML is recommended for new deployments due to its readability.
                 </div>
             </div>
 
@@ -218,7 +219,7 @@ authentication:
 
 listen:
   - socket:
-      port: 8000
+      port: 9300
       bind_address: 0.0.0.0
 
 paths:
@@ -244,7 +245,7 @@ mount:
             <ul>
                 <li><strong>source_password:</strong> Password that source clients use to connect and stream</li>
                 <li><strong>admin_password:</strong> Password for accessing administrative features</li>
-                <li><strong>listen → port:</strong> Port number for the server (default: 8000)</li>
+                <li><strong>listen → port:</strong> Port number for the server (default: <strong>9300</strong> for HTTP, <strong>9443</strong> for HTTPS)</li>
                 <li><strong>listen → bind_address:</strong> IP address to bind to (0.0.0.0 = all interfaces)</li>
                 <li><strong>logdir:</strong> Where to store log files</li>
                 <li><strong>webroot:</strong> Directory for static web content</li>
@@ -289,7 +290,7 @@ mount:
             <p>Verify the server is running by accessing the statistics page:</p>
 
             <div class="code-block">
-<pre>http://yourserver:8000/admin/stats.xml</pre>
+<pre>http://yourserver:9300/admin/stats.xml</pre>
             </div>
 
             <p>
@@ -314,7 +315,7 @@ mount:
                     </tr>
                     <tr>
                         <td><strong>Port</strong></td>
-                        <td>8000 (or your configured port)</td>
+                        <td>9300 for HTTP (encoders); 9443 for HTTPS (public streams)</td>
                     </tr>
                     <tr>
                         <td><strong>Protocol</strong></td>
@@ -340,12 +341,12 @@ mount:
 
             <h3>Direct Stream URL</h3>
             <div class="code-block">
-<pre>http://yourserver:8000/stream</pre>
+<pre>http://yourserver:9300/stream</pre>
             </div>
 
             <h3>Playlist File (M3U)</h3>
             <div class="code-block">
-<pre>http://yourserver:8000/stream.m3u</pre>
+<pre>http://yourserver:9300/stream.m3u</pre>
             </div>
 
             <p>
@@ -365,9 +366,9 @@ mount:
             <div class="alert-box alert-info">
                 <i class="fas fa-info-circle alert-icon"></i>
                 <div class="alert-content">
-                    <strong>Example:</strong> If your server is at <code>192.168.1.100:8000</code> with mountpoint
+                    <strong>Example:</strong> If your server is at <code>192.168.1.100:9300</code> with mountpoint
                     <code>/stream.ogg</code>, listeners would use:
-                    <code>http://192.168.1.100:8000/stream.ogg.m3u</code>
+                    <code>http://192.168.1.100:9300/stream.ogg.m3u</code>
                 </div>
             </div>
 
@@ -375,7 +376,7 @@ mount:
             <p>To confirm your setup is working correctly:</p>
 
             <ol>
-                <li>Check the server is running: <code>http://yourserver:8000/admin/stats.xml</code></li>
+                <li>Check the server is running: <code>http://yourserver:9300/admin/stats.xml</code></li>
                 <li>Verify your source client shows a successful connection</li>
                 <li>Check the access log for source connection: <code>tail -f /var/log/mcaster1/access.log</code></li>
                 <li>Open the stream URL in a media player and verify you hear audio</li>

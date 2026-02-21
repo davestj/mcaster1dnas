@@ -101,7 +101,7 @@
 relay:
   master:
     server: 192.168.1.11
-    port: 8001
+    port: 9301
     username: relay
     password: hackme
     update_interval: 120  # Check for new mounts every 120 seconds
@@ -140,7 +140,7 @@ relay:
 relay:
   master:
     server: 192.168.1.11
-    port: 8001
+    port: 9301
     username: relay
     password: hackme
     redirect: true  # Register for redirection</pre></div>
@@ -155,14 +155,14 @@ relay:
 relay:
   relays:
     - server: 192.168.1.11
-      port: 8001
+      port: 9301
       mount: /example.ogg
       local_mount: /different.ogg  # Optional: rename on slave
       username: relay
       password: hackme
 
     - server: shoutcast.example.com
-      port: 8000
+      port: 9300
       mount: /                     # Shoutcast always uses /
       local_mount: /shoutcast.mp3
       relay_shoutcast_metadata: true  # Include embedded metadata</pre></div>
@@ -222,7 +222,7 @@ stream3.example.com → Slave 3 (relay from master)</pre></div>
                 <li><strong>Latency Monitoring:</strong> Detect delays in relay propagation</li>
             </ul>
 
-            <div class="code-block"><pre>http://slaveserver:8000/admin/stats.xml</pre></div>
+            <div class="code-block"><pre>http://slaveserver:9300/admin/stats.xml</pre></div>
 
             <h2><i class="fas fa-shield-alt"></i> Security Considerations</h2>
             <ul>

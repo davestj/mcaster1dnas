@@ -345,7 +345,7 @@
                                 <a href="./auth.xsl" class="btn btn-primary">Login to Listen</a>
                             </xsl:when>
                             <xsl:otherwise>
-                                <a href="javascript:void(0);" onclick="window.open('/webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=650,height=800,resizable=yes,scrollbars=yes'); return false;" class="btn btn-primary" title="Open web player in new window - bookmark for quick access" style="margin-right: 0.5rem;">
+                                <a href="javascript:void(0);" onclick="window.open('/webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=960,height=880,resizable=yes,scrollbars=yes'); return false;" class="btn btn-primary" title="Open web player in new window - bookmark for quick access" style="margin-right: 0.5rem;">
                                     <i class="fas fa-play-circle"></i> Web Player
                                 </a>
                                 <a href=".{@mount}.m3u" class="btn btn-secondary">Listen (M3U)</a>

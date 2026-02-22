@@ -60,6 +60,7 @@
 #include "auth.h"
 #include "icy2_meta.h"
 #include "slave.h"
+#include "yp.h"
 
 #undef CATMODULE
 #define CATMODULE "source"
@@ -376,6 +377,71 @@ void source_reset_client_stats (source_t *source, int not_locked)
 }
 
 
+/* Returns 1 if mount_type is a static persistent type (podcast/ondemand/socialmedia).
+ * NULL or unset mount_type defaults to 0 — preserving original dynamic behaviour. */
+static int is_static_mount_type (mount_proxy *mp)
+{
+    if (!mp || !mp->mount_type) return 0;
+    return strcmp(mp->mount_type, "podcast")     == 0 ||
+           strcmp(mp->mount_type, "ondemand")    == 0 ||
+           strcmp(mp->mount_type, "socialmedia") == 0 ||
+           strcmp(mp->mount_type, "socialcast")  == 0;
+}
+
+/* Populate / repopulate stats for a static mount from its config.
+ * Uses the handle-based stats API (same as source_init) so that:
+ *   - stats_handle() sets src->updated = LONG_MAX, preventing stats_purge()
+ *     from evicting the entry (stats_event/calloc leaves updated=0 which
+ *     is always < mark, causing immediate eviction).
+ *   - stats_set_flags(h, NULL, NULL, STATS_PUBLIC) clears STATS_HIDDEN while
+ *     the stats_tree write-lock is already held, matching source_init behaviour.
+ */
+static void source_init_static_mount_stats (mount_proxy *mp)
+{
+    const char *m = mp->mountname;
+    int extra_count = 0;
+
+    stats_handle_t h = stats_handle (m);
+    if (h == 0)
+    {
+        WARN1 ("Failed to get stats handle for static mount %s", m);
+        return;
+    }
+
+    stats_set (h, "server_name", mp->stream_name ? mp->stream_name : m);
+    if (mp->stream_description)
+        stats_set (h, "server_description", mp->stream_description);
+    if (mp->stream_url)
+        stats_set (h, "server_url", mp->stream_url);
+    if (mp->stream_genre)
+        stats_set (h, "genre", mp->stream_genre);
+    stats_set (h, "mount_type", mp->mount_type);
+    stats_set_flags (h, "listeners",     "0", STATS_COUNTERS);
+    stats_set_flags (h, "listener_peak", "0", STATS_COUNTERS);
+
+    /* Map icy-meta-X config keys → icy2-X stat keys */
+    kv_pair_t *kv = mp->extra_meta;
+    while (kv)
+    {
+        if (strncmp (kv->key, "icy-meta-", 9) == 0)
+        {
+            char sk[256];
+            snprintf (sk, sizeof(sk), "icy2-%s", kv->key + 9);
+            stats_set (h, sk, kv->value);
+            extra_count++;
+        }
+        kv = kv->next;
+    }
+
+    /* Unhide the source - same mechanism as source_init uses for live sources */
+    stats_set_flags (h, NULL, NULL, STATS_PUBLIC);
+    stats_release (h);
+
+    INFO3 ("Static mount %s (%s) published to stats (%d ICY2 field(s))",
+           m, mp->mount_type, extra_count);
+    yp_log_icy2 (m, "static-init", extra_count);
+}
+
 // drop source from tree, so it cannot be found by name. No lock on source on entry but
 // lock still active on return (stats cleared)
 static void drop_source_from_tree (source_t *source)
@@ -389,10 +455,26 @@ static void drop_source_from_tree (source_t *source)
         // this is only called from the sources client processing
         if (source->stats)
         {
-            DEBUG1 ("stats still referenced on %s", source->mount);
-            stats_lock (source->stats, source->mount);
-            stats_set (source->stats, NULL, NULL);
-            source->stats = 0;
+            mount_proxy *mountinfo = config_lock_mount(NULL, source->mount);
+            if (is_static_mount_type(mountinfo))
+            {
+                /* Static mount: flush live-source dynamic stats, re-populate
+                 * from config so the mount stays visible in stats without a source. */
+                DEBUG1("static mount %s: preserving stats after source disconnect", source->mount);
+                stats_lock(source->stats, source->mount);
+                stats_flush(source->stats);
+                stats_release(source->stats);
+                source->stats = 0;
+                source_init_static_mount_stats(mountinfo);
+            }
+            else
+            {
+                DEBUG1 ("stats still referenced on %s", source->mount);
+                stats_lock (source->stats, source->mount);
+                stats_set (source->stats, NULL, NULL);
+                source->stats = 0;
+            }
+            if (mountinfo) config_release_mount(mountinfo);
         }
         avl_tree_unlock (global.source_tree);
         DEBUG2 ("removed source %s (%p) from tree", source->mount, source);
@@ -407,6 +489,38 @@ void source_free_source (source_t *source)
     //INFO1 ("source %s to be freed", source->mount);
     drop_source_from_tree (source);
     _free_source (source);
+}
+
+
+/* Called once at server startup to pre-register all static mount types
+ * (podcast, ondemand, socialmedia) in the stats system so they appear in
+ * the XML/JSON API without requiring a live source to be connected.
+ *
+ * Exact mount names are stored in config->mounts_tree (AVL tree).
+ * Wildcard/template mounts are stored in config->mounts (linked list).
+ * Both must be scanned. */
+void source_static_mounts_init (mc_config_t *config)
+{
+    /* Template/wildcard mounts (linked list) */
+    mount_proxy *mp = config->mounts;
+    while (mp) {
+        if (is_static_mount_type(mp))
+            source_init_static_mount_stats(mp);
+        mp = mp->next;
+    }
+
+    /* Exact-match mounts (AVL tree) — this is where /podcast, /socialcaster etc. live */
+    if (config->mounts_tree)
+    {
+        avl_node *node = avl_get_first (config->mounts_tree);
+        while (node)
+        {
+            mount_proxy *m = (mount_proxy *)node->key;
+            node = avl_get_next (node);
+            if (is_static_mount_type(m))
+                source_init_static_mount_stats(m);
+        }
+    }
 }
 
 
@@ -2032,10 +2146,30 @@ static void source_apply_mount (source_t *source, mc_config_t *config, mount_pro
                 /* Copy ICY2 metadata to stats for admin interface */
                 icy2_meta_copy_to_stats(icy2, source->stats);
                 INFO1("ICY2 metadata applied to mount %s", source->mount);
+
+                /* YP log: new ICY2 source connected */
+                yp_log_icy2(source->mount, "source-connect", 0);
+
+                /* Access log: ICY2 source connection event */
+                {
+                    mc_config_t *_cfg = config_get_config_unlocked();
+                    if (_cfg && _cfg->access_log.logid >= 0)
+                        log_write_direct(_cfg->access_log.logid,
+                            "ICY2-SOURCE-CONNECT mount=%s client=%s",
+                            source->mount, source->client->connection.ip);
+                }
             }
             else
             {
                 WARN1("Failed to parse ICY2 headers for mount %s", source->mount);
+                /* Access log: ICY2 parse error */
+                {
+                    mc_config_t *_cfg = config_get_config_unlocked();
+                    if (_cfg && _cfg->access_log.logid >= 0)
+                        log_write_direct(_cfg->access_log.logid,
+                            "ICY2-PARSE-ERROR mount=%s client=%s",
+                            source->mount, source->client->connection.ip);
+                }
             }
             icy2_meta_free(icy2);
         }

@@ -42,6 +42,7 @@
 #include "logging.h"
 #include "auth.h"
 #include "songdata_api.h"
+#include "yp.h"
 
 #define CATMODULE "admin"
 
@@ -1002,13 +1003,52 @@ static int command_fallback (client_t *client, source_t *source, int response)
 }
 
 
+/* ICY2 v2.2 extended metadata: HTTP param name → stats key mapping */
+static const struct { const char *param; const char *stat; } icy2_param_map[] = {
+    { "icy-meta-show-title",      "icy2-show-title" },
+    { "icy-meta-show-episode",    "icy2-show-episode" },
+    { "icy-meta-show-season",     "icy2-show-season" },
+    { "icy-meta-show-start-time", "icy2-show-start-time" },
+    { "icy-meta-show-end-time",   "icy2-show-end-time" },
+    { "icy-meta-playlist-name",   "icy2-playlist-name" },
+    { "icy-meta-dj-handle",       "icy2-dj-handle" },
+    { "icy-meta-dj-bio",          "icy2-dj-bio" },
+    { "icy-meta-dj-photo",        "icy2-dj-photo" },
+    { "icy-meta-track-artist",    "icy2-track-artist" },
+    { "icy-meta-track-title",     "icy2-track-title" },
+    { "icy-meta-track-album",     "icy2-track-album" },
+    { "icy-meta-track-artwork",   "icy2-track-artwork" },
+    { "icy-meta-track-bpm",       "icy2-track-bpm" },
+    { "icy-meta-track-buy-url",   "icy2-track-buy-url" },
+    { "icy-meta-track-label",     "icy2-track-label" },
+    { "icy-meta-notice-board",    "icy2-notice-board" },
+    { "icy-meta-upcoming-show",   "icy2-upcoming-show" },
+    { "icy-meta-emergency-alert", "icy2-emergency-alert" },
+    { "icy-meta-hashtags",        "icy2-hashtags" },
+    { "icy-meta-tip-url",         "icy2-tip-url" },
+    { "icy-meta-chat-url",        "icy2-chat-url" },
+    { "icy-meta-request-url",     "icy2-request-url" },
+    { "icy-meta-share-url",       "icy2-share-url" },
+    { "icy-meta-video-platform",  "icy2-video-platform" },
+    { "icy-meta-video-link",      "icy2-video-link" },
+    { "icy-meta-video-title",     "icy2-video-title" },
+    { "icy-meta-station-id",      "icy2-station-id" },
+    { "icy-meta-station-slogan",  "icy2-station-slogan" },
+    { "icy-meta-station-logo",    "icy2-station-logo" },
+    { "icy-meta-station-country", "icy2-station-country" },
+    { NULL, NULL }
+};
+
+
 static int command_metadata (client_t *client, source_t *source, int response)
 {
     const char *song, *title, *artist, *artwork, *charset, *url, *intro;
     format_plugin_t *plugin;
     xmlDocPtr doc;
-    xmlNodePtr node;
+    xmlNodePtr node, updated_node;
     int same_ip = 1;
+    int stream_updated = 0;
+    int icy2_count = 0;
 
     doc = xmlNewDoc(XMLSTR("1.0"));
     node = xmlNewDocNode(doc, NULL, XMLSTR("iceresponse"), NULL);
@@ -1032,60 +1072,134 @@ static int command_metadata (client_t *client, source_t *source, int response)
             if (response == RAW && connection_check_admin_pass (client->parser) == 0)
                 same_ip = 0;
 
+    /* Prepare the updated_fields node for the result page */
+    updated_node = xmlNewChild(node, NULL, XMLSTR("updated_fields"), NULL);
+    /* Include mount name so result page can link back */
+    xmlNewChild(node, NULL, XMLSTR("mount"), XMLSTR(source->mount));
+
     do
     {
-        if (same_ip == 0 || plugin == NULL)
-            break;
-        if (artwork)
-            stats_event (source->mount, "artwork", artwork);
-        if (intro)
+        if (same_ip == 0)
         {
-            source_set_intro (source, NULL, intro);
-        }
-        if (plugin->set_tag)
-        {
-            if (charset == NULL && plugin->charset)
-                charset = plugin->charset;  // optionally use format setting if request has not provided one
-            if (url)
+            WARN2("ICY2/metadata update on %s blocked: IP mismatch or no admin auth (client=%s)",
+                  source->mount, client->connection.ip);
             {
-                plugin->set_tag (plugin, "url", url, charset);
-                INFO2 ("Metadata url on %s set to \"%s\"", source->mount, url);
+                mc_config_t *_cfg = config_get_config_unlocked();
+                if (_cfg && _cfg->access_log.logid >= 0)
+                    log_write_direct(_cfg->access_log.logid,
+                        "ICY2-META-BLOCKED mount=%s reason=ip-mismatch client=%s",
+                        source->mount, client->connection.ip);
             }
-            if (song)
-            {
-                plugin->set_tag (plugin, "artist", NULL, NULL);
-                plugin->set_tag (plugin, "title", song, charset);
-                INFO2("Metadata song on %s set to \"%s\"", source->mount, song);
-            }
-            if (artist)
-            {
-                plugin->set_tag (plugin, "artist", artist, charset);
-                INFO2 ("Metadata artist on %s changed to \"%s\"", source->mount, artist);
-            }
-            if (title)
-            {
-                plugin->set_tag (plugin, "title", title, charset);
-                INFO2 ("Metadata title on %s changed to \"%s\"", source->mount, title);
-            }
-            /* updates are now done, let them be pushed into the stream */
-            plugin->set_tag (plugin, NULL, NULL, charset);
-        }
-        else
-        {
             break;
         }
+
+        /* --- Basic stream metadata (requires live plugin) --- */
+        if (plugin)
+        {
+            if (artwork)
+                stats_event (source->mount, "artwork", artwork);
+            if (intro)
+                source_set_intro (source, NULL, intro);
+            if (plugin->set_tag)
+            {
+                if (charset == NULL && plugin->charset)
+                    charset = plugin->charset;
+                if (url)
+                {
+                    plugin->set_tag (plugin, "url", url, charset);
+                    INFO2 ("Metadata url on %s set to \"%s\"", source->mount, url);
+                }
+                if (song)
+                {
+                    plugin->set_tag (plugin, "artist", NULL, NULL);
+                    plugin->set_tag (plugin, "title", song, charset);
+                    INFO2("Metadata song on %s set to \"%s\"", source->mount, song);
+                }
+                if (artist)
+                {
+                    plugin->set_tag (plugin, "artist", artist, charset);
+                    INFO2 ("Metadata artist on %s changed to \"%s\"", source->mount, artist);
+                }
+                if (title)
+                {
+                    plugin->set_tag (plugin, "title", title, charset);
+                    INFO2 ("Metadata title on %s changed to \"%s\"", source->mount, title);
+                }
+                /* push updates into the stream */
+                plugin->set_tag (plugin, NULL, NULL, charset);
+                stream_updated = 1;
+            }
+        }
+
+        /* --- ICY2 v2.2 extended metadata (stats-only, no plugin required) --- */
+        for (int i = 0; icy2_param_map[i].param; i++)
+        {
+            const char *icy2_val = httpp_get_query_param(client->parser, icy2_param_map[i].param);
+            if (icy2_val && *icy2_val)
+            {
+                stats_event(source->mount, icy2_param_map[i].stat, icy2_val);
+                xmlNodePtr uf = xmlNewChild(updated_node, NULL, XMLSTR("field"), NULL);
+                xmlSetProp(uf, XMLSTR("param"), XMLSTR(icy2_param_map[i].param));
+                xmlSetProp(uf, XMLSTR("stat"),  XMLSTR(icy2_param_map[i].stat));
+                xmlNewChild(uf, NULL, XMLSTR("value"), XMLSTR(icy2_val));
+                INFO3("ICY2 %s on %s set to \"%s\"",
+                      icy2_param_map[i].stat, source->mount, icy2_val);
+                icy2_count++;
+            }
+        }
+
+        if (!stream_updated && icy2_count == 0)
+        {
+            WARN1("Metadata update on %s: no valid fields provided (nothing to update)",
+                  source->mount);
+            {
+                mc_config_t *_cfg = config_get_config_unlocked();
+                if (_cfg && _cfg->access_log.logid >= 0)
+                    log_write_direct(_cfg->access_log.logid,
+                        "ICY2-META-NOOP mount=%s reason=no-fields client=%s",
+                        source->mount, client->connection.ip);
+            }
+            break;
+        }
+
+        {
+            mc_config_t *_cfg = config_get_config_unlocked();
+            /* Access log: stream (non-ICY2) metadata updated */
+            if (stream_updated && _cfg && _cfg->access_log.logid >= 0)
+                log_write_direct(_cfg->access_log.logid,
+                    "STREAM-META-UPDATE mount=%s song=%s artist=%s title=%s client=%s",
+                    source->mount,
+                    song   ? song   : "-",
+                    artist ? artist : "-",
+                    title  ? title  : "-",
+                    client->connection.ip);
+
+            if (icy2_count > 0)
+            {
+                INFO2("%d ICY2 field(s) updated on %s", icy2_count, source->mount);
+                yp_log_icy2(source->mount, "admin-update", icy2_count);
+
+                /* Access log: ICY2 metadata update */
+                if (_cfg && _cfg->access_log.logid >= 0)
+                    log_write_direct(_cfg->access_log.logid,
+                        "ICY2-META-UPDATE mount=%s fields=%d client=%s",
+                        source->mount, icy2_count, client->connection.ip);
+            }
+        }
+
         thread_rwlock_unlock (&source->lock);
         xmlNewChild(node, NULL, XMLSTR("message"), XMLSTR("Metadata update successful"));
         xmlNewChild(node, NULL, XMLSTR("return"), XMLSTR("1"));
-        return admin_send_response(doc, client, response, "response.xsl");
+        return admin_send_response(doc, client, response, "metadata.xsl");
 
     } while (0);
-    INFO1 ("Metadata on mountpoint %s prevented", source->mount);
+
+    INFO1 ("Metadata on mountpoint %s prevented or nothing to update", source->mount);
     thread_rwlock_unlock (&source->lock);
     xmlNewChild(node, NULL, XMLSTR("message"),
-            XMLSTR("Mountpoint will not accept this URL update"));
-    xmlNewChild(node, NULL, XMLSTR("return"), XMLSTR("1"));
-    return admin_send_response(doc, client, response, "response.xsl");
+            XMLSTR("Mountpoint will not accept this metadata update"));
+    xmlNewChild(node, NULL, XMLSTR("return"), XMLSTR("0"));
+    return admin_send_response(doc, client, response, "metadata.xsl");
 }
 
 

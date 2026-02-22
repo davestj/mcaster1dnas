@@ -1376,25 +1376,40 @@
                 });
             }
 
-            // ICY2-specific fields — shown if the server sends them
+            // ICY2 v2.2 fields from status-json.xsl
             var icy2Fields = [
-                { key: 'icy_notice1',     label: 'Notice' },
-                { key: 'icy_notice2',     label: 'Notice' },
-                { key: 'icy_upcoming',    label: 'Coming Up' },
-                { key: 'icy_show',        label: 'Show' },
-                { key: 'icy_episode',     label: 'Episode' },
-                { key: 'icy_hashtags',    label: 'Hashtags' },
-                { key: 'icy_description', label: 'Info' },
+                { key: 'icy2-emergency-alert',  label: 'Alert',      border: '#ef4444' },
+                { key: 'icy2-notice-board',     label: 'Notice',     border: '#fbbf24' },
+                { key: 'icy2-upcoming-show',    label: 'Coming Up',  border: '#fbbf24' },
+                { key: 'icy2-show-title',       label: 'Show',       border: '#fbbf24' },
+                { key: 'icy2-show-episode',     label: 'Episode',    border: '#fbbf24' },
+                { key: 'icy2-dj-handle',        label: 'DJ',         border: '#fbbf24' },
+                { key: 'icy2-dj-bio',           label: 'DJ Bio',     border: '#fbbf24' },
+                { key: 'icy2-hashtags',         label: 'Hashtags',   border: '#fbbf24' },
+                { key: 'icy2-station-slogan',   label: 'Slogan',     border: '#14b8a6' },
+                { key: 'icy2-track-artwork',    label: 'Artwork',    border: '#14b8a6', isArtwork: true },
+                { key: 'icy2-tip-url',          label: 'Tip Jar',    border: '#10b981', isUrl: true },
+                { key: 'icy2-chat-url',         label: 'Chat',       border: '#10b981', isUrl: true },
+                { key: 'icy2-request-url',      label: 'Requests',   border: '#10b981', isUrl: true },
+                { key: 'icy2-share-url',        label: 'Share',      border: '#0891b2', isUrl: true },
+                { key: 'icy2-social-twitter',   label: 'Twitter',    border: '#fbbf24' },
+                { key: 'icy2-social-youtube',   label: 'YouTube',    border: '#fbbf24' },
+                { key: 'icy2-social-bluesky',   label: 'Bluesky',    border: '#fbbf24' },
             ];
             icy2Fields.forEach(function(f) {
-                if (src[f.key] && src[f.key].trim()) {
-                    items.push({
-                        tag: f.label,
-                        text: escapeHtml(src[f.key]),
-                        border: '#fbbf24',
-                        icy2: true
-                    });
+                var val = src[f.key];
+                if (!val || !String(val).trim()) return;
+                var text;
+                if (f.isArtwork) {
+                    text = '<img src="' + escapeHtml(String(val)) + '" alt="Artwork" style="max-width:100%;border-radius:4px;margin-top:0.2rem;"/>';
+                } else if (f.isUrl) {
+                    text = '<a href="' + escapeHtml(String(val)) + '" target="_blank" rel="noopener noreferrer">'
+                         + '<i class="fas fa-external-link-alt" style="font-size:0.6rem;margin-right:0.2rem;"></i>'
+                         + escapeHtml(String(val)) + '</a>';
+                } else {
+                    text = escapeHtml(String(val));
                 }
+                items.push({ tag: f.label, text: text, border: f.border || '#fbbf24', icy2: true });
             });
 
             if (items.length === 0) {

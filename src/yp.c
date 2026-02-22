@@ -292,6 +292,19 @@ static void yp_log (struct yp_server *server, const char *mount, const char *act
 }
 
 
+/* Public: Write ICY2 update event to all active YP log files */
+void yp_log_icy2 (const char *mount, const char *event, int field_count)
+{
+    struct yp_server *server = (struct yp_server *)active_yps;
+    char msg[256];
+    snprintf(msg, sizeof(msg), "ICY2 %s: %d field(s)", event, field_count);
+    while (server) {
+        yp_log(server, mount, "icy2-update", msg);
+        server = server->next;
+    }
+}
+
+
 static void yp_client_add (mc_config_t *config)
 {
     if (config->num_yp_directories == 0 || active_yps || global_state() != MC_RUNNING)

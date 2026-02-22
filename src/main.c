@@ -66,6 +66,7 @@
 #include "xslt.h"
 #include "fserve.h"
 #include "auth.h"
+#include "source.h"
 #include "songdata_api.h"
 
 #include <libxml/xmlmemory.h>
@@ -248,6 +249,10 @@ void server_process (void)
 
     /* Do this after logging init */
     auth_initialise ();
+
+    /* Pre-register static mount types (podcast/ondemand/socialmedia) in the
+     * stats system so they appear in the XML/JSON API without a live source */
+    source_static_mounts_init (config_get_config_unlocked());
 
     if (background)
     {

@@ -568,6 +568,9 @@ void config_clear_mount (mount_proxy *mount, int log)
     if (mount->bitrate)     xmlFree (mount->bitrate);
     if (mount->type)        xmlFree (mount->type);
     if (mount->subtype)     xmlFree (mount->subtype);
+    if (mount->mount_type)  xmlFree (mount->mount_type);
+    { kv_pair_t *kv = mount->extra_meta;
+      while (kv) { kv_pair_t *n = kv->next; free(kv->key); free(kv->value); free(kv); kv = n; } }
     if (mount->charset)     xmlFree (mount->charset);
     if (mount->cluster_password) xmlFree (mount->cluster_password);
     if (mount->redirect)            xmlFree (mount->redirect);
@@ -1599,6 +1602,7 @@ static int _parse_mount (cfg_xml *cfg, void *arg)
         { "public",             config_get_bool,    &mount->yp_public },
         { "type",               config_get_str,     &mount->type,       .flags = CFG_TAG_NOTATTR }, // clash with type on xiph build
         { "subtype",            config_get_str,     &mount->subtype,    .flags = CFG_TAG_NOTATTR },
+        { "mount-type",         config_get_str,     &mount->mount_type },
         { NULL, NULL, NULL },
     };
 
@@ -1627,6 +1631,26 @@ static int _parse_mount (cfg_xml *cfg, void *arg)
 
     if (parse_xml_tags (cfg, mcaster1_tags) < 0)
         return -1;
+
+    /* Collect any icy-meta-* XML elements as extra_meta for static mounts */
+    {
+        xmlNodePtr node = cfg->node->xmlChildrenNode;
+        while (node) {
+            if (node->type == XML_ELEMENT_NODE &&
+                xmlStrncmp(node->name, XMLSTR("icy-meta-"), 9) == 0) {
+                char *val = (char *)xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+                if (val) {
+                    kv_pair_t *kv = calloc(1, sizeof(kv_pair_t));
+                    kv->key = strdup((char *)node->name);
+                    kv->value = strdup(val);
+                    kv->next = mount->extra_meta;
+                    mount->extra_meta = kv;
+                    xmlFree(val);
+                }
+            }
+            node = node->next;
+        }
+    }
 
     if (mount->mountname == NULL)
     {

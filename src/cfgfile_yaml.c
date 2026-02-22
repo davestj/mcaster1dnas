@@ -1170,6 +1170,7 @@ int yaml_parse_mount(yaml_parse_ctx *ctx, yaml_node_t *node)
     yaml_node_t *public_yp = yaml_get_mapping_value(ctx->document, node, "public");
     yaml_node_t *type = yaml_get_mapping_value(ctx->document, node, "type");
     yaml_node_t *subtype = yaml_get_mapping_value(ctx->document, node, "subtype");
+    yaml_node_t *mount_type = yaml_get_mapping_value(ctx->document, node, "mount-type");
 
     /* Set mount name (required) */
     if (mount_name) {
@@ -1206,6 +1207,7 @@ int yaml_parse_mount(yaml_parse_ctx *ctx, yaml_node_t *node)
     SET_STR(bitrate, bitrate);
     SET_STR(type, type);
     SET_STR(subtype, subtype);
+    SET_STR(mount_type, mount_type);
 
     #undef SET_STR
 
@@ -1255,6 +1257,27 @@ int yaml_parse_mount(yaml_parse_ctx *ctx, yaml_node_t *node)
             xmlFree(mount->redirect);
             mount->redirect = xmlMalloc(len);
             snprintf(mount->redirect, len, "%s%s", redirect_str, patt);
+        }
+    }
+
+    /* Collect icy-meta-* keys as extra_meta for static mounts */
+    {
+        yaml_node_pair_t *pair;
+        for (pair = node->data.mapping.pairs.start;
+             pair < node->data.mapping.pairs.top; pair++) {
+            yaml_node_t *key_node = yaml_document_get_node(ctx->document, pair->key);
+            const char *key = yaml_get_scalar_value(ctx->document, key_node);
+            if (key && strncmp(key, "icy-meta-", 9) == 0) {
+                yaml_node_t *val_node = yaml_document_get_node(ctx->document, pair->value);
+                const char *val = yaml_get_scalar_value(ctx->document, val_node);
+                if (val) {
+                    kv_pair_t *kv = calloc(1, sizeof(kv_pair_t));
+                    kv->key = strdup(key);
+                    kv->value = strdup(val);
+                    kv->next = mount->extra_meta;
+                    mount->extra_meta = kv;
+                }
+            }
         }
     }
 

@@ -25,6 +25,7 @@ void yp_initialize (mc_config_t *config);
 void yp_shutdown(void);
 void yp_thread_startup (void);
 void yp_stop (void);
+void yp_log_icy2 (const char *mount, const char *event, int field_count);
 
 #else
 
@@ -36,6 +37,7 @@ void yp_stop (void);
 #define yp_shutdown()           do{}while(0)
 #define yp_thread_startup()     do{}while(0)
 #define yp_stop()               do{}while(0)
+#define yp_log_icy2(x,y,z)     do{}while(0)
 
 #endif /* USE_YP */
 

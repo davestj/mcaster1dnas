@@ -129,43 +129,44 @@ static size_t response_header (void *ptr, size_t size, size_t nmemb, void *strea
 {
     ypdata_t *yp = stream;
     unsigned bytes = size * nmemb;
+    const char *cptr = (const char *)ptr;   /* avoid void* arithmetic (MSVC) */
 
-    // DEBUG2 ("header from YP is \"%.*s\"", bytes, (char*)ptr);
-    if (strncasecmp (ptr, "YPResponse:", 11) == 0)
+    // DEBUG2 ("header from YP is \"%.*s\"", bytes, cptr);
+    if (strncasecmp (cptr, "YPResponse:", 11) == 0)
     {
         unsigned resp = 0;
-        sscanf (ptr+11, "%u", &resp);
+        sscanf (cptr+11, "%u", &resp);
         if (resp == 1)
             yp->cmd_ok = resp;
     }
 
-    if (strncasecmp (ptr, "YPMessage:", 10) == 0)
+    if (strncasecmp (cptr, "YPMessage:", 10) == 0)
     {
         unsigned len = bytes - 10;
         free (yp->error_msg);
         yp->error_msg = calloc (1, len);
         if (yp->error_msg)
         {
-            sscanf (ptr+10, " %[^\r\n]", yp->error_msg);
+            sscanf (cptr+10, " %[^\r\n]", yp->error_msg);
             INFO2 ("message for %s, %s", yp->mount, yp->error_msg);
         }
     }
 
     if (yp->process == do_yp_add)
     {
-        if (strncasecmp (ptr, "SID:", 4) == 0)
+        if (strncasecmp (cptr, "SID:", 4) == 0)
         {
             unsigned len = bytes - 4;
             free (yp->sid);
             yp->sid = calloc (1, len);
             if (yp->sid)
-                sscanf (ptr+4, " %[^\r\n]", yp->sid);
+                sscanf (cptr+4, " %[^\r\n]", yp->sid);
         }
     }
-    if (strncasecmp (ptr, "TouchFreq:", 10) == 0)
+    if (strncasecmp (cptr, "TouchFreq:", 10) == 0)
     {
         unsigned secs = 300;
-        sscanf (ptr+10, "%u", &secs);
+        sscanf (cptr+10, "%u", &secs);
         if (secs < 30)
             secs = 30;
         if (yp->touch_interval != secs)
@@ -288,6 +289,19 @@ static void yp_log (struct yp_server *server, const char *mount, const char *act
         log_write_direct (server->logid, "[%s] %s - %s: %s", timestamp, server->url, action, message);
     else
         log_write_direct (server->logid, "[%s] %s - %s", timestamp, server->url, action);
+}
+
+
+/* Public: Write ICY2 update event to all active YP log files */
+void yp_log_icy2 (const char *mount, const char *event, int field_count)
+{
+    struct yp_server *server = (struct yp_server *)active_yps;
+    char msg[256];
+    snprintf(msg, sizeof(msg), "ICY2 %s: %d field(s)", event, field_count);
+    while (server) {
+        yp_log(server, mount, "icy2-update", msg);
+        server = server->next;
+    }
 }
 
 

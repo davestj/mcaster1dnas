@@ -170,11 +170,28 @@
                 <div class="mcaster-card">
                     <h2>
                         <i class="fas fa-stream"></i> Mount: <xsl:value-of select="@mount"/>
-                        <xsl:if test="listeners">
-                            <span class="status-badge status-active">
-                                <i class="fas fa-circle"></i> LIVE - <xsl:value-of select="listeners"/> listening
-                            </span>
-                        </xsl:if>
+                        <xsl:choose>
+                            <xsl:when test="mount_type = 'podcast'">
+                                <span class="status-badge" style="background:rgba(139,92,246,0.15);color:#7c3aed;border:1px solid rgba(139,92,246,0.3);">
+                                    <i class="fas fa-podcast"></i> PODCAST
+                                </span>
+                            </xsl:when>
+                            <xsl:when test="mount_type = 'socialmedia' or mount_type = 'socialcast'">
+                                <span class="status-badge" style="background:rgba(236,72,153,0.15);color:#db2777;border:1px solid rgba(236,72,153,0.3);">
+                                    <i class="fas fa-share-alt"></i> SOCIAL MEDIA
+                                </span>
+                            </xsl:when>
+                            <xsl:when test="mount_type = 'ondemand'">
+                                <span class="status-badge" style="background:rgba(245,158,11,0.15);color:#d97706;border:1px solid rgba(245,158,11,0.3);">
+                                    <i class="fas fa-archive"></i> ON DEMAND
+                                </span>
+                            </xsl:when>
+                            <xsl:when test="listeners and number(listeners) > 0">
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-circle"></i> LIVE &#8212; <xsl:value-of select="listeners"/> listening
+                                </span>
+                            </xsl:when>
+                        </xsl:choose>
                     </h2>
 
                     <!-- Admin Actions -->
@@ -194,12 +211,14 @@
                                 <i class="fas fa-key"></i> Manage Auth
                             </a>
                         </xsl:if>
-                        <a href="javascript:void(0);" onclick="window.open('webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=650,height=800,resizable=yes,scrollbars=yes'); return false;" class="admin-action-btn" title="Open web player in new window - bookmark for quick access">
+                        <a href="javascript:void(0);" onclick="window.open('webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=960,height=880,resizable=yes,scrollbars=yes'); return false;" class="admin-action-btn" title="Open web player in new window - bookmark for quick access">
                             <i class="fas fa-play-circle"></i> Player
                         </a>
-                        <a href="killsource.xsl?mount={@mount}" class="admin-action-btn danger">
-                            <i class="fas fa-stop-circle"></i> Kill Source
-                        </a>
+                        <xsl:if test="not(mount_type = 'podcast' or mount_type = 'ondemand' or mount_type = 'socialmedia' or mount_type = 'socialcast')">
+                            <a href="killsource.xsl?mount={@mount}" class="admin-action-btn danger">
+                                <i class="fas fa-stop-circle"></i> Kill Source
+                            </a>
+                        </xsl:if>
                     </div>
 
                     <!-- Stream Information (Always Visible) -->
@@ -412,6 +431,175 @@
                                 <th>Data Sent</th>
                                 <td><xsl:value-of select="total_bytes_sent"/> bytes</td>
                             </tr>
+                        </xsl:if>
+
+                        <!-- ICY2 v2.2 Extended Metadata (Admin Full View) -->
+                        <xsl:if test="*[local-name()='icy2-version']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Protocol &amp; Identity</th></tr>
+                            <tr><th>ICY2 Version</th><td><xsl:value-of select="*[local-name()='icy2-version']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-station-id']">
+                            <tr><th>Station ID</th><td><xsl:value-of select="*[local-name()='icy2-station-id']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-station-slogan']">
+                            <tr><th>Slogan</th><td><xsl:value-of select="*[local-name()='icy2-station-slogan']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-station-country']">
+                            <tr><th>Country</th><td><xsl:value-of select="*[local-name()='icy2-station-country']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-station-type']">
+                            <tr><th>Station Type</th><td><xsl:value-of select="*[local-name()='icy2-station-type']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-show-title']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Show / Programming</th></tr>
+                            <tr><th>Show Title</th><td><xsl:value-of select="*[local-name()='icy2-show-title']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-show-episode']">
+                            <tr><th>Episode</th><td><xsl:value-of select="*[local-name()='icy2-show-episode']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-show-season']">
+                            <tr><th>Season</th><td><xsl:value-of select="*[local-name()='icy2-show-season']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-show-start-time']">
+                            <tr><th>Show Start</th><td><xsl:value-of select="*[local-name()='icy2-show-start-time']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-show-end-time']">
+                            <tr><th>Show End</th><td><xsl:value-of select="*[local-name()='icy2-show-end-time']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-playlist-name']">
+                            <tr><th>Playlist</th><td><xsl:value-of select="*[local-name()='icy2-playlist-name']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-autodj']">
+                            <tr><th>AutoDJ</th><td><xsl:value-of select="*[local-name()='icy2-autodj']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-stream-session-id']">
+                            <tr><th>Session ID</th><td><xsl:value-of select="*[local-name()='icy2-stream-session-id']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-dj-handle']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — DJ / Host</th></tr>
+                            <tr><th>DJ Handle</th><td><xsl:value-of select="*[local-name()='icy2-dj-handle']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-dj-bio']">
+                            <tr><th>DJ Bio</th><td><xsl:value-of select="*[local-name()='icy2-dj-bio']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-dj-showrating']">
+                            <tr><th>Show Rating</th><td><xsl:value-of select="*[local-name()='icy2-dj-showrating']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-track-artist']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Track Metadata</th></tr>
+                            <tr><th>Artist</th><td><xsl:value-of select="*[local-name()='icy2-track-artist']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-album']">
+                            <tr><th>Album</th><td><xsl:value-of select="*[local-name()='icy2-track-album']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-title']">
+                            <tr><th>Track Title</th><td><xsl:value-of select="*[local-name()='icy2-track-title']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-year']">
+                            <tr><th>Year</th><td><xsl:value-of select="*[local-name()='icy2-track-year']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-isrc']">
+                            <tr><th>ISRC</th><td><xsl:value-of select="*[local-name()='icy2-track-isrc']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-artwork']">
+                            <tr><th>Artwork</th><td><a href="{*[local-name()='icy2-track-artwork']}" target="_blank"><xsl:value-of select="*[local-name()='icy2-track-artwork']"/></a></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-label']">
+                            <tr><th>Label</th><td><xsl:value-of select="*[local-name()='icy2-track-label']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-track-bpm']">
+                            <tr><th>BPM</th><td><xsl:value-of select="*[local-name()='icy2-track-bpm']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-audio-codec']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Audio Technical</th></tr>
+                            <tr><th>Audio Codec</th><td><xsl:value-of select="*[local-name()='icy2-audio-codec']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-audio-samplerate']">
+                            <tr><th>Sample Rate</th><td><xsl:value-of select="*[local-name()='icy2-audio-samplerate']"/> Hz</td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-audio-channels']">
+                            <tr><th>Channels</th><td><xsl:value-of select="*[local-name()='icy2-audio-channels']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-audio-quality']">
+                            <tr><th>Audio Quality</th><td><xsl:value-of select="*[local-name()='icy2-audio-quality']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-podcast-host']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Podcast</th></tr>
+                            <tr><th>Host</th><td><xsl:value-of select="*[local-name()='icy2-podcast-host']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-podcast-rss']">
+                            <tr><th>RSS Feed</th><td><a href="{*[local-name()='icy2-podcast-rss']}" target="_blank"><xsl:value-of select="*[local-name()='icy2-podcast-rss']"/></a></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-podcast-episode']">
+                            <tr><th>Episode</th><td><xsl:value-of select="*[local-name()='icy2-podcast-episode']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-podcast-rating']">
+                            <tr><th>Rating</th><td><xsl:value-of select="*[local-name()='icy2-podcast-rating']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-social-twitter']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Social &amp; Engagement</th></tr>
+                            <tr><th>Twitter</th><td><xsl:value-of select="*[local-name()='icy2-social-twitter']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-social-instagram']">
+                            <tr><th>Instagram</th><td><xsl:value-of select="*[local-name()='icy2-social-instagram']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-social-tiktok']">
+                            <tr><th>TikTok</th><td><xsl:value-of select="*[local-name()='icy2-social-tiktok']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-social-youtube']">
+                            <tr><th>YouTube</th><td><xsl:value-of select="*[local-name()='icy2-social-youtube']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-social-bluesky']">
+                            <tr><th>Bluesky</th><td><xsl:value-of select="*[local-name()='icy2-social-bluesky']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-tip-url']">
+                            <tr><th>Tip Jar</th><td><a href="{*[local-name()='icy2-tip-url']}" target="_blank" rel="noopener noreferrer"><xsl:value-of select="*[local-name()='icy2-tip-url']"/></a></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-chat-url']">
+                            <tr><th>Chat</th><td><a href="{*[local-name()='icy2-chat-url']}" target="_blank" rel="noopener noreferrer"><xsl:value-of select="*[local-name()='icy2-chat-url']"/></a></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-hashtags']">
+                            <tr><th>Hashtags</th><td><xsl:value-of select="*[local-name()='icy2-hashtags']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-notice-board']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Notices &amp; Distribution</th></tr>
+                            <tr><th>Notice Board</th><td><xsl:value-of select="*[local-name()='icy2-notice-board']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-upcoming-show']">
+                            <tr><th>Coming Up</th><td><xsl:value-of select="*[local-name()='icy2-upcoming-show']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-emergency-alert']">
+                            <tr><th style="color:#ef4444;">ALERT</th><td style="color:#ef4444;font-weight:bold;"><xsl:value-of select="*[local-name()='icy2-emergency-alert']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-cdn-region']">
+                            <tr><th>CDN Region</th><td><xsl:value-of select="*[local-name()='icy2-cdn-region']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-relay-origin']">
+                            <tr><th>Relay Origin</th><td><xsl:value-of select="*[local-name()='icy2-relay-origin']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-stream-quality-tier']">
+                            <tr><th>Quality Tier</th><td><xsl:value-of select="*[local-name()='icy2-stream-quality-tier']"/></td></tr>
+                        </xsl:if>
+
+                        <xsl:if test="*[local-name()='icy2-content-rating']">
+                            <tr><th colspan="2" style="background:rgba(8,145,178,0.1);color:#0891b2;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">ICY2 v2.2 — Compliance</th></tr>
+                            <tr><th>Content Rating</th><td><xsl:value-of select="*[local-name()='icy2-content-rating']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-parental-advisory']">
+                            <tr><th>Parental Advisory</th><td><xsl:value-of select="*[local-name()='icy2-parental-advisory']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-dmca-compliant']">
+                            <tr><th>DMCA Compliant</th><td><xsl:value-of select="*[local-name()='icy2-dmca-compliant']"/></td></tr>
+                        </xsl:if>
+                        <xsl:if test="*[local-name()='icy2-verification-status']">
+                            <tr><th>Verified</th><td><xsl:value-of select="*[local-name()='icy2-verification-status']"/></td></tr>
                         </xsl:if>
                     </table>
 

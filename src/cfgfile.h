@@ -131,6 +131,12 @@ typedef struct _fbinfo
 } fbinfo;
 
 
+typedef struct _kv_pair {
+    char *key;
+    char *value;
+    struct _kv_pair *next;
+} kv_pair_t;
+
 typedef struct _mount_proxy {
     char *mountname; /* The mountpoint this proxy is used for */
 
@@ -207,6 +213,8 @@ typedef struct _mount_proxy {
     char *bitrate;
     char *type;
     char *subtype;
+    char *mount_type;  /* ICY2: podcast | live | ondemand | socialmedia */
+    kv_pair_t *extra_meta; /* icy-meta-* config key/value pairs for static mounts */
     int yp_public;
 
     struct _mount_proxy *next;

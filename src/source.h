@@ -127,6 +127,7 @@ source_t *source_find_mount_raw(const char *mount);
 client_t *source_find_client(source_t *source, uint64_t id);
 int source_compare_sources(void *arg, void *a, void *b);
 void source_free_source(source_t *source);
+void source_static_mounts_init(mc_config_t *config);
 void source_main(source_t *source);
 void source_recheck_mounts (int update_all);
 int  source_add_listener (const char *mount, mount_proxy *mountinfo, client_t *client);

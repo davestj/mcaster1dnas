@@ -560,11 +560,27 @@ int client_add_incoming (client_t *client)
 
 void worker_control_create (FD_t wakeup_fd[])
 {
+#ifdef _WIN32
+    /* sock_create_pipe_emulation expects SOCKET* (UINT_PTR, 8 bytes on Win64).
+     * wakeup_fd is FD_t* (int*, 4 bytes). Passing int* as SOCKET* causes
+     * wakeup_fd[1] to receive 0 (high bits of handles[0]) instead of the
+     * write-end socket, breaking worker_wakeup() silently.
+     * Use a correctly-typed SOCKET[2] buffer then copy to FD_t. */
+    SOCKET handles[2];
+    if (sock_create_pipe_emulation (handles) < 0)
+    {
+        ERROR0 ("pipe failed, descriptor limit?");
+        abort();
+    }
+    wakeup_fd[0] = (FD_t)handles[0];
+    wakeup_fd[1] = (FD_t)handles[1];
+#else
     if (pipe_create (&wakeup_fd[0]) < 0)
     {
         ERROR0 ("pipe failed, descriptor limit?");
         abort();
     }
+#endif
     sock_set_blocking (wakeup_fd[0], 0);
     sock_set_blocking (wakeup_fd[1], 0);
 }

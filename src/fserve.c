@@ -274,7 +274,11 @@ static void fh_stats (fh_node *fh, int enable)
         if (fh->stats == 0)
         {
             int len = strlen (fh->finfo.mount) + 15;
+#ifdef _MSC_VER
+            char buf[512];
+#else
             char buf [len];
+#endif
             snprintf (buf, len, "%s-%s", (fh->finfo.flags & FS_FALLBACK) ? "fallback" : "file", fh->finfo.mount);
             fh->stats = stats_handle (buf);
             fh->prev_count = ~fh->refcount; // trigger update of listeners

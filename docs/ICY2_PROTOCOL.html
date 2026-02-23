@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICY2 Protocol — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    h4{font-size:.8rem;color:#6868a0;margin:1.25rem 0 .4rem;text-transform:uppercase;letter-spacing:.07em}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">ICY2 Protocol</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Protocol Reference</div>
+    <h1>ICY2 Protocol</h1>
+    <div class="sub">ICY-META v2.2 — Extended metadata protocol for streaming servers</div>
+    <span class="badge">Protocol v2.2</span>
+    <span class="badge">v2.5.1+</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>What is ICY2?</h2>
+  <p>ICY2 (ICY-META version 2.x) is an extended metadata protocol layered on top of the legacy SHOUTcast/Icecast ICY&nbsp;1.x headers. It adds structured, typed metadata fields covering:</p>
+  <ul>
+    <li>Station identity and programming</li>
+    <li>Track/song metadata (title, artist, album, BPM, ISRC)</li>
+    <li>Podcast episode metadata (host, RSS URL, episode number, duration)</li>
+    <li>Social media integration (DJ handle, Twitter, Instagram, TikTok)</li>
+    <li>Audio technical parameters (codec, bitrate, sample rate, channels)</li>
+    <li>Live performance details (venue, set start time, DJ bio)</li>
+    <li>Listener engagement (requests URL, chat link)</li>
+    <li>Content classification (NSFW, AI-generated, geo-region)</li>
+    <li>Distribution (CDN, relay network)</li>
+  </ul>
+  <div class="note"><strong>Key principle:</strong> ICY2 is purely additive. All ICY 1.x legacy headers (<code>icy-name</code>, <code>icy-genre</code>, <code>icy-url</code>, <code>icy-pub</code>, <code>icy-br</code>, <code>icy-metaint</code>) are preserved unchanged. A server that does not understand ICY2 simply ignores the extra headers.</div>
+
+  <h2>Protocol Detection</h2>
+  <p>The server detects ICY2 clients by the presence of:</p>
+  <pre><code>icy-metadata-version: 2.2</code></pre>
+  <p>Version matching uses prefix <code>2.</code> so both <code>2.1</code> and <code>2.2</code> are accepted. If the header is absent the server falls back to ICY&nbsp;1.x parsing.</p>
+
+  <h2>Source Client Handshake</h2>
+  <p>A source encoder (OBS, Mixxx, ffmpeg, custom) authenticates via HTTP PUT and sends ICY2 headers in the request:</p>
+  <pre><code>PUT /live.mp3 HTTP/1.1
+Host: stream.example.com:9443
+Authorization: Basic c291cmNlOnBhc3N3b3Jk
+Content-Type: audio/mpeg
+icy-metadata-version: 2.2
+icy-name: My Radio Station
+icy-genre: Electronic / House
+icy-url: https://myradio.example.com
+icy-br: 128
+icy-pub: 1
+icy-dj-handle: @djname
+icy-show-title: Saturday Night Live
+icy-station-id: myradio-001
+icy-social-twitter: @myradio
+icy-hashtags: #electronic #live</code></pre>
+
+  <h2>Live Metadata Push (StreamTitle Updates)</h2>
+  <p>After the source connection is established, the encoder may inject in-stream ICY metadata updates (the classic SHOUTcast StreamTitle mechanism). Mcaster1DNAS v2.5.1+ adds support for ICY2-extended fields in these in-band updates:</p>
+  <pre><code>StreamTitle='Artist - Title';
+StreamUrl='https://...';</code></pre>
+  <p>For ICY2 you may also use the <code>/admin/metadata</code> HTTP endpoint to push updates without interrupting the audio stream:</p>
+  <pre><code># Update "now playing" on a live mount
+curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata?mount=/live.mp3&amp;mode=updinfo&amp;song=Artist+-+Track+Title"
+
+# Push ICY2 extended metadata
+curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata" \
+  -d "mount=/live.mp3&amp;mode=updinfo&amp;song=Artist - Title&amp;icy-dj-handle=@djname&amp;icy-show-title=Saturday%20Night"</code></pre>
+
+  <h2>Static Mount Metadata Push</h2>
+  <p>For podcast, socialcast, and on-demand mounts (see <a href="STATIC_MOUNTS.html">Static Mounts</a>) the server manages metadata independently from a live encoder. Push updates via:</p>
+  <pre><code># Update metadata on a podcast mount
+curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata?mount=/podcast&amp;mode=updinfo" \
+  --data-urlencode "song=Episode 42 - Understanding ICY2" \
+  --data-urlencode "icy-podcast-host=The Host Name" \
+  --data-urlencode "icy-podcast-episode=42"
+
+# Update on-demand mount now-playing
+curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata?mount=/ondemand&amp;mode=updinfo&amp;song=Artist+-+Track"</code></pre>
+
+  <h2>ICY2 v2.2 Field Reference</h2>
+
+  <h3>Core Station Identity</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-metadata-version</code></td><td>string</td><td><code>2.2</code></td></tr>
+      <tr><td><code>icy-meta-station-id</code></td><td>string</td><td><code>myradio-unique-001</code></td></tr>
+      <tr><td><code>icy-name</code></td><td>string</td><td><code>My Radio Station</code> (ICY1 compat)</td></tr>
+      <tr><td><code>icy-genre</code></td><td>string</td><td><code>Electronic / House</code></td></tr>
+      <tr><td><code>icy-url</code></td><td>URL</td><td><code>https://myradio.com</code></td></tr>
+      <tr><td><code>icy-pub</code></td><td>0/1</td><td><code>1</code></td></tr>
+      <tr><td><code>icy-br</code></td><td>integer</td><td><code>128</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Track / Now Playing</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-title</code></td><td>string</td><td><code>Track Title</code></td></tr>
+      <tr><td><code>icy-artist</code></td><td>string</td><td><code>Artist Name</code></td></tr>
+      <tr><td><code>icy-album</code></td><td>string</td><td><code>Album Name</code></td></tr>
+      <tr><td><code>icy-year</code></td><td>integer</td><td><code>2024</code></td></tr>
+      <tr><td><code>icy-track</code></td><td>string</td><td><code>5</code></td></tr>
+      <tr><td><code>icy-isrc</code></td><td>string</td><td><code>USRC17607839</code></td></tr>
+      <tr><td><code>icy-bpm</code></td><td>float</td><td><code>128.5</code></td></tr>
+      <tr><td><code>icy-label</code></td><td>string</td><td><code>Record Label</code></td></tr>
+      <tr><td><code>icy-composer</code></td><td>string</td><td><code>Composer Name</code></td></tr>
+      <tr><td><code>icy-copyright</code></td><td>string</td><td><code>© 2024 Label</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Show / Programming</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-show-title</code></td><td>string</td><td><code>Saturday Night Live</code></td></tr>
+      <tr><td><code>icy-show-start</code></td><td>ISO8601</td><td><code>2024-02-15T21:00:00Z</code></td></tr>
+      <tr><td><code>icy-show-end</code></td><td>ISO8601</td><td><code>2024-02-16T01:00:00Z</code></td></tr>
+      <tr><td><code>icy-dj-handle</code></td><td>string</td><td><code>@djname</code></td></tr>
+      <tr><td><code>icy-dj-bio</code></td><td>string</td><td><code>DJ based in Dallas TX</code></td></tr>
+      <tr><td><code>icy-venue</code></td><td>string</td><td><code>Club 9330, Dallas TX</code></td></tr>
+      <tr><td><code>icy-language</code></td><td>BCP47</td><td><code>en-US</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Podcast Fields</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-podcast-host</code></td><td>string</td><td><code>The Podcast Host</code></td></tr>
+      <tr><td><code>icy-podcast-rss</code></td><td>URL</td><td><code>https://myshow.com/feed.rss</code></td></tr>
+      <tr><td><code>icy-podcast-episode</code></td><td>integer</td><td><code>42</code></td></tr>
+      <tr><td><code>icy-podcast-season</code></td><td>integer</td><td><code>3</code></td></tr>
+      <tr><td><code>icy-podcast-duration</code></td><td>seconds</td><td><code>3600</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Social Media</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-social-twitter</code></td><td>string</td><td><code>@myradio</code></td></tr>
+      <tr><td><code>icy-social-instagram</code></td><td>string</td><td><code>@myradio</code></td></tr>
+      <tr><td><code>icy-social-tiktok</code></td><td>string</td><td><code>@myradio</code></td></tr>
+      <tr><td><code>icy-emoji</code></td><td>string</td><td><code>🎵🔥</code></td></tr>
+      <tr><td><code>icy-hashtags</code></td><td>string</td><td><code>#electronic #live</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Audio Technical</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-audio-codec</code></td><td>string</td><td><code>MP3</code>, <code>AAC</code>, <code>Opus</code>, <code>Vorbis</code></td></tr>
+      <tr><td><code>icy-audio-samplerate</code></td><td>integer</td><td><code>44100</code></td></tr>
+      <tr><td><code>icy-audio-channels</code></td><td>integer</td><td><code>2</code></td></tr>
+      <tr><td><code>icy-audio-bitdepth</code></td><td>integer</td><td><code>16</code>, <code>24</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Content Classification</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-nsfw</code></td><td>boolean</td><td><code>false</code></td></tr>
+      <tr><td><code>icy-ai-generated</code></td><td>boolean</td><td><code>false</code></td></tr>
+      <tr><td><code>icy-geo-region</code></td><td>string</td><td><code>US, CA, GB</code> (allow-list)</td></tr>
+      <tr><td><code>icy-content-rating</code></td><td>string</td><td><code>clean</code>, <code>explicit</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Listener Engagement</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-requests-url</code></td><td>URL</td><td><code>https://myradio.com/request</code></td></tr>
+      <tr><td><code>icy-chat-url</code></td><td>URL</td><td><code>https://myradio.com/chat</code></td></tr>
+      <tr><td><code>icy-donate-url</code></td><td>URL</td><td><code>https://myradio.com/donate</code></td></tr>
+      <tr><td><code>icy-requests-enabled</code></td><td>boolean</td><td><code>true</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Video / Stream Link</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-video-type</code></td><td>string</td><td><code>live</code>, <code>vod</code></td></tr>
+      <tr><td><code>icy-video-link</code></td><td>URL</td><td><code>https://youtube.com/live/...</code></td></tr>
+      <tr><td><code>icy-video-platform</code></td><td>string</td><td><code>youtube</code>, <code>twitch</code></td></tr>
+      <tr><td><code>icy-video-title</code></td><td>string</td><td><code>Saturday Night Stream</code></td></tr>
+      <tr><td><code>icy-video-resolution</code></td><td>string</td><td><code>1920x1080</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Config — Mount-Level Defaults</h2>
+  <p>ICY2 metadata fields can be pre-set per mount in YAML config so they are active from server startup without requiring a source encoder:</p>
+  <pre><code>mounts:
+  - mount-name: "/live"
+    mount-type: "live"
+    max-listeners: 100
+    public: 1
+    stream-name: "My Live Station"
+    stream-description: "Electronic music live from Dallas"
+    genre: "Electronic"
+    bitrate: "128"
+    icy-dj-handle: "@djname"
+    icy-station-id: "myradio-001"
+    icy-show-title: "The Evening Show"
+    icy-requests-enabled: false
+    icy-social-twitter: "@myradio"
+    icy-hashtags: "#electronic #live"
+
+  - mount-name: "/podcast"
+    mount-type: "podcast"
+    stream-name: "The Podcast"
+    icy-podcast-host: "Host Name"
+    icy-podcast-rss: "https://myshow.com/feed.rss"
+    icy-requests-enabled: false</code></pre>
+
+  <h2>Stats API — ICY2 Metadata Exposure</h2>
+  <p>ICY2 fields set on a mount are exposed in the server stats XML at <code>/admin/stats</code>:</p>
+  <pre><code>&lt;source mount="/live"&gt;
+  &lt;stream_start_iso8601&gt;2026-02-22T18:00:00+0000&lt;/stream_start_iso8601&gt;
+  &lt;title&gt;Artist - Track Title&lt;/title&gt;
+  &lt;genre&gt;Electronic&lt;/genre&gt;
+  &lt;bitrate&gt;128&lt;/bitrate&gt;
+  &lt;audio_codecid&gt;audio/mpeg&lt;/audio_codecid&gt;
+  &lt;audio_samplerate&gt;44100&lt;/audio_samplerate&gt;
+  &lt;audio_channels&gt;2&lt;/audio_channels&gt;
+  &lt;icy_dj_handle&gt;@djname&lt;/icy_dj_handle&gt;
+  &lt;icy_show_title&gt;Saturday Night Live&lt;/icy_show_title&gt;
+  &lt;icy_station_id&gt;myradio-001&lt;/icy_station_id&gt;
+  &lt;listeners&gt;42&lt;/listeners&gt;
+  &lt;max_listeners&gt;100&lt;/max_listeners&gt;
+&lt;/source&gt;</code></pre>
+  <p>The public <code>/status</code> XML exposes the non-sensitive subset (title, genre, bitrate, codec, listener count).</p>
+
+  <h2>Backward Compatibility Notes</h2>
+  <ul>
+    <li>Encoders sending only classic ICY 1.x headers (<code>icy-name</code>, <code>icy-genre</code>, <code>icy-br</code>, <code>icy-pub</code>) work exactly as before — ICY2 parsing is only activated by the presence of <code>icy-metadata-version: 2.x</code></li>
+    <li>ICY2 v2.1 clients that send <code>icy-station-id</code> instead of <code>icy-meta-station-id</code> are fully supported — both aliases are parsed</li>
+    <li>ICY2 headers not understood by a listener client are silently ignored by that client</li>
+  </ul>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="STATIC_MOUNTS.html">Static Mounts</a> — podcast, socialcast, on-demand mount types</li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a> — song history ring buffer and XML API</li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> — TLS configuration for secure listeners</li>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> — mcaster1win.exe user guide</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+</footer>
+</body>
+</html>

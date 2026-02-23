@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSL Certificate Generation — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .warn{background:#1e180a;border:1px solid #f59e0b44;border-left:3px solid #f59e0b;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#d4a84a}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">SSL Certificate Generation</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Security &amp; TLS</div>
+    <h1>SSL Certificate Generation</h1>
+    <div class="sub">Built-in OpenSSL cert and CSR generator — CLI, Windows Console, and GUI</div>
+    <span class="badge">v2.5.1-beta.2+</span>
+    <span class="badge">Windows &bull; Linux &bull; macOS</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>Overview</h2>
+  <p>Mcaster1DNAS includes a built-in OpenSSL-based certificate and CSR generator accessible from the command line (all platforms) and from the Windows GUI (<code>mcaster1win.exe</code>). This eliminates the need for separate openssl CLI invocations when bootstrapping a new server with TLS.</p>
+  <div class="note">The feature is compiled only when <code>HAVE_OPENSSL</code> is defined — always true on Windows with vcpkg openssl; on Linux/macOS requires the <code>--with-openssl</code> configure flag.</div>
+
+  <h2>CLI Flags (All Platforms)</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Flag</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>--ssl-gencert</code></td><td>presence flag</td><td>Trigger SSL generation mode; no server starts</td></tr>
+      <tr><td><code>--ssl-gentype=&lt;type&gt;</code></td><td><code>selfsigned</code> or <code>csr</code></td><td>Output type (default: <code>selfsigned</code>)</td></tr>
+      <tr><td><code>--subj=&lt;subject&gt;</code></td><td>string</td><td>X.509 subject in OpenSSL format (e.g. <code>/C=US/ST=TX/O=Org/CN=localhost</code>)</td></tr>
+      <tr><td><code>--ssl-gencert-savepath=&lt;dir&gt;</code></td><td>path</td><td>Output directory (created if absent)</td></tr>
+      <tr><td><code>--ssl-gencert-addtoconfig=true</code></td><td>boolean</td><td>Patch <code>-c &lt;config&gt;</code> file after generation</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">When <code>--ssl-gencert</code> is present the server <strong>does not start</strong> — it generates files, optionally patches the config, reports result, and exits.</div>
+
+  <h2>Windows Console (mcaster1.exe)</h2>
+  <pre><code># Self-signed cert — saves to ssl\mycert\
+mcaster1.exe --ssl-gencert `
+    --ssl-gentype=selfsigned `
+    --subj="/C=US/ST=TX/L=Dallas/O=Acme Radio/CN=stream.example.com" `
+    --ssl-gencert-savepath="ssl\mycert"
+
+# Self-signed cert + auto-patch config
+mcaster1.exe --ssl-gencert `
+    --ssl-gentype=selfsigned `
+    --subj="/C=US/ST=TX/O=Acme Radio/CN=stream.example.com" `
+    --ssl-gencert-savepath="ssl\mycert" `
+    --ssl-gencert-addtoconfig=true `
+    -c windows\mcaster1dnas.yaml
+
+# CSR (for submission to a CA)
+mcaster1.exe --ssl-gencert `
+    --ssl-gentype=csr `
+    --subj="/C=US/ST=TX/O=Acme Radio/CN=stream.example.com" `
+    --ssl-gencert-savepath="ssl\csr"</code></pre>
+
+  <h2>Windows GUI (mcaster1win.exe)</h2>
+  <p>The GUI passes the same flags at launch. On completion a MessageBox reports success or failure, then the application exits (no server GUI is shown).</p>
+  <pre><code>mcaster1win.exe --ssl-gencert --ssl-gentype=selfsigned ^
+    --subj="/C=US/ST=TX/O=Acme Radio/CN=stream.example.com" ^
+    --ssl-gencert-savepath=ssl\mycert ^
+    --ssl-gencert-addtoconfig=true ^
+    -c windows\mcaster1dnas.yaml</code></pre>
+  <p>You can also invoke it from within the GUI via <strong>Configuration &rarr; Generate SSL Certificate</strong> (planned &mdash; use command-line for now).</p>
+
+  <h2>Linux / macOS (mcaster1)</h2>
+  <p>Same flags, identical behavior. Build must have been configured with <code>--with-openssl</code>.</p>
+  <pre><code># Self-signed cert
+./mcaster1 --ssl-gencert \
+    --ssl-gentype=selfsigned \
+    --subj="/C=US/ST=CA/O=Acme Radio/CN=stream.example.com" \
+    --ssl-gencert-savepath=/etc/mcaster1dnas/ssl
+
+# CSR for a commercial CA
+./mcaster1 --ssl-gencert \
+    --ssl-gentype=csr \
+    --subj="/C=US/ST=CA/O=Acme Radio/CN=stream.example.com" \
+    --ssl-gencert-savepath=/etc/mcaster1dnas/ssl
+
+# Verify the generated CSR
+openssl req -verify -in /etc/mcaster1dnas/ssl/server.csr -noout -text</code></pre>
+
+  <h2>Output Files</h2>
+  <h3>Self-signed (<code>--ssl-gentype=selfsigned</code>)</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>File</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;savepath&gt;/selfsigned.key</code></td><td>PEM private key (RSA 2048-bit, unencrypted)</td></tr>
+      <tr><td><code>&lt;savepath&gt;/selfsigned.crt</code></td><td>PEM certificate (X.509, valid 365 days by default)</td></tr>
+      <tr><td><code>&lt;savepath&gt;/selfsigned.pem</code></td><td>Combined cert + key (use with <code>ssl-certificate</code> config key)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>CSR (<code>--ssl-gentype=csr</code>)</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>File</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;savepath&gt;/server.key</code></td><td>PEM private key</td></tr>
+      <tr><td><code>&lt;savepath&gt;/server.csr</code></td><td>PEM Certificate Signing Request</td></tr>
+    </tbody>
+  </table></div>
+  <p>Submit <code>server.csr</code> to your CA (Let's Encrypt, DigiCert, etc.). When you receive the signed cert, combine it with <code>server.key</code> into a <code>.pem</code> file and point <code>ssl-certificate:</code> at it.</p>
+
+  <h2>Config Patching (<code>--ssl-gencert-addtoconfig=true</code>)</h2>
+  <p>When this flag is present alongside <code>-c &lt;configfile&gt;</code>, the generator line-scans the YAML or XML config and updates (or inserts) the <code>ssl-certificate</code> key:</p>
+  <h3>YAML — updates <code>ssl-certificate:</code> under <code>paths:</code></h3>
+  <pre><code>paths:
+  ssl-certificate: "ssl/mycert/selfsigned.pem"   # ← patched in-place</code></pre>
+  <h3>XML — updates <code>&lt;ssl-certificate&gt;</code> inside <code>&lt;paths&gt;</code></h3>
+  <pre><code>&lt;paths&gt;
+  &lt;ssl-certificate&gt;ssl/mycert/selfsigned.pem&lt;/ssl-certificate&gt;
+&lt;/paths&gt;</code></pre>
+  <p>If the key is absent it is inserted after the <code>paths:</code> / <code>&lt;paths&gt;</code> block opener.</p>
+
+  <h2>Using Test Certificates in Development</h2>
+  <p>The <code>ssl/temp/</code> directory contains pre-generated test files for local development (created with vcpkg <code>openssl.exe</code>, subject <code>CN=localhost</code>):</p>
+  <pre><code>ssl/temp/selfsigned.key   — private key
+ssl/temp/selfsigned.crt   — certificate
+ssl/temp/selfsigned.pem   — combined (use this in config)
+ssl/temp/test.key         — CSR private key
+ssl/temp/test.csr         — Certificate Signing Request</code></pre>
+  <pre><code>paths:
+  ssl-certificate: "../../ssl/temp/selfsigned.pem"</code></pre>
+  <div class="warn"><strong>Never use test/self-signed certificates in production.</strong> Browsers will show a certificate warning. Use <code>curl -k</code> or add the cert to your browser's trust store for local testing only.</div>
+
+  <h2>Per-Listener SSL Enforcement</h2>
+  <p>Beyond generating certs, Mcaster1DNAS v2.5.1-beta.2+ supports per-listener <code>ssl:</code> flags in the config.</p>
+  <h3>YAML</h3>
+  <pre><code>listen-sockets:
+  - port: 9330
+    bind-address: "0.0.0.0"
+    ssl: false      # plain HTTP only — TLS connections rejected with WARN log
+  - port: 9443
+    bind-address: "0.0.0.0"
+    ssl: true       # TLS only — plain HTTP connections rejected with WARN log</code></pre>
+  <h3>XML</h3>
+  <pre><code>&lt;listen-socket&gt;&lt;port&gt;9330&lt;/port&gt;&lt;ssl&gt;0&lt;/ssl&gt;&lt;/listen-socket&gt;
+&lt;listen-socket&gt;&lt;port&gt;9443&lt;/port&gt;&lt;ssl&gt;1&lt;/ssl&gt;&lt;/listen-socket&gt;</code></pre>
+  <p>The default (<code>ssl:</code> absent or <code>-1</code>) is the previous auto-detect behavior — the server peeks at the first bytes to determine whether the client is speaking TLS.</p>
+
+  <h2>Troubleshooting</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Symptom</th><th>Likely Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>ssl_gen_run: EVP_RSA_gen failed</code></td><td>OpenSSL not linked / <code>HAVE_OPENSSL</code> not defined</td><td>Rebuild with <code>--with-openssl</code> (Linux) or ensure vcpkg openssl is linked (Windows)</td></tr>
+      <tr><td><code>mkdir failed: permission denied</code></td><td>Savepath parent not writable</td><td>Choose a writeable directory or run with elevated permissions</td></tr>
+      <tr><td><code>config patch: ssl-certificate key not found</code></td><td><code>paths:</code> block missing in YAML</td><td>Add a <code>paths:</code> section manually first</td></tr>
+      <tr><td>Browser says cert invalid</td><td>Self-signed cert used in production</td><td>Use Let's Encrypt or a commercial CA for production</td></tr>
+      <tr><td><code>curl: (60) SSL certificate problem</code></td><td>Self-signed cert not trusted</td><td>Use <code>curl -k</code> for testing, or import cert into OS trust store</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> — mcaster1win.exe user guide</li>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> — extended metadata protocol reference</li>
+      <li><a href="STATIC_MOUNTS.html">Static Mounts</a> — mount type configuration</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+</footer>
+</body>
+</html>

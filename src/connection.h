@@ -52,6 +52,7 @@ struct connection_tag
     char error;
     unsigned char readchk;
     unsigned char flags;
+    signed char ssl_required;  /* -1=auto, 0=plain-only, 1=SSL-only (from listener config) */
 
 #ifdef HAVE_OPENSSL
     SSL *ssl;   /* SSL handler */

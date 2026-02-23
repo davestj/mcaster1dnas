@@ -6,8 +6,9 @@
 [![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
 [![Language](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20BSD%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/davestj/mcaster1dnas)
-[![ICY-META](https://img.shields.io/badge/ICY--META-v2.1+-purple.svg)](ICY2_PROTOCOL_SPEC.md)
+[![ICY-META](https://img.shields.io/badge/ICY--META-v2.2-purple.svg)](ICY2_PROTOCOL_SPEC.md)
 [![YAML Config](https://img.shields.io/badge/config-YAML%20%7C%20XML-yellow.svg)](YAML_IMPLEMENTATION.md)
+[![SSL Gen](https://img.shields.io/badge/SSL-built--in%20cert%20gen-green.svg)](docs/SSL_CERT_GENERATION.md)
 
 ### Audio Format Support
 [![MP3](https://img.shields.io/badge/codec-MP3-red.svg)](https://en.wikipedia.org/wiki/MP3)
@@ -23,7 +24,7 @@
 [![HTTPS/SSL](https://img.shields.io/badge/protocol-HTTPS%2FSSL-green.svg)](https://en.wikipedia.org/wiki/HTTPS)
 [![Icecast](https://img.shields.io/badge/protocol-Icecast-orange.svg)](https://icecast.org/)
 [![Shoutcast](https://img.shields.io/badge/protocol-Shoutcast-red.svg)](https://en.wikipedia.org/wiki/Shoutcast)
-[![ICY-META v2.1+](https://img.shields.io/badge/protocol-ICY--META_v2.1+-purple.svg)](ICY2_PROTOCOL_SPEC.md)
+[![ICY-META v2.2](https://img.shields.io/badge/protocol-ICY--META_v2.2-purple.svg)](ICY2_PROTOCOL_SPEC.md)
 
 ---
 
@@ -34,7 +35,10 @@
 ### 🎯 Key Features
 
 - 🔒 **Secure by Default** - HTTPS/SSL streaming enabled out of the box
-- 🆕 **ICY-META v2.1+ Protocol** - Extended metadata with podcast, video, and social media support ([spec](ICY2_PROTOCOL_SPEC.md))
+- 🆕 **ICY-META v2.2 Protocol** - Extended metadata with podcast, video, social media, track data, and live programming support ([spec](ICY2_PROTOCOL_SPEC.md) | [guide](docs/ICY2_PROTOCOL.md))
+- 🔑 **Built-in SSL Cert Generator** - Generate self-signed certs or CSRs directly from `mcaster1` CLI or `mcaster1win.exe` GUI — no separate openssl install needed ([guide](docs/SSL_CERT_GENERATION.md))
+- 🎛️ **Per-Listener SSL Enforcement** - Mark each listen-socket as `ssl: true` (TLS only) or `ssl: false` (plain HTTP only) in YAML or XML config
+- 📻 **Static Mount Types** - podcast, socialcast, and on-demand mount types alongside live streaming ([guide](docs/STATIC_MOUNTS.md))
 - 📝 **YAML Configuration** - Modern YAML config alongside traditional XML ([guide](YAML_IMPLEMENTATION.md))
 - 🎵 **Multi-Format Audio** - MP3, AAC, Ogg Vorbis, Opus, FLAC, Speex, and Theora
 - 🚀 **High Performance** - Optimized for low latency and high concurrent listener capacity
@@ -224,22 +228,25 @@ After starting the server, access the web interfaces:
 
 ---
 
-## 🎯 ICY-META v2.1+ Protocol
+## 🎯 ICY-META v2.2 Protocol
 
-Mcaster1DNAS introduces the **ICY-META v2.1+ extended metadata protocol**, providing rich metadata support beyond legacy ICY 1.x.
+Mcaster1DNAS implements the **ICY-META v2.2 extended metadata protocol**, providing rich metadata support beyond legacy ICY 1.x.
 
 ### 🌟 Features
 
-- **Auto-Detection** - Automatically detects ICY2-compliant encoders via `icy-metadata-version: 2.1` header
+- **Auto-Detection** - Automatically detects ICY2-compliant encoders via `icy-metadata-version: 2.x` header
 - **Backward Compatible** - Seamlessly falls back to ICY 1.x for legacy encoders
 - **Zero Configuration** - No server config changes needed, works automatically
-- **29+ Metadata Fields** - Comprehensive metadata across 6 categories:
+- **50+ Metadata Fields** - Comprehensive metadata across 9 categories:
   - **Core**: station-id, name, url, genre, bitrate, public
-  - **Podcast**: host, rss, episode, duration, language
+  - **Track**: title, artist, album, ISRC, BPM, label, composer
+  - **Show/Programming**: show-title, show-start/end, DJ handle, venue, language
+  - **Podcast**: host, rss, episode, season, duration
   - **Video**: type, link, title, platform, resolution
   - **Social Media**: dj-handle, twitter, instagram, tiktok, emoji, hashtags
-  - **Access Control**: nsfw, ai-generated, geo-region, auth-token
-  - **Verification**: certificate-verify, verification-status
+  - **Audio Technical**: codec, samplerate, channels, bitdepth
+  - **Listener Engagement**: requests-url, chat-url, donate-url
+  - **Content Classification**: nsfw, ai-generated, geo-region, content-rating
 
 ### 📡 Example ICY2 Request
 
@@ -285,11 +292,13 @@ curl -k -X PUT \
 
 ### 📖 Full Specification
 
-See **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** for the complete protocol specification, including:
-- All metadata field definitions
-- Client/server implementation guidelines
-- Security considerations
-- Future protocol versions (2.2, 2.3)
+See **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** for the complete protocol specification and
+**[docs/ICY2_PROTOCOL.md](docs/ICY2_PROTOCOL.md)** for the implementation guide, including:
+- All metadata field definitions (50+ fields)
+- Static mount metadata push (podcast, socialcast, on-demand)
+- Admin API metadata update examples
+- Config-level ICY2 defaults per mount
+- Stats XML exposure of ICY2 fields
 
 ---
 
@@ -388,35 +397,57 @@ brittle hand-coded pixel math with declarative anchor-based layout:
 - Window position and size persist between sessions (stored in the Windows registry)
 - All four tab pages (Status, Stats, Config, Log) resize independently with proper anchoring
 
+#### Real-Time Clocks
+- **Uptime clock** — shows `Up: HH:MM:SS` next to the server status indicator, incrementing every 500ms while the server is running
+- **System time status bar** — always-on clock at the bottom of the main window (`System Time: Mon Feb 22 2026  06:45:12 PM`), updates every second via a dedicated WM_TIMER
+
+#### Real-Time Log Viewer
+The Log tab tails all server log files (access, error, playlist) in real time with
+color-coded lines (errors red, info amber, debug grey). Uses `_fsopen` with `_SH_DENYNO`
+share mode so reading works even while the server holds the files open for writing.
+
+#### HTTP Admin Authentication Fixed
+A critical Windows-only bug was fixed in `src/params.c` where MSVC struct positional
+initializers in `mc_http_printf` / `mc_params_printf` were mapping fields incorrectly,
+causing `name=NULL` and silently dropping **all** HTTP response headers (including
+`WWW-Authenticate`) on Windows. The fix uses `memset + explicit field assignment`.
+
 #### Command-Line Interface
 The GUI application supports command-line flags for scripted and automated use:
 
 ```
 mcaster1win.exe [options]
 
-  -c <file>   Use specified config file (YAML or XML, auto-detected)
-  -s          Auto-start the server on launch
-  -m          Start minimised to the system tray
-  -v          Print version and exit
-  -h          Print help and exit
+  -c <file>                          Use specified config file (YAML or XML)
+  -s                                 Auto-start the server on launch
+  -m                                 Start minimised to the system tray
+  -v                                 Print version and exit
+  -h                                 Print help and exit
+  --ssl-gencert                      Generate SSL certificate/CSR then exit
+  --ssl-gentype=selfsigned|csr       Output type
+  --subj="<subject>"                 X.509 subject string
+  --ssl-gencert-savepath=<dir>       Output directory
+  --ssl-gencert-addtoconfig=true     Patch -c config file after gen
 ```
 
 Example — start with a specific YAML config, auto-start the server, minimised:
 ```
-mcaster1win.exe -c C:\mcaster1\mcaster1.yaml -s -m
+mcaster1win.exe -c C:\mcaster1\mcaster1dnas.yaml -s -m
 ```
 
 #### Auto-Versioned Builds
 Every build stamps the git commit hash and branch into the window title at compile time:
 ```
-Mcaster1DNAS v2.5.1-dev.c2bad3c — running
+Mcaster1DNAS v2.5.1-dev.b73b861 — windows-dev
 ```
 
 #### YAML Configuration on Windows
-YAML config (`mcaster1.yaml`) is fully supported. A Windows-specific CRT DLL boundary crash
-in libyaml was identified and fixed — the config file is now read into memory by the exe's own
-CRT before being handed to `yaml.dll`, eliminating the incompatible `FILE*` struct layout issue.
-Both YAML and XML configs start the server identically on Windows.
+YAML config (`mcaster1dnas.yaml`) is fully supported. A Windows-specific CRT DLL boundary
+crash in libyaml was identified and fixed — the config file is now read into memory by the
+exe's own CRT before being handed to `yaml.dll`, eliminating the incompatible `FILE*` struct
+layout issue. Both YAML and XML configs start the server identically on Windows.
+
+See **[docs/WINDOWS_GUI.md](docs/WINDOWS_GUI.md)** for the complete Windows GUI user guide.
 
 ### Building on Windows
 
@@ -468,10 +499,15 @@ The server auto-detects the format. Sample configs are included in `windows\x64\
 | YAML config support (CRT fix) | **Done** |
 | Auto-version stamping | **Done** |
 | Mcaster1DNAS visual rebrand | **Done** |
+| Real-time log viewer tabs (_SH_DENYNO) | **Done** |
+| Uptime clock + system time status bar | **Done** |
+| HTTP admin authentication fix (WWW-Authenticate) | **Done** |
+| Per-listener SSL enforcement (ssl: true/false) | In Progress |
+| SSL cert generation (--ssl-gencert CLI flags) | In Progress |
+| Config file auto-discovery + GetOpenFileName fallback | In Progress |
 | Config dialog editor (GUI) | Planned |
 | Podcast & On-Demand File Manager | Planned |
 | RSS Podcast Feed Generator | Planned |
-| Podcast core server features | Planned |
 | Windows Installer (Inno Setup) | Planned |
 | Windows Service integration | Planned |
 | Dark mode (Win10/11) | Planned |
@@ -486,20 +522,34 @@ Comprehensive documentation is available:
 
 ### Core Documentation
 - **[BUILD_AND_RUN.md](BUILD_AND_RUN.md)** - Complete build and deployment guide
-- **[ChangeLog](ChangeLog)** - Version history and changes
+- **[ChangeLog](ChangeLog)** - Version history and changes (Linux/macOS)
+- **[CHANGELOG-WIN.md](CHANGELOG-WIN.md)** - ⭐ Windows build change history
 - **[COPYING](COPYING)** - GNU GPL v2 license text
 - **[FORK.md](FORK.md)** - Fork information and lineage
 
-### Feature Documentation
-- **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** - ⭐ ICY-META v2.1+ complete specification
-- **[YAML_IMPLEMENTATION.md](YAML_IMPLEMENTATION.md)** - ⭐ YAML configuration guide
+### Feature Guides (`docs/` directory)
+- **[docs/SSL_CERT_GENERATION.md](docs/SSL_CERT_GENERATION.md)** - ⭐ Built-in SSL cert/CSR generation (all platforms)
+- **[docs/ICY2_PROTOCOL.md](docs/ICY2_PROTOCOL.md)** - ⭐ ICY2 protocol implementation guide (v2.2)
+- **[docs/STATIC_MOUNTS.md](docs/STATIC_MOUNTS.md)** - ⭐ Podcast, socialcast, on-demand mount types
+- **[docs/SONG_HISTORY_API.md](docs/SONG_HISTORY_API.md)** - ⭐ Song history ring buffer and XML API
+- **[docs/WINDOWS_GUI.md](docs/WINDOWS_GUI.md)** - ⭐ Windows GUI user guide (mcaster1win.exe)
+
+### Protocol & Config Reference
+- **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** - ICY-META v2.2 full normative specification
+- **[YAML_IMPLEMENTATION.md](YAML_IMPLEMENTATION.md)** - YAML configuration guide
 - **[YP_LOGGING_FEATURE.md](YP_LOGGING_FEATURE.md)** - YP directory logging implementation
+
+### UI & Player Documentation
+- **[WEBPLAYER_FEATURE.md](WEBPLAYER_FEATURE.md)** - Integrated browser audio player documentation
 - **[ENTERPRISE_UI_ENHANCEMENTS.md](ENTERPRISE_UI_ENHANCEMENTS.md)** - UI modernization details
 - **[CLOCK_AND_LOADTIME.md](CLOCK_AND_LOADTIME.md)** - Live clock and performance metrics
-- **[WEBPLAYER_FEATURE.md](WEBPLAYER_FEATURE.md)** - ⭐ Integrated browser audio player documentation
+
+### Windows Development
+- **[CLAUDE-RESUME-WINDOWS-DEV.md](CLAUDE-RESUME-WINDOWS-DEV.md)** - Windows dev branch state, file index, build commands
 
 ### Implementation Plans
 - **[ICY2_SIMPLIFIED_PLAN.md](ICY2_SIMPLIFIED_PLAN.md)** - ICY2 implementation architecture
+- **[PODCAST_PLANNING.md](PODCAST_PLANNING.md)** - Podcast feature roadmap
 - **[TODO.md](TODO.md)** - Future features and roadmap
 
 ### Online Documentation
@@ -554,8 +604,25 @@ Edit the XML configuration file to customize your server:
 
 ### SSL Certificate
 
-Generate a self-signed certificate for testing:
+**Option A — Built-in cert generator (all platforms, no separate openssl needed):**
 
+```bash
+# Linux / macOS console
+./mcaster1 --ssl-gencert --ssl-gentype=selfsigned \
+    --subj="/C=US/ST=CA/O=My Station/CN=stream.example.com" \
+    --ssl-gencert-savepath=/etc/mcaster1dnas/ssl \
+    --ssl-gencert-addtoconfig=true -c mcaster1dnas.yaml
+```
+
+```powershell
+# Windows console
+mcaster1.exe --ssl-gencert --ssl-gentype=selfsigned `
+    --subj="/C=US/ST=TX/O=My Station/CN=stream.example.com" `
+    --ssl-gencert-savepath=ssl\mycert `
+    --ssl-gencert-addtoconfig=true -c windows\mcaster1dnas.yaml
+```
+
+**Option B — External openssl:**
 ```bash
 openssl req -x509 -newkey rsa:4096 -nodes \
   -keyout mcaster1dnas.pem \
@@ -564,7 +631,8 @@ openssl req -x509 -newkey rsa:4096 -nodes \
   -subj "/CN=your-server.com"
 ```
 
-For production, use a certificate from Let's Encrypt or a trusted CA.
+See **[docs/SSL_CERT_GENERATION.md](docs/SSL_CERT_GENERATION.md)** for full options including CSR
+generation for commercial CAs (Let's Encrypt, DigiCert, etc.).
 
 ---
 
@@ -725,23 +793,29 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 
 ## 🌟 Features Roadmap
 
-### Current Version (2.5.1-rc1)
+### Current Version (2.5.1-beta.2-win)
 ✅ Modern HTML5/CSS3 web interface with shared header/footer templates
 ✅ Interactive help tooltips
 ✅ Live clock and page load metrics
 ✅ HTTPS/SSL by default
 ✅ Enhanced admin dashboard
 ✅ Credits and fork information pages
-✅ ICY-META v2.1+ extended metadata protocol
+✅ ICY-META v2.2 extended metadata protocol — 50+ fields, static mount support
 ✅ YAML configuration support (alongside XML)
+✅ Per-listener `ssl:` enforcement — `ssl: true` (TLS only) or `ssl: false` (plain HTTP only)
+✅ Built-in SSL cert generator — `--ssl-gencert` CLI flags, all platforms
 ✅ Song History API — in-memory ring buffer at `/mcaster1songdata`
 ✅ Track History pages — admin + public with music service lookup icons
+✅ Static mount types — podcast, socialcast, on-demand (alongside live)
 ✅ Integrated browser audio player — VU meters, volume control, keyboard shortcuts
 ✅ Full public codec stats — bitrate, samplerate, channels, codec for all formats
 ✅ Opus ICY metadata support — now playing, artist/title, song history tracking
 ✅ Windows native GUI (`mcaster1win.exe`) — Visual Studio 2022 (v17), fully resizable via ResizableLib
 ✅ Windows YAML config CRT crash fixed — in-memory parse, no DLL FILE* boundary crossing
 ✅ Windows auto-versioning — git commit hash stamped into window title at build time
+✅ Windows uptime clock + system time status bar — real-time display in GUI
+✅ Windows real-time log viewer — color-coded, shared-mode file reading (_SH_DENYNO)
+✅ Windows HTTP admin auth fixed — WWW-Authenticate header now correctly sent (MSVC struct bug fix)
 ✅ Complete Mcaster1DNAS visual rebrand — new bitmaps, icons, installer branding
 
 ### Upcoming Features (Cross-Platform)

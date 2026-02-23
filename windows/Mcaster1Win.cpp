@@ -93,15 +93,23 @@ static bool file_exists(const char *path)
 // Returns TRUE if the user selected a file, FALSE if they cancelled.
 static BOOL BrowseForConfig(char *out, int outSz)
 {
+	char initDir[MAX_PATH] = "";
+	get_exe_dir_win(initDir, sizeof(initDir));
+	// Strip trailing backslash (GetOpenFileName prefers no trailing slash)
+	int len = (int)strlen(initDir);
+	if (len > 0 && (initDir[len-1] == '\\' || initDir[len-1] == '/'))
+		initDir[len-1] = '\0';
+
 	OPENFILENAMEA ofn = {};
-	ofn.lStructSize  = sizeof(ofn);
-	ofn.hwndOwner    = NULL;
-	ofn.lpstrFilter  = "Config Files\0*.yaml;*.yml;*.xml\0All Files\0*.*\0";
-	ofn.lpstrFile    = out;
-	ofn.nMaxFile     = (DWORD)outSz;
-	ofn.Flags        = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-	ofn.lpstrTitle   = "Locate mcaster1dnas.yaml (or XML config)";
-	out[0]           = '\0';
+	ofn.lStructSize    = sizeof(ofn);
+	ofn.hwndOwner      = NULL;
+	ofn.lpstrFilter    = "Config Files\0*.yaml;*.yml;*.xml\0All Files\0*.*\0";
+	ofn.lpstrFile      = out;
+	ofn.nMaxFile       = (DWORD)outSz;
+	ofn.lpstrInitialDir = initDir[0] ? initDir : NULL;
+	ofn.Flags          = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+	ofn.lpstrTitle     = "Locate mcaster1dnas.yaml (or XML config)";
+	out[0]             = '\0';
 	return GetOpenFileNameA(&ofn);
 }
 
@@ -325,6 +333,9 @@ BOOL CMcaster1WinApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+
+	// Load RichEdit control DLL so CLogTab's CRichEditCtrl can be created.
+	AfxInitRichEdit2();
 
 	CMcaster1WinDlg dlg;
 	m_pMainWnd = &dlg;

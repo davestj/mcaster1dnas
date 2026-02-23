@@ -230,6 +230,10 @@ END_MESSAGE_MAP()
 
 CMcaster1WinDlg::CMcaster1WinDlg(CWnd* pParent /*=NULL*/)
 	: CResizableDialog(CMcaster1WinDlg::IDD, pParent)
+	, accessLogTab(LTK_ACCESS)
+	, errorLogTab(LTK_ERROR)
+	, ypHealthLogTab(LTK_YPHEALTH)
+	, playlistLogTab(LTK_PLAYLIST)
 {
 	//{{AFX_DATA_INIT(CMcaster1WinDlg)
 	m_AccessEdit = _T("");
@@ -330,15 +334,26 @@ BOOL CMcaster1WinDlg::OnInitDialog()
 	
 	statsTab.Create(IDD_STATSDIALOG, this);
 	statusTab.Create(IDD_SSTATUS, this);
+	accessLogTab.Create(IDD_LOG_VIEW, this);
+	errorLogTab.Create(IDD_LOG_VIEW, this);
+	ypHealthLogTab.Create(IDD_LOG_VIEW, this);
+	playlistLogTab.Create(IDD_LOG_VIEW, this);
 
 	int nPageID = 0;
 	m_MainTab.AddSSLPage (_T("Server Status"), nPageID, (CTabPageSSL *)&statusTab);
 	nPageID++;
 	m_MainTab.AddSSLPage (_T("Source Level Stats"), nPageID, (CTabPageSSL *)&statsTab);
 	nPageID++;
+	m_MainTab.AddSSLPage (_T("Access Log"),    nPageID, (CTabPageSSL *)&accessLogTab);
+	nPageID++;
+	m_MainTab.AddSSLPage (_T("Error Log"),     nPageID, (CTabPageSSL *)&errorLogTab);
+	nPageID++;
+	m_MainTab.AddSSLPage (_T("YP Health"),     nPageID, (CTabPageSSL *)&ypHealthLogTab);
+	nPageID++;
+	m_MainTab.AddSSLPage (_T("Playlist Log"),  nPageID, (CTabPageSSL *)&playlistLogTab);
+	nPageID++;
 
-	
-	labelFont.CreateFont(24,0, 0, 0, FW_BOLD, 0, 0, 0, 0, OUT_TT_PRECIS, 0, PROOF_QUALITY, 0, "Arial");
+	labelFont.CreateFont(10, 0, 0, 0, FW_BOLD, 0, 0, 0, 0, OUT_TT_PRECIS, 0, PROOF_QUALITY, 0, "Tahoma");
 	
 	runningBitmap.LoadBitmap(IDB_BITMAP6);
 	stoppedBitmap.LoadBitmap(IDB_BITMAP5);
@@ -347,8 +362,36 @@ BOOL CMcaster1WinDlg::OnInitDialog()
 
 	LoadConfig();
 
+	// Tab control — expands to fill the whole window
 	AddAnchor(IDC_MAINTAB, TOP_LEFT, BOTTOM_RIGHT);
-	// IDC_STATICBLACK not in dialog resource (banner uses IDC_STATIC); skip anchor
+
+	// Header strip — banner stretches; left controls pin top-left; right controls pin top-right
+	AddAnchor(IDC_STATICBLACK,   TOP_LEFT,  TOP_RIGHT);   // title banner bitmap
+	AddAnchor(IDC_START,         TOP_LEFT,  TOP_LEFT);    // Start/Stop button
+	AddAnchor(IDC_AUTOSTART,     TOP_LEFT,  TOP_LEFT);    // "Start on Startup" checkbox
+	AddAnchor(IDC_STATIC_SS,     TOP_RIGHT, TOP_RIGHT);   // "Server Status" label
+	AddAnchor(IDC_SERVERSTATUS,  TOP_RIGHT, TOP_RIGHT);   // status indicator bitmap
+	AddAnchor(IDC_HIDESYSTRAY,   TOP_RIGHT, TOP_RIGHT);   // "Hide To Systray" button
+	AddAnchor(IDC_UPTIME,        TOP_RIGHT, TOP_RIGHT);   // uptime clock (below status indicator)
+	AddAnchor(IDC_SYSCLOCK,      BOTTOM_LEFT, BOTTOM_RIGHT); // system time bar at bottom
+
+	// System clock timer — always running, fires every second
+	SetTimer(3, 1000, NULL);
+	{
+		SYSTEMTIME st;
+		GetLocalTime(&st);
+		const char *days[]   = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+		const char *months[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+		int h12 = st.wHour == 0 ? 12 : (st.wHour > 12 ? st.wHour - 12 : st.wHour);
+		char clockStr[128] = "";
+		_snprintf_s(clockStr, sizeof(clockStr), _TRUNCATE,
+			"System Time:  %s %s %02d %04d   %02d:%02d:%02d %s",
+			days[st.wDayOfWeek % 7], months[(st.wMonth - 1) % 12],
+			st.wDay, st.wYear, h12, st.wMinute, st.wSecond,
+			st.wHour < 12 ? "AM" : "PM");
+		SetDlgItemText(IDC_SYSCLOCK, clockStr);
+	}
+
 	EnableSaveRestore("mcaster1win");
 
 	m_pTray = NULL;
@@ -646,6 +689,15 @@ void CMcaster1WinDlg::OnTimer(UINT_PTR nIDEvent)
 			statusTab.m_RunningFor = timespan;
 			statusTab.UpdateData(FALSE);
 
+			// Uptime clock label (HH:MM:SS) next to server status indicator
+			int uptH = (int)(runningTime / 3600);
+			int uptM = (int)((runningTime % 3600) / 60);
+			int uptS = (int)(runningTime % 60);
+			char uptimeStr[32] = "";
+			_snprintf_s(uptimeStr, sizeof(uptimeStr), _TRUNCATE,
+				"Up: %02d:%02d:%02d", uptH, uptM, uptS);
+			SetDlgItemText(IDC_UPTIME, uptimeStr);
+
 			SetTimer(1, 500, NULL);
 		}
 		else {
@@ -657,9 +709,27 @@ void CMcaster1WinDlg::OnTimer(UINT_PTR nIDEvent)
 			UpdateData(FALSE);
 			statusTab.m_RunningFor = "Not running";
 			statusTab.UpdateData(FALSE);
+			SetDlgItemText(IDC_UPTIME, "Stopped");
 		}
 	}
-	
+
+	// System clock timer (ID 3) fires every second regardless of server state
+	if (nIDEvent == 3)
+	{
+		SYSTEMTIME st;
+		GetLocalTime(&st);
+		const char *days[]   = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+		const char *months[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+		int h12 = st.wHour == 0 ? 12 : (st.wHour > 12 ? st.wHour - 12 : st.wHour);
+		char clockStr[128] = "";
+		_snprintf_s(clockStr, sizeof(clockStr), _TRUNCATE,
+			"System Time:  %s %s %02d %04d   %02d:%02d:%02d %s",
+			days[st.wDayOfWeek % 7], months[(st.wMonth - 1) % 12],
+			st.wDay, st.wYear, h12, st.wMinute, st.wSecond,
+			st.wHour < 12 ? "AM" : "PM");
+		SetDlgItemText(IDC_SYSCLOCK, clockStr);
+	}
+
 	CDialog::OnTimer(nIDEvent);
 }
 
@@ -1170,14 +1240,15 @@ void CMcaster1WinDlg::OnBlankRestore()
 	}
 }
 
-void CMcaster1WinDlg::OnDestroy() 
+void CMcaster1WinDlg::OnDestroy()
 {
+	KillTimer(3);   // system clock timer
 	CDialog::OnDestroy();
-	
+
 	if (m_pTray) {
 		delete m_pTray ;
 		m_pTray = NULL ;
-	} 
+	}
 	// TODO: Add your message handler code here
 	
 }
@@ -1228,10 +1299,9 @@ void CMcaster1WinDlg::OnFileEditconfiguration()
 
 }
 
-void CMcaster1WinDlg::OnAboutHelp() 
+void CMcaster1WinDlg::OnAboutHelp()
 {
-	// TODO: Add your command handler code here
-	ShellExecute(NULL, "open", "doc\\mcaster1dnas.chm", NULL, NULL, SW_SHOWNORMAL);	
+	ShellExecuteA(NULL, "open", "https://mcaster1.com/mcaster1dnas/", NULL, NULL, SW_SHOWNORMAL);
 }
 
 void CMcaster1WinDlg::OnAboutCredits() 

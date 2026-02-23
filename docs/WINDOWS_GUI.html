@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows GUI Guide — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .ascii{background:#0a0a18;border:1px solid #1a1a38;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem;font-family:"Cascadia Code","Fira Code",Consolas,monospace;font-size:.83rem;line-height:1.55;color:#8888cc}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    .status-planned{color:#f59e0b;font-size:.8rem}
+    .status-known{color:#ef4444;font-size:.8rem}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">Windows GUI Guide</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Windows User Guide</div>
+    <h1>Windows GUI Guide</h1>
+    <div class="sub">mcaster1win.exe — native Windows MFC front-end for Mcaster1DNAS</div>
+    <span class="badge">v2.5.1-beta.2+</span>
+    <span class="badge">VS2022 &bull; MSVC v143 &bull; x64</span>
+    <span class="badge">Windows 10/11</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>Overview</h2>
+  <p><code>mcaster1win.exe</code> is the native Windows GUI front-end for Mcaster1DNAS. It wraps the same server core (<code>mcaster1.exe</code>) in an MFC dialog-based application with:</p>
+  <ul>
+    <li>Resizable main window (ResizableLib by Paolo Messina)</li>
+    <li>Four tabbed panels: Status, Stats, Config, Log</li>
+    <li>Server start/stop with auto-start option</li>
+    <li>System tray minimize</li>
+    <li>Real-time uptime clock and system clock</li>
+    <li>Real-time log tailing for all log files</li>
+    <li>Full command-line interface for scripted use</li>
+    <li>SSL certificate generation (see <a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a>)</li>
+    <li>Config file auto-discovery with <code>GetOpenFileName</code> fallback dialog</li>
+  </ul>
+
+  <h2>First Launch</h2>
+  <p>On first launch, the application searches for a config file in this order:</p>
+  <ol>
+    <li><code>&lt;exe directory&gt;\mcaster1dnas.yaml</code></li>
+    <li><code>&lt;exe directory&gt;\mcaster1dnas.xml</code></li>
+    <li><code>.\mcaster1dnas.yaml</code> (current working directory)</li>
+    <li><code>.\mcaster1dnas.xml</code></li>
+    <li>If none found &rarr; <strong>File Open dialog</strong> (<code>GetOpenFileName</code>) prompts you to locate a <code>.yaml</code> or <code>.xml</code> config file</li>
+  </ol>
+  <p>You can also pass the config path explicitly:</p>
+  <pre><code>mcaster1win.exe -c "C:\mcaster1\mcaster1dnas.yaml"</code></pre>
+  <div class="note">A sample Windows config is included at <code>windows\mcaster1dnas.yaml</code>. Edit it before first launch to set your passwords. Default GUI ports are <strong>9033</strong> (HTTP) and <strong>9344</strong> (HTTPS) — separate from the service ports (9330/9443) so both can run simultaneously.</div>
+
+  <h2>Main Window Layout</h2>
+  <div class="ascii">┌─────────────────────────────────────────────────────────────────────┐
+│ [mcaster1dnas title bar bitmap]                                     │
+│ [Start Server] [Start on Startup checkbox]     [●] Server Status   │
+│                                            [Stopped/Up HH:MM:SS]  │
+│                                            [Hide To Systray]       │
+├─────────────────────────────────────────────────────────────────────┤
+│  Status │ Stats │ Config │ Log                                     │
+│ ┌───────────────────────────────────────────────────────────────┐  │
+│ │  (tab content)                                                │  │
+│ └───────────────────────────────────────────────────────────────┘  │
+│ System Time:  Sun Feb 22 2026   06:45:12 PM                        │
+└─────────────────────────────────────────────────────────────────────┘</div>
+
+  <h3>Header Area</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Control</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Start Server</strong> button</td><td>Starts (or stops) the Mcaster1DNAS server process</td></tr>
+      <tr><td><strong>Start Server on Startup</strong> checkbox</td><td>If checked, server starts automatically when the app launches</td></tr>
+      <tr><td><strong>Server Status</strong> bitmap</td><td>Green dot = running, red dot = stopped</td></tr>
+      <tr><td><strong>Uptime / Status text</strong></td><td>Shows <code>Stopped</code> when idle; <code>Up: HH:MM:SS</code> when running</td></tr>
+      <tr><td><strong>Hide To Systray</strong> button</td><td>Minimizes the window to the system notification tray</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Status Bar (Bottom)</h3>
+  <p>The bottom status bar always shows the current local system time:</p>
+  <pre><code>System Time:  Mon Feb 22 2026   06:45:12 PM</code></pre>
+  <p>Updates every second regardless of server state.</p>
+
+  <h2>Tab Panels</h2>
+
+  <h3>Status Tab</h3>
+  <p>Displays global server statistics as a list view with two columns (Statistic / Value). Stats include: server uptime, total bytes sent, active listeners, active sources, connected clients, and more. The list auto-refreshes every 500ms while the server is running.</p>
+
+  <h3>Stats Tab</h3>
+  <p>Shows per-source statistics with two list views:</p>
+  <ul>
+    <li><strong>Left (Sources):</strong> All currently connected sources / mount points</li>
+    <li><strong>Right (Statistics):</strong> Statistics for the selected source</li>
+  </ul>
+  <p><strong>Usage:</strong> Click a source in the left list &rarr; statistics for that source appear on the right. Double-click to refresh. Right-click a statistic &rarr; context menu to add it to the global stats list.</p>
+
+  <h3>Config Tab</h3>
+  <p>Displays the raw contents of the loaded config file (YAML or XML) in a multi-line text editor. You can edit the config directly and save; changes take effect on next server restart.</p>
+  <p>Access via the menu: <strong>Configuration &rarr; Edit Configuration</strong></p>
+
+  <h3>Log Tab</h3>
+  <p>Real-time log viewer with sub-tabs for each log file:</p>
+  <ul>
+    <li><strong>Access Log</strong> (<code>access.log</code>) — HTTP request log, one line per request</li>
+    <li><strong>Error Log</strong> (<code>error.log</code>) — server events, warnings, and errors</li>
+    <li><strong>Playlist Log</strong> (<code>playlist.log</code>) — track changes and metadata events</li>
+  </ul>
+  <p>Logs are polled every 500ms using <code>_fsopen</code> with <code>_SH_DENYNO</code> (shared read mode) so the viewer works even while the server process holds the files open for writing.</p>
+  <p><strong>Color coding (Error Log):</strong></p>
+  <ul>
+    <li style="color:#ef5350">Red — <code>ERROR</code> and <code>WARN</code> level messages</li>
+    <li style="color:#f5c842">Yellow/amber — <code>INFO</code> level messages</li>
+    <li style="color:#888899">Grey — <code>DEBUG</code> level messages</li>
+    <li>White — unclassified messages</li>
+  </ul>
+
+  <h2>Command-Line Flags</h2>
+  <pre><code>mcaster1win.exe [options]
+
+  -c &lt;file&gt;        Use specified config file (YAML or XML, auto-detected)
+  -s               Auto-start the server on launch
+  -m               Start minimized to the system tray
+  -v               Print version and exit
+  -h               Print help text and exit
+
+SSL Generation (exits after generating, no GUI shown):
+  --ssl-gencert                     Generate SSL certificate/CSR
+  --ssl-gentype=selfsigned|csr      Output type (default: selfsigned)
+  --subj="&lt;subject&gt;"               X.509 subject string
+  --ssl-gencert-savepath=&lt;dir&gt;     Output directory
+  --ssl-gencert-addtoconfig=true    Patch -c config file after generation</code></pre>
+
+  <h3>Examples</h3>
+  <pre><code># Launch with specific config, auto-start, minimized to tray
+mcaster1win.exe -c "C:\mcaster1\mcaster1dnas.yaml" -s -m
+
+# Generate self-signed cert and patch the config
+mcaster1win.exe --ssl-gencert --ssl-gentype=selfsigned ^
+    --subj="/C=US/ST=TX/O=My Station/CN=stream.example.com" ^
+    --ssl-gencert-savepath="C:\mcaster1\ssl" ^
+    --ssl-gencert-addtoconfig=true ^
+    -c "C:\mcaster1\mcaster1dnas.yaml"
+
+# Print version
+mcaster1win.exe -v</code></pre>
+
+  <h2>System Tray</h2>
+  <p>Click <strong>Hide To Systray</strong> (or minimize the window) to hide the GUI to the Windows notification area (system tray). The Mcaster1DNAS icon appears in the tray.</p>
+  <ul>
+    <li><strong>Left double-click</strong> tray icon &rarr; restore window</li>
+    <li><strong>Right-click</strong> tray icon &rarr; context menu with <strong>Restore</strong> option</li>
+  </ul>
+  <p>The server continues running in the background while the window is hidden.</p>
+
+  <h2>Menu Bar</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Menu</th><th>Item</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><strong>File</strong></td><td>Exit</td><td>Graceful shutdown — stops server and exits</td></tr>
+      <tr><td><strong>Configuration</strong></td><td>Edit Configuration</td><td>Opens config text in the Config tab</td></tr>
+      <tr><td><strong>About</strong></td><td>Help</td><td>Opens help information</td></tr>
+      <tr><td><strong>About</strong></td><td>Credits</td><td>Opens the credits/about dialog with version info</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Window Resizing</h2>
+  <p>The main window is fully resizable. All controls anchor correctly:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Control</th><th>Anchor Behavior</th></tr></thead>
+    <tbody>
+      <tr><td>Tab control (main content area)</td><td>Stretches in all directions</td></tr>
+      <tr><td>Status, Stats, Config, Log (tab content)</td><td>Stretch with tab control</td></tr>
+      <tr><td>Start Server, Auto-start checkbox</td><td>Fixed top-left</td></tr>
+      <tr><td>Server Status bitmap + Uptime text</td><td>Fixed top-right</td></tr>
+      <tr><td>Hide To Systray button</td><td>Fixed top-right</td></tr>
+      <tr><td>System time status bar</td><td>Stretches full width at bottom</td></tr>
+    </tbody>
+  </table></div>
+  <p>Window size and position are saved to the Windows registry on exit and restored on next launch.</p>
+
+  <h2>Auto-Version Stamping</h2>
+  <p>The window title bar shows the build version at compile time:</p>
+  <pre><code>Mcaster1DNAS v2.5.1-dev.b73b861 — windows-dev</code></pre>
+  <p>The commit hash and branch name are embedded by a pre-build PowerShell script that reads <code>git describe --tags --long --always</code>. This happens automatically on every build.</p>
+
+  <h2>Windows Service</h2>
+  <p>The Windows Service component (<code>mcaster1Service.exe</code>) runs separately from the GUI and uses the console config (<code>mcaster1dnas-console.yaml</code>) on ports 9330/9443. The GUI sidecar runs on ports 9033/9344 so both can coexist.</p>
+  <p>Service control shortcuts are included in the Start Menu (<strong>Start Menu &rarr; Mcaster1 &rarr; Mcaster1DNAS</strong>). Both Start and Stop Service shortcuts trigger UAC elevation automatically.</p>
+
+  <h2>Building mcaster1win.exe</h2>
+
+  <h3>Prerequisites</h3>
+  <ol>
+    <li><strong>Visual Studio 2022</strong> (Professional or Community) with:
+      <ul>
+        <li>"Desktop development with C++" workload</li>
+        <li>MSVC v143 toolset</li>
+        <li>Windows 10/11 SDK</li>
+      </ul>
+    </li>
+    <li><strong>vcpkg</strong> with x64-windows packages:
+      <pre><code>vcpkg install libxml2 libxslt curl openssl libyaml ogg vorbis theora speex pthreads</code></pre>
+    </li>
+    <li>Set <code>VCPKG_ROOT</code> environment variable to your vcpkg install path</li>
+  </ol>
+
+  <h3>Build</h3>
+  <pre><code># Build all three projects (GUI + console + service) — Debug x64
+cd C:\Users\dstjohn\dev\00_mcaster1.com\mcaster1dnas\windows\installer
+powershell -ExecutionPolicy Bypass -File build-installer.ps1 -Config Debug
+
+# OR build just mcaster1win.exe directly
+&amp; "C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" `
+    windows\Mcaster1Win.vcxproj /p:Configuration=Debug /p:Platform=x64 /t:Build /v:minimal</code></pre>
+  <p>Or open <code>windows\Mcaster1DNAS.sln</code> in Visual Studio 2022 and press <kbd>Ctrl+Shift+B</kbd>.</p>
+
+  <h3>Output</h3>
+  <pre><code>windows\x64\Debug\mcaster1win.exe       (GUI application)
+windows\x64\Debug\mcaster1.exe          (console server)
+windows\x64\Debug\mcaster1Service.exe   (Windows Service)</code></pre>
+
+  <h2>Known Issues and Limitations (Beta)</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Issue</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Config dialog is read-only (no save-to-disk button)</td><td><span class="status-planned">Planned</span></td></tr>
+      <tr><td>Log tab does not auto-scroll to bottom on new lines</td><td><span class="status-known">Known</span></td></tr>
+      <tr><td>Dark mode (Windows 10/11)</td><td><span class="status-planned">Planned</span></td></tr>
+      <tr><td>Podcast file manager</td><td><span class="status-planned">Planned</span></td></tr>
+      <tr><td>Statistics charts / graphs</td><td><span class="status-planned">Planned</span></td></tr>
+      <tr><td>SSL cert generation wired to Config tab UI</td><td><span class="status-planned">Planned</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> — generate TLS certs from the CLI or GUI</li>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> — ICY2 metadata protocol used by the server</li>
+      <li><a href="STATIC_MOUNTS.html">Static Mounts</a> — podcast, socialcast, on-demand mount types</li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a> — track history XML API</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+</footer>
+</body>
+</html>

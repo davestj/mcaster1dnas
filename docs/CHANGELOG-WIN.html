@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Changelog — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .badge-green{background:#4caf5018;border-color:#4caf5044;color:#4caf50}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    h4{font-size:.95rem;color:#7878b8;margin:1.4rem 0 .5rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    .check{color:#4caf50;font-weight:700}.cross{color:#ef4444;font-weight:700}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .release{background:#13131e;border:1px solid #2a2a4a;border-left:4px solid #00c9ff;border-radius:8px;padding:1.25rem 1.5rem;margin:2.5rem 0 1rem}
+    .release .rel-title{font-size:1.15rem;color:#00c9ff;font-weight:700;margin-bottom:.25rem}
+    .release .rel-meta{font-size:.8rem;color:#5555aa;margin-bottom:.5rem}
+    .release .rel-meta span{margin-right:1rem}
+    .section-label{display:inline-block;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;padding:.15rem .6rem;border-radius:4px;margin-bottom:.75rem;font-weight:700}
+    .label-fix{background:#ef444420;border:1px solid #ef444444;color:#ef4444}
+    .label-feature{background:#4caf5020;border:1px solid #4caf5044;color:#4caf50}
+    .label-build{background:#f59e0b20;border:1px solid #f59e0b44;color:#f59e0b}
+    .label-graphics{background:#a855f720;border:1px solid #a855f744;color:#a855f7}
+    .label-config{background:#00c9ff20;border:1px solid #00c9ff44;color:#00c9ff}
+    .label-known{background:#64748b20;border:1px solid #64748b44;color:#94a3b8}
+    .label-roadmap{background:#1d4ed820;border:1px solid #1d4ed844;color:#60a5fa}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">Windows Changelog</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Windows-Dev Branch</div>
+    <h1>Windows Changelog</h1>
+    <div class="sub">Windows-specific development history — GUI, Visual Studio build infrastructure, and Windows runtime fixes</div>
+    <span class="badge">windows-dev</span>
+    <span class="badge">v2.5.1-beta+</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="note">
+    This file tracks changes made exclusively on the <code>windows-dev</code> branch that relate to
+    the native Windows GUI (<code>mcaster1win.exe</code>), Visual Studio build infrastructure, and
+    Windows-specific runtime fixes. Cross-platform server changes are in
+    <a href="https://github.com/davestj/mcaster1dnas/blob/development/CHANGELOG.md">CHANGELOG.md</a>.
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <div class="release">
+    <div class="rel-title">[2.5.1-beta.2-win]</div>
+    <div class="rel-meta">
+      <span>&#x1F4C5; 2026-02-22</span>
+      <span>&#x1F33F; windows-dev branch</span>
+    </div>
+  </div>
+
+  <!-- ── Critical Bug Fixes ─────────────────────────────────────── -->
+  <h2><span class="section-label label-fix">Critical Bug Fix</span></h2>
+
+  <h3>HTTP Admin Authentication — <code>WWW-Authenticate</code> Header Missing on Windows</h3>
+  <p><strong>Root cause:</strong> A struct field order mismatch in the MSVC-specific code path in <code>src/params.c</code>.
+  The <code>mc_param_t</code> struct is declared as <code>{next, flags, name_len, value_len, name, value, &hellip;}</code> but
+  both <code>mc_params_printf()</code> and <code>mc_http_printf()</code> MSVC blocks used a positional initializer:</p>
+  <pre><code>mc_param_t hdr = { NULL, (char*)name, content, flags };
+//                 ^next  ^flags(!)   ^name_len(!) ...</code></pre>
+  <p>This left <code>hdr.name = NULL</code> and <code>hdr.value = NULL</code>. <code>mc_http_apply()</code> checked for both null
+  and returned <code>-1</code> immediately &mdash; silently discarding <strong>every response header set via
+  <code>mc_http_printf()</code></strong> on Windows. Affected headers included: <code>WWW-Authenticate</code>, <code>Content-Type</code>,
+  <code>Content-Length</code>, <code>Location</code>, <code>Content-Range</code>, <code>User-Agent</code>, and all per-response headers.</p>
+
+  <p><strong>Effect:</strong> Admin 401 responses had no <code>WWW-Authenticate</code> header, so browsers displayed
+  an error page instead of a credentials dialog. Other endpoints lost <code>Content-Type</code> etc.</p>
+
+  <p><strong>Fix (<code>src/params.c</code>):</strong> Replaced wrong positional initializers with <code>memset</code> + explicit field
+  assignments in both <code>mc_params_printf</code> and <code>mc_http_printf</code> MSVC blocks:</p>
+  <pre><code>mc_param_t hdr;
+memset (&amp;hdr, 0, sizeof hdr);
+hdr.name  = (char*)name;
+hdr.value = content;
+hdr.flags = (uint32_t)flags;</code></pre>
+  <p>Affects both <code>Mcaster1Win.vcxproj</code> and <code>Mcaster1Console.vcxproj</code> builds.</p>
+
+  <!-- ── New Features ──────────────────────────────────────────── -->
+  <h2><span class="section-label label-feature">New Features</span></h2>
+
+  <h3>Per-Listener SSL Enforcement (<code>ssl: true/false</code>)</h3>
+  <ul>
+    <li>Added <code>int ssl</code> field to <code>listener_t</code> / <code>_listener_t</code> struct (<code>src/cfgfile.h</code>)</li>
+    <li>XML config: <code>&lt;ssl&gt;0&lt;/ssl&gt;</code> or <code>&lt;ssl&gt;1&lt;/ssl&gt;</code> inside <code>&lt;listen-socket&gt;</code> block</li>
+    <li>YAML config: <code>ssl: false</code> or <code>ssl: true</code> per entry in <code>listen-sockets:</code></li>
+    <li><code>global.ssl_on_sock[]</code> parallel array tracks per-socket SSL requirement</li>
+    <li><code>connection_peek()</code> enforces policy strictly:
+      <ul>
+        <li>Port with <code>ssl: true</code> &rarr; rejects plain HTTP, accepts TLS only</li>
+        <li>Port with <code>ssl: false</code> &rarr; rejects TLS, accepts plain HTTP only</li>
+        <li>Port with no <code>ssl:</code> key &rarr; auto-detects as before (backwards-compatible)</li>
+      </ul>
+    </li>
+    <li>WARN log entries when policy is violated: <code>"TLS rejected on plain-HTTP port"</code> / <code>"Plain HTTP rejected on SSL-only port"</code></li>
+  </ul>
+
+  <p><strong>Example YAML:</strong></p>
+  <pre><code>listen-sockets:
+  - port: 9330
+    bind-address: "127.0.0.1"
+    ssl: false      # plain HTTP only
+  - port: 9443
+    bind-address: "127.0.0.1"
+    ssl: true       # TLS only</code></pre>
+
+  <h3>SSL Certificate Generation CLI (<code>src/ssl_gen.h</code> / <code>src/ssl_gen.c</code>)</h3>
+  <p>New cross-platform OpenSSL-based certificate/CSR generator guarded by <code>#ifdef HAVE_OPENSSL</code>.</p>
+
+  <p><strong>New flags (all platforms):</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>--ssl-gencert</code></td><td>Trigger SSL generation mode (server does not start)</td></tr>
+      <tr><td><code>--ssl-gentype=selfsigned|csr</code></td><td>Output type: self-signed cert or CSR</td></tr>
+      <tr><td><code>--subj="/C=.../CN=..."</code></td><td>X.509 subject string (standard openssl format)</td></tr>
+      <tr><td><code>--ssl-gencert-savepath=&lt;dir&gt;</code></td><td>Output directory (created if absent)</td></tr>
+      <tr><td><code>--ssl-gencert-addtoconfig=true</code></td><td>Patch <code>ssl-certificate</code>/<code>ssl-private-key</code> paths in the <code>-c</code> config file</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Self-signed output (<code>--ssl-gentype=selfsigned</code>)</h4>
+  <ul>
+    <li><code>&lt;savepath&gt;/selfsigned.key</code> &mdash; PEM private key</li>
+    <li><code>&lt;savepath&gt;/selfsigned.crt</code> &mdash; PEM certificate</li>
+    <li><code>&lt;savepath&gt;/selfsigned.pem</code> &mdash; combined cert+key (for server config)</li>
+  </ul>
+
+  <h4>CSR output (<code>--ssl-gentype=csr</code>)</h4>
+  <ul>
+    <li><code>&lt;savepath&gt;/server.key</code> &mdash; PEM private key</li>
+    <li><code>&lt;savepath&gt;/server.csr</code> &mdash; PEM certificate signing request</li>
+  </ul>
+
+  <h4>Windows C++ wrapper (<code>windows/SslGen.h</code> / <code>windows/SslGen.cpp</code>)</h4>
+  <ul>
+    <li><code>CSslGen::Run(SslGenParams)</code> &mdash; calls <code>ssl_gen_run()</code> from C code</li>
+    <li><code>win_ssl_gencert(argc, argv)</code> &mdash; C entry point for <code>Mcaster1Win.cpp</code></li>
+    <li>When <code>--ssl-gencert</code> present in WinUI args: generates cert, shows <code>MessageBox</code> with result, then exits without launching the server GUI</li>
+  </ul>
+
+  <p><strong>Example usage (console):</strong></p>
+  <pre><code>mcaster1.exe --ssl-gencert --ssl-gentype=selfsigned \
+  --subj="/C=US/ST=TX/L=Dallas/O=MyStation/CN=localhost" \
+  --ssl-gencert-savepath=ssl/certs \
+  --ssl-gencert-addtoconfig=true -c windows/mcaster1dnas.yaml</code></pre>
+  <p>See <a href="SSL_CERT_GENERATION.html">SSL Certificate Generation</a> for the full guide.</p>
+
+  <h3>Config File Auto-Discovery</h3>
+  <p>When no <code>-c &lt;file&gt;</code> argument is given the server searches in this order:</p>
+  <ol>
+    <li><code>&lt;exe-directory&gt;/mcaster1dnas.yaml</code></li>
+    <li><code>./mcaster1dnas.yaml</code> (current working directory)</li>
+    <li>If neither found &rarr; prompt user</li>
+  </ol>
+  <ul>
+    <li><strong>Console / Linux / macOS prompt:</strong> reads a path from stdin</li>
+    <li><strong>WinUI dialog:</strong> opens a <code>GetOpenFileName</code> file-picker dialog (<code>*.yaml;*.xml</code>)</li>
+  </ul>
+
+  <h3>Windows GUI Log Viewer Tabs (4 new tabs)</h3>
+  <p>Added <code>LogTab.h</code> / <code>LogTab.cpp</code> implementing <code>CLogTab : CTabPageSSL</code>:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tab</th><th>Log File</th></tr></thead>
+    <tbody>
+      <tr><td>Access Log</td><td><code>cfg-&gt;access_log.name</code> in <code>cfg-&gt;log_dir</code></td></tr>
+      <tr><td>Error Log</td><td><code>cfg-&gt;error_log.name</code> in <code>cfg-&gt;log_dir</code></td></tr>
+      <tr><td>YP Health</td><td><code>cfg-&gt;yp_logfile[0]</code> (first YP directory)</td></tr>
+      <tr><td>Playlist Log</td><td><code>cfg-&gt;playlist_log.name</code> in <code>cfg-&gt;log_dir</code></td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Black background / white monospace (Consolas 9pt) rich edit control</li>
+    <li>Error log colour-coding: <code>EROR</code> &rarr; red, <code>WARN</code> &rarr; yellow, <code>INFO</code> &rarr; cyan, <code>DBUG</code> &rarr; grey</li>
+    <li>Real-time tail via <code>WM_TIMER</code> (2-second poll)</li>
+    <li>Uses <code>_fsopen(path, "rb", _SH_DENYNO)</code> &mdash; reads files while the server has them open for writing</li>
+    <li>Path resolved from <code>config_get_config_unlocked()</code> after server starts</li>
+    <li>Log rotation detection: resets <code>m_fileOffset</code> when file shrinks</li>
+    <li><code>Mcaster1Win.vcxproj</code> updated: <code>LogTab.cpp</code> + <code>LogTab.h</code> added</li>
+  </ul>
+
+  <h3>Uptime Clock</h3>
+  <ul>
+    <li>New <code>IDC_UPTIME</code> (<code>CStatic</code>) added to <code>IDD_MCASTER1WIN_DIALOG</code> RC and <code>resource.h</code></li>
+    <li>Positioned below the Server Status label/bitmap in the header strip</li>
+    <li>Updates every 500 ms (reuses timer 1) while server is running</li>
+    <li>Format: <code>"Up: HH:MM:SS"</code> / <code>"Stopped"</code> when halted</li>
+    <li>Anchored <code>TOP_RIGHT &rarr; TOP_RIGHT</code> via ResizableLib</li>
+  </ul>
+
+  <h3>System Time Status Bar</h3>
+  <ul>
+    <li>New <code>IDC_SYSCLOCK</code> (<code>CStatic</code>) added to <code>IDD_MCASTER1WIN_DIALOG</code> RC and <code>resource.h</code></li>
+    <li>Positioned at bottom of dialog below the tab control (full width)</li>
+    <li>Dedicated timer 3 fires every 1 second via <code>SetTimer(3, 1000)</code> in <code>OnInitDialog</code></li>
+    <li>Timer 3 killed in <code>OnDestroy</code></li>
+    <li>Format: <code>"System Time:&nbsp; Sat Feb 22 2026&nbsp;&nbsp; 10:30:45 AM"</code></li>
+    <li>Anchored <code>BOTTOM_LEFT &rarr; BOTTOM_RIGHT</code> via ResizableLib</li>
+  </ul>
+
+  <h3>Portable Windows Dev Config (<code>windows/mcaster1dnas.yaml</code>)</h3>
+  <p>Updated to use relative paths (<code>"."</code> as basedir) and full ICY 2.2 mount metadata:</p>
+  <ul>
+    <li>Paths resolve relative to exe working directory (no hard-coded user paths)</li>
+    <li>Per-listener <code>ssl: true/false</code> flags applied</li>
+    <li>Example mounts for live broadcast, podcast, and social media types</li>
+    <li>All ICY 2.2 metadata fields documented per mount</li>
+  </ul>
+
+  <!-- ── Bug Fixes ─────────────────────────────────────────────── -->
+  <h2><span class="section-label label-fix">Bug Fixes</span></h2>
+
+  <h3>ResizableLib Anchoring</h3>
+  <ul>
+    <li><code>IDC_STATICBLACK</code> (banner bitmap): renamed from generic <code>IDC_STATIC</code> to give it a unique ID addressable by <code>AddAnchor()</code>; all header-strip controls now correctly pin on maximize</li>
+    <li><code>IDC_STATIC_SLS</code> (&ldquo;Click source to view statistics&rdquo; label in Source Level Stats tab): renamed from <code>IDC_STATIC</code>; added <code>AddAnchor(IDC_STATIC_SLS, BOTTOM_LEFT, BOTTOM_LEFT)</code> in <code>CStatsTab::OnInitDialog</code> &mdash; label now stays at the bottom of the tab on resize</li>
+    <li><code>IDC_UPTIME</code>, <code>IDC_SYSCLOCK</code> anchors: new controls registered with ResizableLib</li>
+  </ul>
+
+  <h3>About &rarr; Help</h3>
+  <p><code>OnAboutHelp()</code> now calls <code>ShellExecuteA</code> to open <code>https://mcaster1.com/mcaster1dnas/</code> in
+  the default browser instead of launching a CHM file that no longer existed.</p>
+
+  <h3>Tab Header Label Overlap</h3>
+  <ul>
+    <li>Removed oversized &ldquo;Source Level Statistics&rdquo; label from <code>IDD_STATSDIALOG</code> (was rendered behind the tab strip; <code>CStatic</code> font still being applied at 10pt Bold causing visual noise)</li>
+    <li>Removed &ldquo;Global Statistics&rdquo; label from <code>IDD_SSTATUS</code> for same reason</li>
+    <li>List controls repositioned to <code>y=7</code> filling available height; hint text moved to <code>y=182</code>/<code>y=183</code></li>
+  </ul>
+
+  <!-- ── Build Verification ─────────────────────────────────────── -->
+  <h2><span class="section-label label-build">Build Verification</span></h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Test</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>MSBuild x64 Debug <code>Mcaster1Win</code> &mdash; 0 errors</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>MSBuild x64 Debug <code>Mcaster1Console</code> &mdash; 0 errors</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>HTTP admin auth (browser login dialog appears)</td><td><span class="check">PASS</span> (after <code>mc_http_printf</code> fix)</td></tr>
+      <tr><td>Log tabs real-time tailing while server running</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Uptime clock ticking</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>System time clock updating</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Resize / Maximize &mdash; all controls anchored</td><td><span class="check">PASS</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <div class="release">
+    <div class="rel-title">[2.5.1-beta.1-win]</div>
+    <div class="rel-meta">
+      <span>&#x1F4C5; 2026-02-18/19</span>
+      <span>&#x1F33F; windows-dev branch</span>
+    </div>
+  </div>
+
+  <!-- ── VS Build Infrastructure ───────────────────────────────── -->
+  <h2><span class="section-label label-build">Visual Studio 2022 Build Infrastructure</span></h2>
+
+  <h3>Project &amp; Solution Modernisation</h3>
+  <ul>
+    <li>Migrated solution and project files to <strong>Visual Studio 2022 / MSBuild v17</strong> toolset (<code>v143</code>)</li>
+    <li>Added <code>Mcaster1DNAS.sln</code> as the primary solution file replacing the legacy VC6-era <code>.dsw</code></li>
+    <li>All four sub-projects compile cleanly under x64 Debug and Release configurations:
+      <ul>
+        <li><code>mcaster1win.exe</code> &mdash; Windows GUI tray application</li>
+        <li><code>mcaster1.exe</code> &mdash; Headless console server</li>
+        <li><code>mcaster1Service.exe</code> &mdash; Windows Service wrapper</li>
+        <li><code>mcaster1Console.exe</code> &mdash; Lightweight console runner</li>
+      </ul>
+    </li>
+    <li>Removed stale VC6 <code>.dsp/.dsw</code> build files from active build paths (retained in <code>Archive/</code> for historical reference)</li>
+  </ul>
+
+  <h3>vcpkg Dependency Integration</h3>
+  <p>All third-party libraries now sourced through <strong>vcpkg</strong> (<code>x64-windows</code> triplet):</p>
+  <ul>
+    <li><code>libxml2</code>, <code>libxslt</code>, <code>libcurl</code>, <code>openssl</code>, <code>libyaml</code>, <code>ogg</code>, <code>vorbis</code>, <code>theora</code>, <code>speex</code>, <code>pthreads</code></li>
+    <li>Include paths, library paths, and DLL copy steps wired into <code>Mcaster1Win.vcxproj</code> <code>&lt;AdditionalIncludeDirectories&gt;</code> and post-build events</li>
+  </ul>
+
+  <h3>Automatic Git Version Stamping (PreBuildEvent)</h3>
+  <ul>
+    <li>Added <code>windows/git-version.ps1</code> &mdash; PowerShell script invoked as a <strong>PreBuildEvent</strong></li>
+    <li>Generates <code>src/git_hash.h</code> at build time with <code>GIT_VERSION</code>, <code>GIT_HASH</code>, <code>GIT_BRANCH</code>, <code>GIT_DIRTY</code></li>
+    <li>Window title bar now shows <code>Mcaster1DNAS vX.Y.Z-dev.HASH</code> (or <code>-modified</code> suffix when working tree is dirty)</li>
+    <li>Confirmed output: <code>GIT_VERSION = 2.5.1-dev.c2bad3c-modified</code></li>
+  </ul>
+
+  <!-- ── GUI Enhancements ───────────────────────────────────────── -->
+  <h2><span class="section-label label-feature">Windows GUI Enhancements</span></h2>
+
+  <h3>Command-Line Flags</h3>
+  <p>Added full CLI argument parsing to <code>Mcaster1WinDlg.cpp</code>:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Flag</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><code>-c &lt;file&gt;</code></td><td>Specify config file path (overrides default <code>.\mcaster1.yaml</code> search)</td></tr>
+      <tr><td><code>-s</code></td><td>Auto-start the server on launch (no button click required)</td></tr>
+      <tr><td><code>-m</code></td><td>Start minimised to system tray</td></tr>
+      <tr><td><code>-v</code></td><td>Print version string and exit</td></tr>
+      <tr><td><code>-h</code></td><td>Print help and exit</td></tr>
+    </tbody>
+  </table></div>
+  <p>These allow the GUI to be scripted, launched from shortcuts with specific configs, or started automatically as a login item.</p>
+
+  <h3>ResizableLib Integration (Resizable Dialogs)</h3>
+  <p>Integrated <strong>ResizableLib by Paolo Messina</strong> (MIT/Artistic-2.0) into the project:</p>
+  <ul>
+    <li><code>windows/ResizableLib/</code> &mdash; full library source (8 compilation units) added to the repository</li>
+    <li>All four MFC dialog classes migrated from <code>CDialog</code> &rarr; <code>CResizableDialog</code>:
+      <ul>
+        <li><code>CMcaster1WinDlg</code> (main window)</li>
+        <li><code>CTabPageSSL</code> (shared tab base class &rarr; transitively: <code>CStatus</code>, <code>CStatsTab</code>, <code>CConfigTab</code>)</li>
+      </ul>
+    </li>
+    <li><code>AddAnchor()</code> calls activated for all resizable controls:
+      <ul>
+        <li>Main window: <code>IDC_MAINTAB</code> anchored <code>TOP_LEFT &rarr; BOTTOM_RIGHT</code></li>
+        <li>Status tab: <code>IDC_GLOBALSTAT_LIST</code> fills tab; <code>IDC_STATIC_RUN</code>, <code>IDC_RUNNINGFOR</code> pinned to bottom</li>
+        <li>Stats tab: <code>IDC_SOURCELIST</code> fixed-width left panel; <code>IDC_STATSLIST</code> fills right side</li>
+        <li>Config tab: <code>IDC_CONFIG</code> editor fills entire tab</li>
+      </ul>
+    </li>
+    <li><code>EnableSaveRestore("mcaster1win")</code> &mdash; window position and size now persist between sessions (registry key <code>HKCU\Software\mcaster1win\positions</code>)</li>
+    <li>40-line hand-rolled <code>OnSize()</code> pixel math replaced with 8-line ResizableLib cascade:</li>
+  </ul>
+  <pre><code>CResizableDialog::OnSize(nType, cx, cy);   // moves IDC_MAINTAB via anchor
+m_MainTab.ResizeDialog(active, ...);        // propagates to active tab page</code></pre>
+
+  <h4>Bugs fixed during ResizableLib integration</h4>
+  <ul>
+    <li><code>IDC_STATICBLACK</code> referenced in old <code>AddAnchor</code> calls but not present in dialog resource &rarr; removed (banner uses <code>IDC_STATIC</code>)</li>
+    <li><code>IDC_FILLER1</code> similarly absent from <code>IDD_STATSDIALOG</code> &rarr; removed</li>
+    <li><code>EnableSaveRestore("mcaster1win", "positions")</code> passed a string as second arg; actual API signature is <code>EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE)</code> &rarr; fixed to <code>EnableSaveRestore("mcaster1win")</code></li>
+  </ul>
+
+  <p><strong>Build configuration for ResizableLib in vcxproj:</strong> Each ResizableLib <code>.cpp</code> entry carries per-file
+  <code>&lt;PrecompiledHeader&gt;NotUsing&lt;/PrecompiledHeader&gt;</code> and <code>&lt;AdditionalIncludeDirectories&gt;$(ProjectDir)ResizableLib;...&lt;/AdditionalIncludeDirectories&gt;</code>
+  so the library finds its own <code>StdAfx.h</code> (which defines <code>WINVER 0x0501</code>, <code>uxtheme.h</code>, <code>shlwapi.h</code>)
+  without conflicting with the main project&rsquo;s precompiled header.</p>
+
+  <!-- ── YAML Fix ───────────────────────────────────────────────── -->
+  <h2><span class="section-label label-fix">YAML Configuration — Windows Runtime Fix</span></h2>
+
+  <h3>Root Cause</h3>
+  <p><code>yaml_parser_load()</code> crashed on Windows when called with a <code>FILE*</code> opened by the main exe.
+  <code>yaml.dll</code> (from vcpkg) was compiled against a different C runtime (UCRT) than the MSVC-compiled
+  exe, making the <code>FILE</code> struct layout binary-incompatible. Any read attempt inside libyaml
+  dereferenced invalid struct offsets &rarr; access violation.</p>
+  <p>The last successful trace line before the crash was:</p>
+  <pre><code>[yaml] yaml_parser_load          ← trace written BEFORE the call; nothing after = crash inside</code></pre>
+  <p>XML config was unaffected because <code>libxml2</code> opens the file internally using its own CRT handles.</p>
+
+  <h3>Fix Applied (<code>src/cfgfile_yaml.c</code> &mdash; <code>config_parse_yaml_file()</code>)</h3>
+  <ul>
+    <li>Read the entire config file into a heap buffer using the exe&rsquo;s own CRT <code>fread()</code> / <code>ftell()</code></li>
+    <li>Close the <code>FILE*</code> before calling any libyaml function</li>
+    <li>Call <code>yaml_parser_set_input_string(&amp;parser, buf, len)</code> instead of <code>yaml_parser_set_input_file(&amp;parser, fp)</code></li>
+    <li>No <code>FILE*</code> ever crosses the DLL boundary</li>
+  </ul>
+
+  <p><strong>Verified by full trace log after fix:</strong></p>
+  <pre><code>[yaml] file read into memory
+[yaml] yaml_parser_initialize ok
+[yaml] yaml_parser_load
+[yaml] yaml_parser_load ok          ← was the crash point; now passes cleanly
+[yaml] root node ok
+[yaml] root is mapping
+[yaml] config_init_configuration ok
+[yaml] yaml_parse_root
+[yaml] yaml_parse_root done
+[si]  connection_setup_sockets ok
+[si]  server_init done -&gt; returning 0
+[3]   server_process starting</code></pre>
+
+  <h3>Diagnostic Infrastructure (retained for future use)</h3>
+  <ul>
+    <li><code>CFG_TRACE(msg)</code> macro in <code>src/cfgfile.c</code> &mdash; appends to <code>mcaster1win_start.log</code> in the exe&rsquo;s working directory (WIN32 only, no-op on Linux/macOS)</li>
+    <li><code>YAML_TRACE(msg)</code> macro in <code>src/cfgfile_yaml.c</code> &mdash; same log file, <code>[yaml]</code> prefix</li>
+    <li>23 trace checkpoints from server init through <code>server_process starting</code></li>
+  </ul>
+
+  <!-- ── Graphics ───────────────────────────────────────────────── -->
+  <h2><span class="section-label label-graphics">Graphics &amp; Branding</span></h2>
+
+  <h3>Full Visual Rebrand: Icecast2 &rarr; Mcaster1DNAS</h3>
+  <p>Replaced all Icecast2 bitmap assets in <code>windows/</code> with Mcaster1DNAS branded equivalents:</p>
+  <ul>
+    <li><code>mcaster1dnaslogo2.bmp</code> &mdash; main application logo</li>
+    <li><code>mcaster1dnastitle.bmp</code> &mdash; title bar / about screen banner</li>
+    <li><code>running.bmp</code> / <code>stopped.bmp</code> &mdash; server status indicator icons</li>
+    <li><code>credits.bmp</code> &mdash; credits screen image</li>
+  </ul>
+  <ul>
+    <li>Dialog resource (<code>Mcaster1Win.rc</code>) updated to reference new bitmaps</li>
+    <li>Application icon (<code>mcaster1.ico</code>) updated to Mcaster1DNAS icon</li>
+    <li>Installer scripts (<code>mcaster1dnas.iss</code>, <code>mcaster164.nsis</code>) updated with new branding, paths, and version strings</li>
+    <li><strong>Original developer credits preserved in full</strong> &mdash; the Credits dialog continues to display acknowledgment of Xiph.Org Foundation (Icecast2), Karl Heyes (Icecast-KH), Jack Moffitt, Michael Smith, oddsock, and all upstream contributors in accordance with GNU GPL v2 attribution requirements</li>
+  </ul>
+
+  <!-- ── Config Files ───────────────────────────────────────────── -->
+  <h2><span class="section-label label-config">Configuration Files (Windows Dev)</span></h2>
+
+  <h3>XML Config (<code>windows/x64/Debug/mcaster1.xml</code>)</h3>
+  <ul>
+    <li>Created Windows-specific XML development config targeting <code>127.0.0.1:9300</code> (HTTP) and <code>127.0.0.1:9443</code> (HTTPS)</li>
+    <li>Absolute Windows paths for basedir, logdir, webroot, adminroot, ssl-certificate, pidfile</li>
+    <li>Used to verify XML code path and isolate YAML crash during diagnosis</li>
+  </ul>
+
+  <h3>YAML Config (<code>windows/x64/Debug/mcaster1.yaml</code>)</h3>
+  <ul>
+    <li>Created equivalent YAML development config with identical settings to <code>mcaster1.xml</code></li>
+    <li>Both configs now start the server cleanly and produce identical runtime behaviour</li>
+    <li>Config auto-detection (<code>detect_config_format()</code>) reads the first non-whitespace byte: <code>&lt;</code> &rarr; XML, <code>#</code>/<code>-</code>/word &rarr; YAML</li>
+  </ul>
+
+  <!-- ── Build Verification ─────────────────────────────────────── -->
+  <h2><span class="section-label label-build">Build Verification</span></h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Test</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>MSBuild x64 Debug &mdash; 0 errors</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Window launch + 15s resize stress test</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Resize to 900&times;700</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Maximize &rarr; 1550&times;830</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Restore &rarr; 900&times;700</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>Process survival (no crash)</td><td><span class="check">PASS</span></td></tr>
+      <tr><td>XML config server start (<code>-c mcaster1.xml -s</code>)</td><td><span class="check">PASS</span> &mdash; 15s healthy</td></tr>
+      <tr><td>YAML config server start (<code>-c mcaster1.yaml -s</code>)</td><td><span class="check">PASS</span> &mdash; 15s healthy</td></tr>
+      <tr><td>Full YAML trace (23/23 checkpoints)</td><td><span class="check">PASS</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <!-- ── Known Issues ───────────────────────────────────────────── -->
+  <h2><span class="section-label label-known">Known Issues / In Progress</span></h2>
+  <ul>
+    <li><strong>Config dialog editor</strong> &mdash; planned visual editor for <code>mcaster1.yaml</code>/<code>mcaster1.xml</code> directly inside the GUI (no hand-editing required)</li>
+    <li><strong>Stats tab auto-refresh</strong> &mdash; GUI polls admin HTTP API; requires server to be listening on the configured port for tabs to populate</li>
+    <li><strong>Windows Service installer</strong> &mdash; <code>mcaster1Service.vcxproj</code> compiles; NSIS/Inno Setup installer packaging not yet automated in CI</li>
+  </ul>
+
+  <!-- ── Roadmap ────────────────────────────────────────────────── -->
+  <h2><span class="section-label label-roadmap">Upcoming Windows-Specific Roadmap</span></h2>
+  <p>See also the main <a href="https://github.com/davestj/mcaster1dnas/blob/development/README.md">README.md</a> roadmap section.</p>
+  <ul>
+    <li><strong>Config Dialog Editor</strong> &mdash; GUI-based config editor with validation, replacing raw file editing</li>
+    <li><strong>Enhanced Documentation</strong> &mdash; Windows-specific installation guide, dependency setup wizard</li>
+    <li><strong>Podcast &amp; On-Demand File Manager</strong> &mdash; GUI panel for managing podcast episode files and on-demand audio assets</li>
+    <li><strong>RSS Podcast Feed Generator</strong> &mdash; Built-in feed builder that publishes an RSS 2.0 / Apple Podcasts compatible feed from the on-demand library</li>
+    <li><strong>Podcast Core Server Features</strong> &mdash; Episode scheduling, chapter markers, podcast-specific ICY metadata fields, listener analytics per episode</li>
+    <li><strong>Windows Installer (MSI/Inno)</strong> &mdash; Full automated installer with dependency bundling (vcredist, vcpkg DLLs, config wizard)</li>
+    <li><strong>Auto-Update Mechanism</strong> &mdash; In-app update check against GitHub releases</li>
+    <li><strong>Dark Mode</strong> &mdash; Windows 10/11 dark mode support via <code>DwmSetWindowAttribute</code></li>
+  </ul>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> &mdash; full mcaster1win.exe user guide</li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> &mdash; cert generation CLI and config patching</li>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> &mdash; full ICY 2.2 protocol reference</li>
+      <li><a href="STATIC_MOUNTS.html">Static Mount Points</a> &mdash; podcast, socialcast, and on-demand mounts</li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a> &mdash; track history ring buffer and XML API</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+  &mdash; Branch: <code style="color:#5555aa;background:none">windows-dev</code>
+  &mdash; Maintainer: David St John
+</footer>
+</body>
+</html>

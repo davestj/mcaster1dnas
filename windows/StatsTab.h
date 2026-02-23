@@ -23,7 +23,6 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CStatsTab)
 	enum { IDD = IDD_STATSDIALOG };
-	CStatic	m_SLS;
 	CListCtrl	m_StatsListCtrl;
 	CListCtrl	m_SourceListCtrl;
 	//}}AFX_DATA

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mcaster1DNAS Documentation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f14;
+      color: #e0e0e8;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-bottom: 2px solid #00c9ff;
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: #00c9ff;
+      letter-spacing: 0.05em;
+    }
+    header p {
+      margin-top: 0.5rem;
+      color: #8888aa;
+      font-size: 0.95rem;
+    }
+    .version-badge {
+      display: inline-block;
+      margin-top: 0.75rem;
+      background: #00c9ff22;
+      border: 1px solid #00c9ff55;
+      color: #00c9ff;
+      padding: 0.2rem 0.75rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    main {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .section-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #00c9ff;
+      margin-bottom: 1rem;
+      margin-top: 2.5rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #00c9ff33;
+    }
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .doc-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, background 0.15s;
+      display: block;
+    }
+    .doc-card:hover {
+      border-color: #00c9ff;
+      background: #1e1e38;
+    }
+    .doc-card .icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .doc-card h3 {
+      font-size: 0.95rem;
+      color: #d0d0ee;
+      margin-bottom: 0.4rem;
+    }
+    .doc-card p {
+      font-size: 0.82rem;
+      color: #7878a0;
+      line-height: 1.5;
+    }
+    .doc-card .tag {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: #00c9ff18;
+      color: #00c9ff99;
+      border: 1px solid #00c9ff33;
+    }
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .quick-link {
+      background: #16213e;
+      border: 1px solid #2a3560;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      color: #a0a0cc;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .quick-link:hover { color: #00c9ff; border-color: #00c9ff; }
+    .ports-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-top: 1rem;
+    }
+    .ports-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #16213e;
+      color: #8888aa;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .ports-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #1e1e38;
+      color: #c0c0d8;
+    }
+    .ports-table tr:last-child td { border-bottom: none; }
+    .ports-table code {
+      background: #0a0a18;
+      color: #00c9ff;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #44445a;
+      font-size: 0.8rem;
+      border-top: 1px solid #1a1a2e;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Mcaster1DNAS</h1>
+  <p>Digital Network Audio Server &mdash; Windows Edition</p>
+  <span class="version-badge">v2.5.2-dev</span>
+</header>
+
+<main>
+
+  <div class="section-title">Core Documentation</div>
+  <div class="doc-grid">
+
+    <a class="doc-card" href="WINDOWS_GUI.html">
+      <div class="icon">&#x1F5A5;&#xFE0F;</div>
+      <h3>Windows GUI Guide</h3>
+      <p>Installing, configuring and operating the Mcaster1DNAS Windows desktop application and Windows Service.</p>
+      <span class="tag">WINDOWS_GUI.html</span>
+    </a>
+
+    <a class="doc-card" href="ICY2_PROTOCOL.html">
+      <div class="icon">&#x1F4E1;</div>
+      <h3>ICY 2.2 Protocol Spec</h3>
+      <p>Full specification for the ICY 2.2 extended metadata protocol including all supported fields and client negotiation.</p>
+      <span class="tag">ICY2_PROTOCOL.html</span>
+    </a>
+
+    <a class="doc-card" href="SONG_HISTORY_API.html">
+      <div class="icon">&#x1F3B5;</div>
+      <h3>Song History API</h3>
+      <p>REST JSON API for track history, now-playing data, and the /songdata endpoint. Includes request/response examples.</p>
+      <span class="tag">SONG_HISTORY_API.html</span>
+    </a>
+
+    <a class="doc-card" href="SSL_CERT_GENERATION.html">
+      <div class="icon">&#x1F512;</div>
+      <h3>SSL Certificate Setup</h3>
+      <p>Generating self-signed and CA-signed certificates for HTTPS listeners, including localhost PEM configuration.</p>
+      <span class="tag">SSL_CERT_GENERATION.html</span>
+    </a>
+
+    <a class="doc-card" href="STATIC_MOUNTS.html">
+      <div class="icon">&#x1F4CC;</div>
+      <h3>Static Mount Points</h3>
+      <p>Defining and configuring static mount points for live, podcast and social media streams with ICY 2.2 metadata.</p>
+      <span class="tag">STATIC_MOUNTS.html</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">Additional References</div>
+  <div class="doc-grid">
+
+    <a class="doc-card" href="README.html">
+      <div class="icon">&#x1F4D6;</div>
+      <h3>README</h3>
+      <p>Project overview, feature list, and quick-start instructions for Mcaster1DNAS.</p>
+      <span class="tag">README.html</span>
+    </a>
+
+    <a class="doc-card" href="CHANGELOG-WIN.html">
+      <div class="icon">&#x1F4CB;</div>
+      <h3>Windows Changelog</h3>
+      <p>Release history and change log for the Windows-specific builds and installer.</p>
+      <span class="tag">CHANGELOG-WIN.html</span>
+    </a>
+
+    <a class="doc-card" href="ICY2_PROTOCOL_SPEC.html">
+      <div class="icon">&#x1F4F6;</div>
+      <h3>ICY2 Protocol Spec (Full)</h3>
+      <p>Extended protocol specification document with wire-format diagrams and compatibility notes.</p>
+      <span class="tag">ICY2_PROTOCOL_SPEC.html</span>
+    </a>
+
+    <a class="doc-card" href="YAML_IMPLEMENTATION.html">
+      <div class="icon">&#x2699;&#xFE0F;</div>
+      <h3>YAML Config Reference</h3>
+      <p>Complete YAML configuration file reference covering all keys, types, defaults and examples.</p>
+      <span class="tag">YAML_IMPLEMENTATION.html</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">Default Port Assignments</div>
+  <table class="ports-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>HTTP Port</th>
+        <th>HTTPS Port</th>
+        <th>Config File</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Windows Service / Console</td>
+        <td><code>9330</code></td>
+        <td><code>9443</code></td>
+        <td>mcaster1dnas-console.yaml</td>
+      </tr>
+      <tr>
+        <td>GUI Application (sidecar)</td>
+        <td><code>9033</code></td>
+        <td><code>9344</code></td>
+        <td>mcaster1dnas.yaml</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Quick Links</div>
+  <div class="quick-links">
+    <a class="quick-link" href="http://127.0.0.1:9330/">Service Status (HTTP)</a>
+    <a class="quick-link" href="https://127.0.0.1:9443/">Service Status (HTTPS)</a>
+    <a class="quick-link" href="http://127.0.0.1:9033/">GUI Status (HTTP)</a>
+    <a class="quick-link" href="https://127.0.0.1:9344/">GUI Status (HTTPS)</a>
+    <a class="quick-link" href="https://127.0.0.1:9443/admin/stats.xsl">Service Admin</a>
+    <a class="quick-link" href="https://127.0.0.1:9344/admin/stats.xsl">GUI Admin</a>
+    <a class="quick-link" href="https://mcaster1.com">mcaster1.com</a>
+    <a class="quick-link" href="https://github.com/davestj/mcaster1dnas/issues">Report Issue</a>
+  </div>
+
+</main>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44; text-decoration:none;">mcaster1.com</a>
+</footer>
+
+</body>
+</html>

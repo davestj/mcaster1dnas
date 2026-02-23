@@ -12,6 +12,7 @@
 #include "StatsTab.h"
 #include "Status.h"
 #include "TrayNot.h"
+#include "LogTab.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,6 +32,10 @@ public:
 	CConfigTab	configTab;
 	CStatsTab	statsTab;
 	CStatus		statusTab;
+	CLogTab		accessLogTab;
+	CLogTab		errorLogTab;
+	CLogTab		ypHealthLogTab;
+	CLogTab		playlistLogTab;
 	int	m_colSource0Width;
 	int	m_colStats0Width;
 	int	m_colStats1Width;

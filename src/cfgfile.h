@@ -247,6 +247,7 @@ struct _listener_t
     int shoutcast_compat;
     int so_sndbuf;
     int so_mss;
+    int ssl;    /* -1=auto-detect (default), 0=plain-HTTP only, 1=SSL/TLS only */
 };
 
 

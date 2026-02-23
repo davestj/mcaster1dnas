@@ -34,7 +34,6 @@ void CStatsTab::DoDataExchange(CDataExchange* pDX)
 {
 	CTabPageSSL::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CStatsTab)
-	DDX_Control(pDX, IDC_STATIC_SLS, m_SLS);
 	DDX_Control(pDX, IDC_STATSLIST, m_StatsListCtrl);
 	DDX_Control(pDX, IDC_SOURCELIST, m_SourceListCtrl);
 	//}}AFX_DATA_MAP
@@ -61,12 +60,11 @@ BOOL CStatsTab::OnInitDialog()
 	m_StatsListCtrl.InsertColumn(0, _T("Statistic"), LVCFMT_LEFT, m_colStats0Width);
 	m_StatsListCtrl.InsertColumn(1, _T("Value"), LVCFMT_LEFT, m_colStats1Width);
 
-	AddAnchor(IDC_STATSLIST, TOP_LEFT, BOTTOM_RIGHT);
-	AddAnchor(IDC_SOURCELIST, TOP_LEFT, BOTTOM_LEFT);
-	// IDC_FILLER1 not in dialog resource; skip anchor
+	AddAnchor(IDC_STATSLIST,   TOP_LEFT,    BOTTOM_RIGHT);
+	AddAnchor(IDC_SOURCELIST,  TOP_LEFT,    BOTTOM_LEFT);
+	AddAnchor(IDC_STATIC_SLS,  BOTTOM_LEFT, BOTTOM_LEFT);   // "Click source to view statistics"
 	
 	m_SourceListCtrl.SetSelectionMark(0);
-	m_SLS.SetFont(&(g_mainDialog->labelFont), TRUE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

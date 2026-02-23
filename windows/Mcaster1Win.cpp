@@ -2,6 +2,9 @@
 //
 
 #include "stdafx.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "Mcaster1Win.h"
 #include "Mcaster1WinDlg.h"
 #include "xslt.h"

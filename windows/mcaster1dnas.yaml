@@ -1,7 +1,6 @@
 ---
-# Mcaster1DNAS Windows Development Configuration (portable)
-# Paths are relative to the directory from which the exe is run.
-# Run the exe from:  windows\x64\Debug\  or  windows\x64\Release\
+# Mcaster1DNAS Windows Development Configuration
+# Full absolute paths — works regardless of the exe working directory.
 # Ports: 9330 (HTTP, plain only), 9443 (HTTPS/SSL only)
 
 location: "Earth"
@@ -42,19 +41,15 @@ listen-sockets:
     bind-address: "127.0.0.1"
     ssl: true
 
-# Paths — relative to the exe's working directory
-# From windows\x64\Debug\:
-#   "."          = windows\x64\Debug\
-#   "../../web"  = windows\web  (project root web/)
-#   "../../ssl"  = windows\ssl
+# Paths — absolute paths for Windows development
 paths:
-  basedir:         "."
-  logdir:          "./logs"
-  webroot:         "../../web"
-  adminroot:       "../../admin"
-  pidfile:         "./logs/mcaster1.pid"
+  basedir:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug"
+  logdir:          "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs"
+  webroot:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/web"
+  adminroot:       "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/admin"
+  pidfile:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs/mcaster1.pid"
   # Combined cert+key PEM — ssl-certificate under paths applies to all SSL listeners
-  ssl-certificate: "../../ssl/mcaster1dnas.pem"
+  ssl-certificate: "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem"
 
   # Aliases
   aliases:
@@ -97,7 +92,7 @@ directories:
   - yp-url: "http://dir.xiph.org/cgi-bin/yp-cgi"
     yp-url-timeout: 10
     touch-interval: 300
-    yp-logfile: "./logs/yp-health.log"
+    yp-logfile: "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs/yp-health.log"
 
 # Mount point definitions with ICY 2.2 metadata
 mounts:

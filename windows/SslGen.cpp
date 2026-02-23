@@ -6,6 +6,9 @@
 //   - win_ssl_gencert()                            called from main.c on Windows
 
 #include "stdafx.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "SslGen.h"
 
 #ifdef HAVE_OPENSSL

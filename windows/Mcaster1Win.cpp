@@ -287,6 +287,24 @@ BOOL CMcaster1WinApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
+	// Set working directory to the exe's own directory first so that
+	// all relative paths in configs (./logs, ./web, ./ssl, etc.) resolve
+	// correctly regardless of how the app was launched (shortcut, service,
+	// double-click, or command-line from a different directory).
+	{
+		char exedir[MAX_PATH] = "";
+		get_exe_dir_win(exedir, sizeof(exedir));
+		if (exedir[0])
+		{
+			// get_exe_dir_win returns path with trailing backslash; strip it
+			// for SetCurrentDirectoryA (both forms work, but be safe).
+			size_t len = strlen(exedir);
+			if (len > 1 && (exedir[len-1] == '\\' || exedir[len-1] == '/'))
+				exedir[len-1] = '\0';
+			SetCurrentDirectoryA(exedir);
+		}
+	}
+
 	// Default config — empty; discovery runs below.
 	m_bAutoStart = FALSE;
 	m_bMinimize  = FALSE;

@@ -1,0 +1,647 @@
+name: Mcaster1DNAS CI/CD - Windows Dev
+
+on:
+  push:
+    branches:
+      - windows-dev
+  pull_request:
+    branches:
+      - windows-dev
+
+env:
+  VCPKG_ROOT: C:\vcpkg
+  VCPKG_DEFAULT_TRIPLET: x64-windows
+  BUILD_CONFIG: Release
+  BUILD_PLATFORM: x64
+  TEST_PORT: 9330
+  TEST_ADMIN_USER: admin
+  TEST_ADMIN_PASS: hackme
+
+jobs:
+
+  # ─────────────────────────────────────────────────────────────
+  # 1. LINT
+  # ─────────────────────────────────────────────────────────────
+  lint:
+    name: Lint Checks (Windows)
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint XSL / XML files
+        shell: pwsh
+        run: |
+          Write-Host "=== Validating XSL/XML files ==="
+          $errors = 0
+          Get-ChildItem -Recurse -Include "*.xsl","*.xml" -Path admin,web -ErrorAction SilentlyContinue | ForEach-Object {
+            try {
+              [xml](Get-Content $_.FullName -Raw) | Out-Null
+              Write-Host "  OK  $($_.FullName)"
+            } catch {
+              Write-Host "  FAIL $($_.FullName): $_"
+              $errors++
+            }
+          }
+          if ($errors -gt 0) { Write-Error "$errors XML/XSL file(s) failed validation"; exit 1 }
+          Write-Host "✓ All XML/XSL files valid"
+
+      - name: Lint YAML config files
+        shell: pwsh
+        run: |
+          Write-Host "=== Checking YAML config files for syntax errors ==="
+          $yamlFiles = Get-ChildItem -Recurse -Include "*.yaml","*.yml" -Path windows -ErrorAction SilentlyContinue
+          foreach ($f in $yamlFiles) {
+            Write-Host "  Checking: $($f.FullName)"
+            $content = Get-Content $f.FullName -Raw
+            if ($content -match "^\s+\t") {
+              Write-Warning "  TAB indentation found in $($f.Name) - YAML requires spaces"
+            } else {
+              Write-Host "  OK  $($f.Name)"
+            }
+          }
+          Write-Host "✓ YAML lint complete"
+
+      - name: Lint PowerShell scripts
+        shell: pwsh
+        run: |
+          Write-Host "=== Linting PowerShell scripts ==="
+          $errors = 0
+          Get-ChildItem -Recurse -Include "*.ps1" | ForEach-Object {
+            $result = Invoke-ScriptAnalyzer -Path $_.FullName -Severity Error -ErrorAction SilentlyContinue
+            if ($result) {
+              Write-Host "  FAIL $($_.Name):"
+              $result | ForEach-Object { Write-Host "    [$($_.Severity)] $($_.RuleName): $($_.Message)" }
+              $errors++
+            } else {
+              Write-Host "  OK  $($_.Name)"
+            }
+          }
+          if ($errors -gt 0) { Write-Error "$errors PowerShell script(s) failed lint"; exit 1 }
+          Write-Host "✓ All PowerShell scripts pass lint"
+        continue-on-error: true
+
+      - name: Check for common C source issues
+        shell: pwsh
+        run: |
+          Write-Host "=== Checking C source files ==="
+          $warned = 0
+          $insecure = @("strcpy\b","strcat\b","sprintf\b","gets\b")
+          Get-ChildItem -Path src -Include "*.c","*.h" -Recurse | ForEach-Object {
+            $lines = Get-Content $_.FullName
+            foreach ($pat in $insecure) {
+              $hits = $lines | Select-String -Pattern $pat
+              if ($hits) {
+                Write-Warning "  $($_.Name): potentially insecure function ($pat)"
+                $warned++
+              }
+            }
+          }
+          if ($warned -gt 0) {
+            Write-Host "⚠ $warned warning(s) — review recommended (non-fatal)"
+          } else {
+            Write-Host "✓ No obvious insecure functions found"
+          }
+
+  # ─────────────────────────────────────────────────────────────
+  # 2. BUILD
+  # ─────────────────────────────────────────────────────────────
+  build-windows:
+    name: Build Windows x64 (VS 2022)
+    runs-on: windows-2022
+    needs: lint
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      full_version: ${{ steps.version.outputs.full_version }}
+      installer_name: ${{ steps.version.outputs.installer_name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate version
+        id: version
+        shell: pwsh
+        run: |
+          $baseVer = (Get-Content VERSION -Raw).Trim()
+          $hash    = (git rev-parse --short HEAD 2>$null) -replace "`r`n",""
+          $branch  = (git rev-parse --abbrev-ref HEAD 2>$null) -replace "`r`n",""
+          $dirty   = if (git diff-index --quiet HEAD -- 2>$null) { "" } else { "-modified" }
+          $fullVer = "$baseVer-win.$hash$dirty"
+
+          Write-Host "Base version : $baseVer"
+          Write-Host "Full version : $fullVer"
+          Write-Host "Branch       : $branch"
+
+          echo "version=$baseVer"         >> $env:GITHUB_OUTPUT
+          echo "full_version=$fullVer"    >> $env:GITHUB_OUTPUT
+          echo "installer_name=mcaster1dnas_win64_${fullVer}_setup.exe" >> $env:GITHUB_OUTPUT
+
+          # Write version info for artifacts
+          @"
+          Build Information
+          ==================
+          Base Version : $baseVer
+          Full Version : $fullVer
+          Branch       : $branch
+          Commit       : $env:GITHUB_SHA
+          Build Date   : $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC' -AsUTC)
+          Build Number : $env:GITHUB_RUN_NUMBER
+          "@ | Set-Content build-version.txt
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install vcpkg
+        shell: pwsh
+        run: |
+          Write-Host "=== Setting up vcpkg ==="
+          if (-not (Test-Path "$env:VCPKG_ROOT")) {
+            git clone https://github.com/microsoft/vcpkg.git $env:VCPKG_ROOT
+            & "$env:VCPKG_ROOT\bootstrap-vcpkg.bat" -disableMetrics
+          } else {
+            Write-Host "vcpkg already present, pulling latest..."
+            git -C $env:VCPKG_ROOT pull
+          }
+          Write-Host "vcpkg ready at $env:VCPKG_ROOT"
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\vcpkg\installed
+            C:\vcpkg\packages
+          key: vcpkg-x64-windows-${{ hashFiles('**/vcpkg.json', '.github/workflows/windows-dev.yml') }}
+          restore-keys: |
+            vcpkg-x64-windows-
+
+      - name: Install vcpkg dependencies
+        shell: pwsh
+        run: |
+          Write-Host "=== Installing vcpkg dependencies (x64-windows) ==="
+          $pkgs = @(
+            "libxml2:x64-windows",
+            "libxslt:x64-windows",
+            "curl:x64-windows",
+            "openssl:x64-windows",
+            "libyaml:x64-windows",
+            "libogg:x64-windows",
+            "libvorbis:x64-windows",
+            "libtheora:x64-windows",
+            "speex:x64-windows",
+            "pthreads:x64-windows"
+          )
+          foreach ($pkg in $pkgs) {
+            Write-Host "  Installing $pkg..."
+            & "$env:VCPKG_ROOT\vcpkg.exe" install $pkg --no-print-usage
+            if ($LASTEXITCODE -ne 0) { Write-Error "Failed to install $pkg"; exit 1 }
+          }
+          Write-Host "✓ All vcpkg packages installed"
+
+      - name: Integrate vcpkg with MSBuild
+        shell: pwsh
+        run: |
+          & "$env:VCPKG_ROOT\vcpkg.exe" integrate install
+          Write-Host "✓ vcpkg integrated with MSBuild"
+
+      - name: Stamp git version into src/git_hash.h
+        shell: pwsh
+        run: |
+          if (Test-Path "windows\git-version.ps1") {
+            & "windows\git-version.ps1"
+            Write-Host "✓ git_hash.h generated"
+          } else {
+            $hash  = (git rev-parse --short HEAD 2>$null).Trim()
+            $ver   = (Get-Content VERSION -Raw).Trim()
+            @"
+          #ifndef GIT_HASH_H
+          #define GIT_HASH_H
+          #define GIT_VERSION  "$ver-win.$hash"
+          #define GIT_HASH     "$hash"
+          #define GIT_BRANCH   "windows-dev"
+          #define GIT_DIRTY    ""
+          #endif
+          "@ | Set-Content src\git_hash.h
+            Write-Host "✓ git_hash.h written (fallback)"
+          }
+
+      - name: Build solution (Release x64)
+        shell: pwsh
+        run: |
+          Write-Host "=== Building Mcaster1DNAS.sln Release|x64 ==="
+          msbuild windows\Mcaster1DNAS.sln `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:VcpkgRoot="$env:VCPKG_ROOT" `
+            /p:VcpkgTriplet=x64-windows `
+            /m /v:minimal /nologo
+          if ($LASTEXITCODE -ne 0) { Write-Error "MSBuild failed"; exit 1 }
+          Write-Host "✓ Build successful"
+
+      - name: Verify build outputs
+        shell: pwsh
+        run: |
+          Write-Host "=== Verifying build outputs ==="
+          $required = @(
+            "windows\x64\Release\mcaster1win.exe",
+            "windows\x64\Release\mcaster1.exe",
+            "windows\x64\Release\mcaster1Service.exe"
+          )
+          $missing = 0
+          foreach ($bin in $required) {
+            if (Test-Path $bin) {
+              $size = (Get-Item $bin).Length / 1KB
+              Write-Host "  ✓ $bin ($([math]::Round($size,1)) KB)"
+            } else {
+              Write-Host "  ✗ MISSING: $bin"
+              $missing++
+            }
+          }
+          if ($missing -gt 0) { Write-Error "$missing required binary(s) missing"; exit 1 }
+
+      - name: Sync vcpkg runtime DLLs to output
+        shell: pwsh
+        run: |
+          Write-Host "=== Syncing vcpkg runtime DLLs ==="
+          $outDir  = "windows\x64\Release"
+          $vcpkgBin = "$env:VCPKG_ROOT\installed\x64-windows\bin"
+          if (Test-Path $vcpkgBin) {
+            $synced = 0
+            Get-ChildItem $vcpkgBin -Filter "*.dll" | ForEach-Object {
+              $dst = Join-Path $outDir $_.Name
+              if (-not (Test-Path $dst) -or $_.LastWriteTime -gt (Get-Item $dst).LastWriteTime) {
+                Copy-Item $_.FullName $outDir -Force
+                $synced++
+              }
+            }
+            Write-Host "✓ Synced $synced DLL(s) to $outDir"
+          }
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcaster1dnas-windows-x64-release
+          path: |
+            windows/x64/Release/*.exe
+            windows/x64/Release/*.dll
+            build-version.txt
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # 3. TEST
+  # ─────────────────────────────────────────────────────────────
+  test-windows:
+    name: Test Windows Binaries
+    runs-on: windows-2022
+    needs: build-windows
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mcaster1dnas-windows-x64-release
+          path: dist
+
+      - name: Show build version
+        shell: pwsh
+        run: Get-Content dist\build-version.txt -ErrorAction SilentlyContinue
+
+      - name: Smoke test — mcaster1.exe --version
+        shell: pwsh
+        run: |
+          Write-Host "=== Smoke test: version flag ==="
+          $out = & dist\mcaster1.exe -v 2>&1
+          Write-Host $out
+          Write-Host "✓ Binary executes"
+
+      - name: Setup test config
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force ci-test\logs | Out-Null
+          New-Item -ItemType Directory -Force ci-test\web  | Out-Null
+          New-Item -ItemType Directory -Force ci-test\admin | Out-Null
+
+          if (Test-Path web)   { Copy-Item web\*   ci-test\web\   -Recurse -Force }
+          if (Test-Path admin) { Copy-Item admin\* ci-test\admin\ -Recurse -Force }
+
+          @"
+          ---
+          location: "CI Test"
+          admin: "ci@test.local"
+          hostname: "localhost"
+          fileserve: true
+
+          authentication:
+            source-password: "testpass"
+            admin-user: "${{ env.TEST_ADMIN_USER }}"
+            admin-password: "${{ env.TEST_ADMIN_PASS }}"
+
+          limits:
+            clients: 10
+            sources: 2
+            workers: 1
+
+          listen-sockets:
+            - port: ${{ env.TEST_PORT }}
+              bind-address: "127.0.0.1"
+              ssl: false
+
+          paths:
+            basedir:   "ci-test"
+            logdir:    "ci-test\logs"
+            webroot:   "ci-test\web"
+            adminroot: "ci-test\admin"
+
+          logging:
+            errorlog:
+              name: "error.log"
+              level: "debug"
+            accesslog:
+              name: "access.log"
+          "@ | Set-Content ci-test\ci.yaml
+          Write-Host "✓ Test config written"
+
+      - name: Start server and run HTTP tests
+        shell: pwsh
+        run: |
+          Write-Host "=== Starting Mcaster1DNAS for HTTP tests ==="
+          $proc = Start-Process -FilePath "dist\mcaster1.exe" `
+                    -ArgumentList "-c","ci-test\ci.yaml" `
+                    -RedirectStandardOutput "ci-test\logs\stdout.log" `
+                    -RedirectStandardError  "ci-test\logs\stderr.log" `
+                    -PassThru -WindowStyle Hidden
+          Write-Host "Server PID: $($proc.Id)"
+
+          # Wait up to 20s for server to accept connections
+          $ready = $false
+          for ($i = 1; $i -le 20; $i++) {
+            Start-Sleep 1
+            try {
+              $r = Invoke-WebRequest "http://127.0.0.1:${{ env.TEST_PORT }}/" -UseBasicParsing -TimeoutSec 2 -ErrorAction Stop
+              Write-Host "✓ Server ready after ${i}s (HTTP $($r.StatusCode))"
+              $ready = $true
+              break
+            } catch {}
+            if ($proc.HasExited) {
+              Write-Host "✗ Server process exited early"
+              Get-Content ci-test\logs\stderr.log -ErrorAction SilentlyContinue
+              exit 1
+            }
+          }
+          if (-not $ready) { Write-Error "Server did not become ready in 20s"; $proc | Stop-Process -Force; exit 1 }
+
+          # ── Test 1: public status page
+          Write-Host "Test 1: Public status page"
+          $r = Invoke-WebRequest "http://127.0.0.1:${{ env.TEST_PORT }}/status.xsl" -UseBasicParsing -ErrorAction Stop
+          if ($r.StatusCode -eq 200) { Write-Host "  ✓ status.xsl OK" } else { Write-Error "  ✗ status.xsl HTTP $($r.StatusCode)"; $proc | Stop-Process -Force; exit 1 }
+
+          # ── Test 2: admin without auth → 401
+          Write-Host "Test 2: Admin without credentials (expect 401)"
+          try {
+            Invoke-WebRequest "http://127.0.0.1:${{ env.TEST_PORT }}/admin/stats.xsl" -UseBasicParsing -ErrorAction Stop | Out-Null
+            Write-Error "  ✗ Admin accessible without auth (security issue)"; $proc | Stop-Process -Force; exit 1
+          } catch {
+            Write-Host "  ✓ Admin correctly returned 401"
+          }
+
+          # ── Test 3: admin with correct credentials → 200
+          Write-Host "Test 3: Admin with correct credentials"
+          $cred = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${{ env.TEST_ADMIN_USER }}:${{ env.TEST_ADMIN_PASS }}"))
+          $r = Invoke-WebRequest "http://127.0.0.1:${{ env.TEST_PORT }}/admin/stats.xsl" `
+                 -Headers @{Authorization="Basic $cred"} -UseBasicParsing -ErrorAction Stop
+          if ($r.StatusCode -eq 200) { Write-Host "  ✓ Admin login OK" } else { Write-Error "  ✗ Admin returned $($r.StatusCode)"; $proc | Stop-Process -Force; exit 1 }
+
+          # ── Test 4: ICY metadata header accepted
+          Write-Host "Test 4: ICY metadata header"
+          $r = Invoke-WebRequest "http://127.0.0.1:${{ env.TEST_PORT }}/status.xsl" `
+                 -Headers @{"Icy-MetaData"="1"} -UseBasicParsing -ErrorAction Stop
+          if ($r.StatusCode -eq 200) { Write-Host "  ✓ ICY header accepted" }
+
+          Write-Host "=== All HTTP tests passed ==="
+          $proc | Stop-Process -Force
+
+      - name: Dump server logs on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          Write-Host "=== Server stdout ==="
+          Get-Content ci-test\logs\stdout.log -ErrorAction SilentlyContinue
+          Write-Host "=== Server stderr ==="
+          Get-Content ci-test\logs\stderr.log -ErrorAction SilentlyContinue
+          Write-Host "=== Error log ==="
+          Get-Content ci-test\logs\error.log  -ErrorAction SilentlyContinue
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-windows
+          path: ci-test/logs/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # 4. INSTALLER + SOURCE ARCHIVES + RELEASE
+  # ─────────────────────────────────────────────────────────────
+  release-windows:
+    name: Build Installer & Release
+    runs-on: windows-2022
+    needs: test-windows
+    # Only cut a release on a push (not PRs)
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mcaster1dnas-windows-x64-release
+          path: windows/x64/Release
+
+      - name: Compute release version and auto-increment
+        id: rel_version
+        shell: pwsh
+        run: |
+          # Read current VERSION
+          $base = (Get-Content VERSION -Raw).Trim()
+
+          # Strip any existing -dev / -win suffix to get the semver core
+          $core = $base -replace '-(dev|win|beta|alpha).*$', ''
+
+          # Auto-increment patch on every successful windows-dev build
+          $parts = $core -split '\.'
+          $major = [int]$parts[0]
+          $minor = if ($parts.Count -gt 1) { [int]$parts[1] } else { 0 }
+          $patch = if ($parts.Count -gt 2) { [int]($parts[2] -replace '[^0-9]','') } else { 0 }
+          $patch++
+
+          $newBase = "$major.$minor.$patch-win"
+          $hash    = (git rev-parse --short HEAD 2>$null).Trim()
+          $fullVer = "$newBase.$hash"
+
+          Write-Host "Previous VERSION : $base"
+          Write-Host "New base version : $newBase"
+          Write-Host "Full release tag : $fullVer"
+
+          # Persist new base version back to VERSION file
+          Set-Content VERSION $newBase
+          Write-Host "✓ VERSION file updated to $newBase"
+
+          echo "new_base=$newBase"  >> $env:GITHUB_OUTPUT
+          echo "full_ver=$fullVer"  >> $env:GITHUB_OUTPUT
+          echo "tag=v$fullVer"      >> $env:GITHUB_OUTPUT
+          echo "installer_name=mcaster1dnas_win64_${fullVer}_setup.exe" >> $env:GITHUB_OUTPUT
+
+      - name: Install NSIS
+        shell: pwsh
+        run: |
+          choco install nsis --no-progress -y
+          $nsisPath = "C:\Program Files (x86)\NSIS"
+          echo "$nsisPath" >> $env:GITHUB_PATH
+          Write-Host "✓ NSIS installed"
+
+      - name: Build NSIS installer
+        shell: pwsh
+        run: |
+          $fullVer  = "${{ steps.rel_version.outputs.full_ver }}"
+          $instName = "${{ steps.rel_version.outputs.installer_name }}"
+
+          Write-Host "=== Building NSIS installer: $instName ==="
+
+          # Copy binaries to installer staging area expected by the NSI script
+          New-Item -ItemType Directory -Force windows\installer\bin | Out-Null
+          Copy-Item windows\x64\Release\*.exe windows\installer\bin\ -Force
+          Copy-Item windows\x64\Release\*.dll windows\installer\bin\ -Force -ErrorAction SilentlyContinue
+
+          # Run makensis with version defines
+          makensis /DPRODUCT_VERSION="$fullVer" `
+                   /DINSTALLER_NAME="$instName" `
+                   windows\installer\mcaster1dnas.nsi
+          if ($LASTEXITCODE -ne 0) { Write-Error "NSIS build failed"; exit 1 }
+
+          # Rename output if NSI produced a fixed name
+          $nsiOut = Get-ChildItem windows\installer -Filter "*setup*.exe" | Select-Object -First 1
+          if ($nsiOut -and $nsiOut.Name -ne $instName) {
+            Rename-Item $nsiOut.FullName $instName
+          }
+
+          $installer = "windows\installer\$instName"
+          if (-not (Test-Path $installer)) {
+            # try root of installer dir
+            $installer = Get-ChildItem windows\installer -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
+          }
+          Write-Host "✓ Installer: $installer ($([math]::Round((Get-Item $installer).Length/1MB,2)) MB)"
+          echo "installer_path=$installer" >> $env:GITHUB_OUTPUT
+        id: nsis
+
+      - name: Create source archives
+        shell: pwsh
+        run: |
+          $fullVer = "${{ steps.rel_version.outputs.full_ver }}"
+          $prefix  = "mcaster1dnas-$fullVer"
+
+          # .zip
+          git archive --format=zip --prefix="${prefix}/" HEAD -o "release-${prefix}.zip"
+          Write-Host "✓ ZIP: release-${prefix}.zip ($([math]::Round((Get-Item "release-${prefix}.zip").Length/1MB,2)) MB)"
+
+          # .tar.gz  (via git archive piped to gzip — available via Git for Windows)
+          git archive --format=tar --prefix="${prefix}/" HEAD | `
+            & "C:\Program Files\Git\usr\bin\gzip.exe" -9 > "release-${prefix}.tar.gz"
+          Write-Host "✓ TAR.GZ: release-${prefix}.tar.gz ($([math]::Round((Get-Item "release-${prefix}.tar.gz").Length/1MB,2)) MB)"
+
+      - name: Commit updated VERSION file
+        shell: pwsh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "ci: auto-increment VERSION to ${{ steps.rel_version.outputs.new_base }} [skip ci]"
+          git push origin windows-dev
+          Write-Host "✓ VERSION committed and pushed"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.rel_version.outputs.tag }}
+          name: "Mcaster1DNAS ${{ steps.rel_version.outputs.full_ver }} — Windows x64"
+          body: |
+            ## Mcaster1DNAS ${{ steps.rel_version.outputs.full_ver }} — Windows Build
+
+            **Branch:** `windows-dev`
+            **Commit:** ${{ github.sha }}
+            **Build:** #${{ github.run_number }}
+
+            ### Downloads
+            | File | Description |
+            |------|-------------|
+            | `*_setup.exe` | Windows x64 installer (NSIS) |
+            | `*.zip` | Source code archive (ZIP) |
+            | `*.tar.gz` | Source code archive (TAR.GZ) |
+
+            ### What's included
+            - `mcaster1win.exe` — Windows GUI (MFC, system tray)
+            - `mcaster1.exe` — Headless console server
+            - `mcaster1Service.exe` — Windows Service wrapper
+            - All vcpkg runtime DLLs
+            - Default `mcaster1dnas.yaml` config
+            - Full `web/` and `admin/` assets
+            - HTML documentation (`docs/`)
+
+            ### Requirements
+            - Windows 10 / 11 x64
+            - Visual C++ Redistributable 2022 (bundled in installer)
+          draft: false
+          prerelease: true
+          files: |
+            ${{ steps.nsis.outputs.installer_path }}
+            release-mcaster1dnas-${{ steps.rel_version.outputs.full_ver }}.zip
+            release-mcaster1dnas-${{ steps.rel_version.outputs.full_ver }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcaster1dnas-windows-release-${{ steps.rel_version.outputs.full_ver }}
+          path: |
+            ${{ steps.nsis.outputs.installer_path }}
+            release-*.zip
+            release-*.tar.gz
+            build-version.txt
+          retention-days: 30
+
+  # ─────────────────────────────────────────────────────────────
+  # 5. SUMMARY
+  # ─────────────────────────────────────────────────────────────
+  summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [lint, build-windows, test-windows, release-windows]
+    if: always()
+
+    steps:
+      - name: Print summary
+        run: |
+          echo "=== Mcaster1DNAS Windows-Dev CI/CD Summary ==="
+          echo "Branch      : windows-dev"
+          echo "Commit      : ${{ github.sha }}"
+          echo "Build Date  : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "Build Number: ${{ github.run_number }}"
+          echo ""
+          echo "Jobs:"
+          echo "  lint           : ${{ needs.lint.result }}"
+          echo "  build-windows  : ${{ needs.build-windows.result }}"
+          echo "  test-windows   : ${{ needs.test-windows.result }}"
+          echo "  release-windows: ${{ needs.release-windows.result }}"

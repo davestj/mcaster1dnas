@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Song History API — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .dedupe-box{background:#0a0a18;border:1px solid #1a1a38;border-radius:6px;padding:1rem 1.4rem;margin:1rem 0 1.5rem;font-family:"Cascadia Code","Fira Code",Consolas,monospace;font-size:.85rem;color:#b8d4f8;line-height:1.8}
+    .dedupe-box .drop{color:#444466}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">Song History API</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; API Reference</div>
+    <h1>Song History API</h1>
+    <div class="sub">In-memory track history ring buffer with XML API, public and admin HTML views</div>
+    <span class="badge">v2.5.1+</span>
+    <span class="badge">GET /mcaster1songdata</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>Overview</h2>
+  <p>Mcaster1DNAS maintains an in-memory ring buffer of recently played tracks across all mount points. When the "now playing" metadata changes on any source the new entry is appended; when the limit is reached the oldest entry is discarded.</p>
+  <ul>
+    <li><strong>Pure in-memory</strong> — no disk I/O, zero database overhead</li>
+    <li><strong>Configurable limit</strong> (<code>song-history-limit</code>) per config file; <code>0</code> = unlimited</li>
+    <li><strong>Deduplication</strong> — consecutive identical titles on the same mount are silently ignored</li>
+    <li><strong><code>ended_at</code> back-fill</strong> — when track N+1 starts, <code>ended_at</code> for track N is set automatically</li>
+    <li>Exposed as a raw XML API, two XSL HTML pages (admin + public), and JSON (planned)</li>
+  </ul>
+
+  <h2>Configuration</h2>
+  <h3>YAML</h3>
+  <pre><code>limits:
+  song-history-limit: 25   # 0 = keep all tracks (memory-backed, no disk I/O)</code></pre>
+  <h3>XML</h3>
+  <pre><code>&lt;limits&gt;
+    &lt;song-history-limit&gt;25&lt;/song-history-limit&gt;
+&lt;/limits&gt;</code></pre>
+  <p>Default is <code>25</code>. Set to <code>0</code> to keep unlimited history (memory grows with uptime).</p>
+
+  <h2>Raw XML Endpoint</h2>
+  <p><strong>URL:</strong> <code>GET /mcaster1songdata</code> &nbsp;&bull;&nbsp; <strong>Auth:</strong> None (public) &nbsp;&bull;&nbsp; <strong>Format:</strong> <code>application/xml</code></p>
+  <pre><code>curl http://localhost:9330/mcaster1songdata</code></pre>
+
+  <h3>Response Structure</h3>
+  <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;mcaster1songdata&gt;
+  &lt;server-name&gt;My Radio Station&lt;/server-name&gt;
+  &lt;generated&gt;2026-02-22T18:45:00Z&lt;/generated&gt;
+  &lt;song-count&gt;5&lt;/song-count&gt;
+  &lt;songs&gt;
+    &lt;song&gt;
+      &lt;mount&gt;/live&lt;/mount&gt;
+      &lt;title&gt;Artist - Track Title&lt;/title&gt;
+      &lt;artist&gt;Artist Name&lt;/artist&gt;
+      &lt;song-title&gt;Track Title&lt;/song-title&gt;
+      &lt;started_at&gt;2026-02-22T18:40:00Z&lt;/started_at&gt;
+      &lt;ended_at&gt;2026-02-22T18:43:30Z&lt;/ended_at&gt;
+      &lt;duration&gt;210&lt;/duration&gt;
+      &lt;listeners&gt;42&lt;/listeners&gt;
+      &lt;codec&gt;audio/mpeg&lt;/codec&gt;
+      &lt;bitrate&gt;128&lt;/bitrate&gt;
+      &lt;samplerate&gt;44100&lt;/samplerate&gt;
+      &lt;channels&gt;2&lt;/channels&gt;
+    &lt;/song&gt;
+    &lt;song&gt;
+      &lt;mount&gt;/live&lt;/mount&gt;
+      &lt;title&gt;DJ Set — Live On Air&lt;/title&gt;
+      &lt;artist&gt;&lt;/artist&gt;
+      &lt;song-title&gt;DJ Set — Live On Air&lt;/song-title&gt;
+      &lt;started_at&gt;2026-02-22T18:43:30Z&lt;/started_at&gt;
+      &lt;ended_at&gt;&lt;/ended_at&gt;
+      &lt;duration&gt;-1&lt;/duration&gt;
+      &lt;listeners&gt;45&lt;/listeners&gt;
+      &lt;codec&gt;audio/mpeg&lt;/codec&gt;
+      &lt;bitrate&gt;128&lt;/bitrate&gt;
+      &lt;samplerate&gt;44100&lt;/samplerate&gt;
+      &lt;channels&gt;2&lt;/channels&gt;
+    &lt;/song&gt;
+  &lt;/songs&gt;
+&lt;/mcaster1songdata&gt;</code></pre>
+
+  <h3>Field Reference</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>mount</code></td><td>string</td><td>Mount point path (e.g. <code>/live</code>, <code>/podcast</code>)</td></tr>
+      <tr><td><code>title</code></td><td>string</td><td>Full ICY StreamTitle (artist + title combined)</td></tr>
+      <tr><td><code>artist</code></td><td>string</td><td>Artist extracted from <code>Artist - Title</code> format</td></tr>
+      <tr><td><code>song-title</code></td><td>string</td><td>Track title extracted from <code>Artist - Title</code> format</td></tr>
+      <tr><td><code>started_at</code></td><td>ISO8601</td><td>UTC timestamp when track started</td></tr>
+      <tr><td><code>ended_at</code></td><td>ISO8601</td><td>UTC timestamp when track ended; empty = currently playing</td></tr>
+      <tr><td><code>duration</code></td><td>integer</td><td>Seconds the track played; <code>-1</code> = still playing</td></tr>
+      <tr><td><code>listeners</code></td><td>integer</td><td>Listener count at the moment the track started</td></tr>
+      <tr><td><code>codec</code></td><td>string</td><td>Audio codec content-type string</td></tr>
+      <tr><td><code>bitrate</code></td><td>integer</td><td>Stream bitrate in kbps</td></tr>
+      <tr><td><code>samplerate</code></td><td>integer</td><td>Sample rate in Hz</td></tr>
+      <tr><td><code>channels</code></td><td>integer</td><td>Channel count (1=mono, 2=stereo)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>HTML Pages</h2>
+  <h3>Public Track History</h3>
+  <p><strong>URL:</strong> <code>GET /songdata.xsl</code> &nbsp;&bull;&nbsp; <strong>Auth:</strong> None (public)</p>
+  <p>Displays a rich table of recently played tracks with:</p>
+  <ul>
+    <li>Artist, title, mount point</li>
+    <li>Codec quality badge: <code>MP3 / 128kbps / 44.1kHz / Stereo</code></li>
+    <li>Played-at timestamp and live "on air" duration counter (Xm Ys)</li>
+    <li>Listener count at the moment the track played</li>
+    <li>Animated pulsing green dot on the most recently added entry</li>
+    <li>Music service lookup icons: MusicBrainz, Last.fm, Discogs, AllMusic</li>
+  </ul>
+
+  <h3>Admin Track History</h3>
+  <p><strong>URL:</strong> <code>GET /admin/songdata.xsl</code> &nbsp;&bull;&nbsp; <strong>Auth:</strong> HTTP Basic (admin credentials)</p>
+  <p>Same as public view with additional admin controls and full codec details.</p>
+
+  <h2>Filtering by Mount</h2>
+  <pre><code># History for /live mount only
+curl "http://localhost:9330/mcaster1songdata?mount=/live"
+
+# History for /podcast mount only
+curl "http://localhost:9330/mcaster1songdata?mount=/podcast"</code></pre>
+
+  <h2>Integration Examples</h2>
+
+  <h3>JavaScript (web widget)</h3>
+  <pre><code>async function fetchSongHistory(mount = null) {
+    const url = mount
+        ? `/mcaster1songdata?mount=${encodeURIComponent(mount)}`
+        : '/mcaster1songdata';
+    const resp = await fetch(url);
+    const xml = await resp.text();
+    const parser = new DOMParser();
+    return parser.parseFromString(xml, 'application/xml');
+}
+
+// Get currently playing track
+async function getNowPlaying(mount = '/live') {
+    const doc = await fetchSongHistory(mount);
+    const songs = doc.querySelectorAll('song');
+    for (const song of songs) {
+        const endedAt = song.querySelector('ended_at')?.textContent;
+        if (!endedAt || endedAt.trim() === '') {
+            return {
+                title:     song.querySelector('title')?.textContent,
+                artist:    song.querySelector('artist')?.textContent,
+                startedAt: song.querySelector('started_at')?.textContent,
+                listeners: song.querySelector('listeners')?.textContent,
+            };
+        }
+    }
+    return null;
+}</code></pre>
+
+  <h3>Python</h3>
+  <pre><code>import requests
+import xml.etree.ElementTree as ET
+
+def get_song_history(base_url, mount=None):
+    url = f"{base_url}/mcaster1songdata"
+    if mount:
+        url += f"?mount={mount}"
+    resp = requests.get(url, timeout=5)
+    root = ET.fromstring(resp.text)
+    songs = []
+    for song in root.findall('.//song'):
+        songs.append({
+            'mount':      song.findtext('mount'),
+            'title':      song.findtext('title'),
+            'artist':     song.findtext('artist'),
+            'started_at': song.findtext('started_at'),
+            'ended_at':   song.findtext('ended_at'),
+            'listeners':  int(song.findtext('listeners') or 0),
+        })
+    return songs
+
+# Example usage
+history = get_song_history('http://localhost:9330', mount='/live')
+for track in history:
+    status = 'NOW PLAYING' if not track['ended_at'] else track['ended_at']
+    print(f"{status}  {track['title']}  ({track['listeners']} listeners)")</code></pre>
+
+  <h2>Deduplication Behavior</h2>
+  <p>Consecutive duplicate titles on the same mount are silently dropped:</p>
+  <div class="dedupe-box">
+18:00 &nbsp;/live &nbsp;"DJ Live Mix" &nbsp;&nbsp;&nbsp;<span style="color:#4caf50">← stored</span><br>
+18:00 &nbsp;/live &nbsp;"DJ Live Mix" &nbsp;&nbsp;&nbsp;<span class="drop">← DROPPED (duplicate)</span><br>
+18:05 &nbsp;/live &nbsp;"DJ Live Mix" &nbsp;&nbsp;&nbsp;<span class="drop">← DROPPED (still same title)</span><br>
+18:10 &nbsp;/live &nbsp;"Artist - Track" &nbsp;<span style="color:#4caf50">← stored (new title)</span>
+  </div>
+  <p>Titles on different mounts are never deduplicated against each other:</p>
+  <div class="dedupe-box">
+18:00 &nbsp;/live &nbsp;&nbsp;&nbsp;&nbsp;"Artist - Track" &nbsp;<span style="color:#4caf50">← stored</span><br>
+18:00 &nbsp;/podcast &nbsp;"Artist - Track" &nbsp;<span style="color:#4caf50">← stored (different mount)</span>
+  </div>
+
+  <h2><code>ended_at</code> Back-Fill</h2>
+  <p>When track N+1 is added to a mount, the <code>ended_at</code> timestamp of track N is set to the <code>started_at</code> of track N+1. This gives accurate time-on-air calculations in the UI.</p>
+  <p>The most recent entry on each mount always has an empty <code>ended_at</code> (currently playing).</p>
+
+  <h2>Memory Footprint</h2>
+  <p>Each song entry occupies approximately 200–400 bytes. With the default limit of 25 entries the total per-server memory overhead is under 10&nbsp;KB regardless of listener count or stream uptime.</p>
+  <p>With <code>song-history-limit: 0</code> (unlimited), the buffer grows by one entry per track change per mount. For a busy station with frequent track changes, budget ~1&nbsp;MB per 5,000 total track changes.</p>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="STATIC_MOUNTS.html">Static Mounts</a> — mount types and how song history integrates</li>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> — how ICY2 metadata drives track change events</li>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> — browser player that shows now-playing</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+</footer>
+</body>
+</html>

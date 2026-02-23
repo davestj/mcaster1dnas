@@ -1,0 +1,100 @@
+---
+# Mcaster1DNAS Console / Windows Service Configuration
+# Used by: mcaster1.exe (console) and mcaster1Service.exe (Windows Service)
+# Install path: C:\Program Files (x86)\Mcaster1\Mcaster1DNAS\
+#
+# IMPORTANT: Change all CHANGE_ME values before starting the server.
+# Ports: 9330 plain HTTP, 9443 HTTPS/SSL (localhost.pem).
+
+location: "Earth"
+admin: "admin@localhost"
+hostname: "localhost"
+fileserve: true
+
+authentication:
+  source-password: "CHANGE_ME_source"
+  relay-password:  "CHANGE_ME_relay"
+  admin-user:      "admin"
+  admin-password:  "CHANGE_ME_admin"
+
+limits:
+  clients:            100
+  sources:            10
+  workers:            4
+  queue-size:         524288
+  burst-size:         65535
+  client-timeout:     30
+  header-timeout:     15
+  source-timeout:     10
+  song-history-limit: 25
+
+listen-sockets:
+  - port:         9330
+    bind-address: "0.0.0.0"
+    ssl:          false
+
+  - port:         9443
+    bind-address: "0.0.0.0"
+    ssl:          true
+
+paths:
+  basedir:         "."
+  logdir:          "./logs"
+  webroot:         "./web"
+  adminroot:       "./admin"
+  pidfile:         "./logs/mcaster1.pid"
+  # Combined key+cert PEM - only needed if ssl: true is added to a listener
+  ssl-certificate: "./ssl/localhost.pem"
+  aliases:
+    - source:      "/"
+      destination: "/status.xsl"
+
+logging:
+  accesslog:
+    name:    "access.log"
+    archive: true
+  errorlog:
+    name:    "error.log"
+    level:   "info"
+    archive: true
+  playlistlog:
+    name:    "playlist.log"
+    archive: true
+  logsize:    10000
+  logarchive: true
+
+security:
+  chroot: false
+
+http-headers:
+  - name:  "Access-Control-Allow-Origin"
+    value: "*"
+  - name:  "Access-Control-Allow-Methods"
+    value: "GET, OPTIONS"
+  - name:  "Access-Control-Allow-Headers"
+    value: "Origin, X-Requested-With, Content-Type, Accept, Icy-MetaData"
+
+mounts:
+  - mount-name:        "/live"
+    mount-type:        "live"
+    max-listeners:     100
+    public:            1
+    stream-name:       "Mcaster1 Live"
+    stream-description: "Live broadcast"
+    genre:             "Music"
+    bitrate:           "128"
+    icy-dj-handle:     "DJ"
+    icy-show-title:    "Live Show"
+    icy-requests-enabled: false
+
+  - mount-name:        "/podcast"
+    mount-type:        "podcast"
+    max-listeners:     100
+    public:            1
+    stream-name:       "Mcaster1 Podcast"
+    stream-description: "Podcast content"
+    genre:             "Talk"
+    bitrate:           "96"
+    icy-podcast-host:  "Host"
+    icy-show-title:    "The Podcast"
+    icy-requests-enabled: false

@@ -1925,6 +1925,7 @@ static int _parse_listen_sock (cfg_xml *cfg, void *arg)
 {
     mc_config_t *config = cfg->config;
     listener_t *listener = calloc (1, sizeof(listener_t));
+    int ssl_tmp = -1;   /* sentinel: -1=not set, 0=plain-only, 1=ssl-only */
 
     struct cfg_tag mcaster1_tags[] =
     {
@@ -1937,14 +1938,18 @@ static int _parse_listen_sock (cfg_xml *cfg, void *arg)
         { "so-mss",             config_get_int,     &listener->so_mss },
 #endif
         { "shoutcast-mount",    config_get_str,     &listener->shoutcast_mount },
+        { "ssl",                config_get_int,     &ssl_tmp },
         { NULL, NULL, NULL },
     };
 
     listener->refcount = 1;
     listener->qlen = MC_LISTEN_QUEUE;
+    listener->ssl = -1;   /* default: auto-detect by peeking at TLS handshake bytes */
     do {
         if (parse_xml_tags (cfg, mcaster1_tags) < 0)
             break;
+        if (ssl_tmp != -1)
+            listener->ssl = ssl_tmp ? 1 : 0;
         if (listener->port == 0) break;
 
         if (listener->qlen < 1)

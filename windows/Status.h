@@ -27,7 +27,6 @@ public:
 
 	//{{AFX_DATA(CStatus)
 	enum { IDD = IDD_SSTATUS };
-	CStatic	m_GS;
 	CListCtrl	m_GlobalStatList;
 	CString	m_Clients;
 	CString	m_Sources;

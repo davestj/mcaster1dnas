@@ -17,6 +17,7 @@
 #define IDD_SSTATUS                     145
 #define IDD_CONFIGDIALOG                146
 #define IDD_STATSDIALOG                 147
+#define IDD_LOG_VIEW                    148
 #define IDB_BITMAP3                     149
 #define IDB_BITMAP4                     150
 #define IDB_BITMAP5                     151
@@ -54,6 +55,9 @@
 #define IDC_STATIC_RUN                  1034
 #define IDC_STATICBLACK                 1035
 #define IDC_HIDESYSTRAY                 1036
+#define IDC_LOGEDIT                     1037
+#define IDC_UPTIME                      1038
+#define IDC_SYSCLOCK                    1039
 #define ID_FILE_STARTSERVER             32771
 #define ID_FILE_EXIT                    32772
 #define ID_FILE_STOPSERVER              32774
@@ -72,7 +76,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        167
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

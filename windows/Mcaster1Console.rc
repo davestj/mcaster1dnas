@@ -1,0 +1,7 @@
+// Mcaster1Console.rc — icon resource for mcaster1.exe (console application)
+// ID=1 is the canonical "application icon" picked by Windows Explorer and taskbar.
+// The icon file is shared with the MFC Win project (mcaster1.ico in the windows\ folder).
+
+#include "winres.h"
+
+1 ICON "mcaster1.ico"

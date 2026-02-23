@@ -127,8 +127,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 2,5,2,0
+ PRODUCTVERSION 2,5,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -144,12 +144,12 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "FileDescription", "Mcaster1Win MFC Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "FileVersion", "2, 5, 2, 0"
             VALUE "InternalName", "Mcaster1Win"
-            VALUE "LegalCopyright", "Copyright (C) 2001"
+            VALUE "LegalCopyright", "Copyright (C) 2001-2026 MediaCast1"
             VALUE "OriginalFilename", "Mcaster1Win.EXE"
             VALUE "ProductName", "Mcaster1Win Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "ProductVersion", "2, 5, 2, 0"
         END
     END
     BLOCK "VarFileInfo"

@@ -77,22 +77,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\Win\</IntDir>
     <TargetName>mcaster1win</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\Win\</IntDir>
     <TargetName>mcaster1win</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\Win\</IntDir>
     <TargetName>mcaster1win</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\Win\</IntDir>
     <TargetName>mcaster1win</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -194,6 +194,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="SslGen.cpp" />
     <ClCompile Include="TabCtrlSSL.cpp" />
     <ClCompile Include="TabPageSSL.cpp" />
     <ClCompile Include="Traynot.cpp" />
@@ -277,6 +278,8 @@
     <ClCompile Include="..\src\source.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <ClCompile Include="..\src\stats.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <ClCompile Include="..\src\util.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
+    <ClCompile Include="..\src\ssl_gen.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
+    <ClCompile Include="win_applink.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <ClCompile Include="..\src\xslt.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <ClCompile Include="..\src\yp.c"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <!-- Sub-library sources -->
@@ -298,6 +301,8 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="TabCtrlSSL.h" />
     <ClInclude Include="TabPageSSL.h" />
+    <ClInclude Include="SslGen.h" />
+    <ClInclude Include="..\src\ssl_gen.h" />
     <ClInclude Include="TRAYNOT.h" />
     <ClInclude Include="colors.h" />
   </ItemGroup>
@@ -313,6 +318,14 @@
     <Image Include="running.bmp" />
     <Image Include="stopped.bmp" />
   </ItemGroup>
+  <!-- Post-build: copy vcpkg runtime DLLs to the output directory -->
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>powershell -ExecutionPolicy Bypass -NoProfile -File "$(SolutionDir)copy-vcpkg-deps.ps1" -OutDir "$(OutDir)\" -Platform "$(Platform)" -Config "$(Configuration)" -VcpkgRoot "$(VcpkgRoot)"</Command>
+      <Message>Copying vcpkg dependency DLLs to $(OutDir)...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

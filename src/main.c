@@ -32,6 +32,12 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#ifdef __APPLE__
+# include <mach-o/dyld.h>   /* _NSGetExecutablePath */
+#endif
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
 #ifdef HAVE_CURL
 #include <curl/curl.h>
 #endif
@@ -54,6 +60,10 @@
 
 #include "cfgfile.h"
 #include "sighandler.h"
+
+#ifdef HAVE_OPENSSL
+#include "ssl_gen.h"
+#endif
 
 #include "global.h"
 #include "compat.h"
@@ -100,12 +110,63 @@ void fatal_error (const char *perr)
 static void _print_usage(void)
 {
     printf("%s\n\n", ICECAST_VERSION_STRING);
-    printf("usage: mcaster1 [-b -v] -c <file>\n");
-    printf("options:\n");
-    printf("\t-c <file>\tSpecify configuration file\n");
+    printf("usage: mcaster1 [-b -v] [-c <file>]\n");
+    printf("       mcaster1 --ssl-gencert [ssl options]\n\n");
+    printf("Server options:\n");
+    printf("\t-c <file>\tSpecify configuration file (YAML or XML)\n");
+    printf("\t\t\tDefault search: <exedir>/mcaster1dnas.yaml, ./mcaster1dnas.yaml\n");
     printf("\t-v\t\tDisplay version info\n");
-    printf("\t-b\t\tRun mcaster1 in the background\n");
+    printf("\t-b\t\tRun in background (Unix only)\n");
+#ifdef HAVE_OPENSSL
+    printf("\nSSL certificate generation (exits after completing):\n");
+    printf("\t--ssl-gencert\t\t\t  Generate SSL certificates\n");
+    printf("\t--ssl-gentype=selfsigned|csr\t  Output type (default: selfsigned)\n");
+    printf("\t--subj=\"/C=US/ST=.../CN=host\"\t  X.509 subject fields\n");
+    printf("\t--ssl-gencert-savepath=<dir>\t  Directory to save generated files\n");
+    printf("\t--ssl-gencert-addtoconfig=true\t  Also update -c config with new cert paths\n");
+#endif
     printf("\n");
+}
+
+
+/*
+ * get_exe_dir() — cross-platform: return the directory containing the running exe.
+ * buf is filled with a path ending in the platform path separator.
+ */
+static void get_exe_dir(char *buf, size_t len)
+{
+    buf[0] = '\0';
+#if defined(_WIN32)
+    {
+        DWORD n = GetModuleFileNameA(NULL, buf, (DWORD)len);
+        if (n > 0)
+        {
+            char *last = strrchr(buf, '\\');
+            if (!last) last = strrchr(buf, '/');
+            if (last) *(last + 1) = '\0';
+        }
+    }
+#elif defined(__APPLE__)
+    {
+        uint32_t sz = (uint32_t)len;
+        if (_NSGetExecutablePath(buf, &sz) == 0)
+        {
+            char *last = strrchr(buf, '/');
+            if (last) *(last + 1) = '\0';
+        }
+    }
+#else
+    /* Linux: /proc/self/exe */
+    {
+        ssize_t r = readlink("/proc/self/exe", buf, len - 1);
+        if (r > 0)
+        {
+            buf[r] = '\0';
+            char *last = strrchr(buf, '/');
+            if (last) *(last + 1) = '\0';
+        }
+    }
+#endif
 }
 
 
@@ -155,7 +216,32 @@ static int _parse_config_opts(int argc, char **argv, char *filename, int size)
     int config_ok = 0;
 
     background = 0;
-    if (argc < 2) return -1;
+
+#ifdef HAVE_OPENSSL
+    /* Check for SSL cert generation before anything else.
+     * If --ssl-gencert is present, generate and exit — no server startup. */
+    {
+        ssl_gen_params_t ssl_params;
+        if (ssl_gen_parse_args(argc, argv, &ssl_params))
+        {
+            if (!ssl_params.savepath || !ssl_params.savepath[0])
+            {
+                fprintf(stderr, "ssl-gen: --ssl-gencert-savepath=<dir> is required\n");
+                exit(1);
+            }
+            printf("ssl-gen: type=%s  subj=%s  savepath=%s\n",
+                   ssl_params.gentype  ? ssl_params.gentype  : "selfsigned",
+                   ssl_params.subj     ? ssl_params.subj     : "/CN=localhost",
+                   ssl_params.savepath);
+            int rc = ssl_gen_run(&ssl_params);
+            if (rc != 0)
+                fprintf(stderr, "ssl-gen error: %s\n", ssl_gen_last_error());
+            else
+                printf("ssl-gen: Done.\n");
+            exit(rc ? 1 : 0);
+        }
+    }
+#endif /* HAVE_OPENSSL */
 
     while (i < argc) {
         if (strcmp(argv[i], "-b") == 0) {
@@ -181,6 +267,11 @@ static int _parse_config_opts(int argc, char **argv, char *filename, int size)
             exit(0);
         }
 
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            _print_usage();
+            exit(0);
+        }
+
         if (strcmp(argv[i], "-c") == 0) {
             if (i + 1 < argc) {
                 strncpy(filename, argv[i + 1], size-1);
@@ -193,10 +284,71 @@ static int _parse_config_opts(int argc, char **argv, char *filename, int size)
         i++;
     }
 
-    if(config_ok)
+    if (config_ok)
         return 1;
-    else
-        return -1;
+
+    /* No -c flag supplied — search for mcaster1dnas.yaml automatically. */
+    {
+        char exedir[PATH_MAX] = "";
+        char candidate[PATH_MAX];
+
+        get_exe_dir(exedir, sizeof(exedir));
+
+        /* 1. <exedir>/mcaster1dnas.yaml */
+        if (exedir[0])
+        {
+            snprintf(candidate, sizeof(candidate), "%smcaster1dnas.yaml", exedir);
+#ifdef _WIN32
+            if (_access(candidate, 0) == 0)
+#else
+            if (access(candidate, F_OK) == 0)
+#endif
+            {
+                strncpy(filename, candidate, size - 1);
+                filename[size - 1] = '\0';
+                return 1;
+            }
+        }
+
+        /* 2. ./mcaster1dnas.yaml */
+        strncpy(candidate, "mcaster1dnas.yaml", sizeof(candidate) - 1);
+#ifdef _WIN32
+        if (_access(candidate, 0) == 0)
+#else
+        if (access(candidate, F_OK) == 0)
+#endif
+        {
+            strncpy(filename, candidate, size - 1);
+            filename[size - 1] = '\0';
+            return 1;
+        }
+
+        /* 3. Prompt user (stdin) */
+        fprintf(stderr,
+            "\n[Mcaster1DNAS] Config file not found.\n"
+            "Searched: %smcaster1dnas.yaml\n"
+            "          ./mcaster1dnas.yaml\n\n"
+            "Enter path to configuration file (YAML or XML): ",
+            exedir);
+        fflush(stderr);
+
+        if (fgets(filename, size, stdin))
+        {
+            filename[strcspn(filename, "\r\n")] = '\0';
+            if (filename[0])
+            {
+#ifdef _WIN32
+                if (_access(filename, 0) == 0)
+#else
+                if (access(filename, F_OK) == 0)
+#endif
+                    return 1;
+                fprintf(stderr, "Config file not accessible: %s\n", filename);
+            }
+        }
+    }
+
+    return -1;
 }
 
 
@@ -461,6 +613,7 @@ int server_init (int argc, char *argv[])
 }
 
 
+#ifndef WIN32_SERVICE
 int main (int argc, char *argv[])
 {
 #ifdef WIN32
@@ -503,4 +656,5 @@ int main (int argc, char *argv[])
     }
     return 0;
 }
+#endif /* WIN32_SERVICE */
 

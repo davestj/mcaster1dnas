@@ -941,6 +941,7 @@ int yaml_parse_listen_socket(yaml_parse_ctx *ctx, yaml_node_t *node)
     listener_t *listener = calloc(1, sizeof(listener_t));
     listener->refcount = 1;
     listener->qlen = MC_LISTEN_QUEUE;
+    listener->ssl = -1;   /* default: auto-detect by peeking at TLS handshake bytes */
 
     yaml_node_t *port = yaml_get_mapping_value(ctx->document, node, "port");
     yaml_node_t *bind = yaml_get_mapping_value(ctx->document, node, "bind-address");
@@ -948,6 +949,7 @@ int yaml_parse_listen_socket(yaml_parse_ctx *ctx, yaml_node_t *node)
     yaml_node_t *shoutcast_mount = yaml_get_mapping_value(ctx->document, node, "shoutcast-mount");
     yaml_node_t *queue_len = yaml_get_mapping_value(ctx->document, node, "queue-len");
     yaml_node_t *so_sndbuf = yaml_get_mapping_value(ctx->document, node, "so-sndbuf");
+    yaml_node_t *ssl_node  = yaml_get_mapping_value(ctx->document, node, "ssl");
 #ifndef _WIN32
     yaml_node_t *so_mss = yaml_get_mapping_value(ctx->document, node, "so-mss");
 #endif
@@ -972,6 +974,12 @@ int yaml_parse_listen_socket(yaml_parse_ctx *ctx, yaml_node_t *node)
     if (shoutcast_mount) {
         const char *val = yaml_get_scalar_value(ctx->document, shoutcast_mount);
         if (val) listener->shoutcast_mount = (char *)xmlCharStrdup(val);
+    }
+
+    if (ssl_node) {
+        int ssl_tmp = 0;
+        yaml_get_bool_value(ctx->document, ssl_node, &ssl_tmp);
+        listener->ssl = ssl_tmp ? 1 : 0;
     }
 
     if (queue_len) yaml_get_int_value(ctx->document, queue_len, &listener->qlen);

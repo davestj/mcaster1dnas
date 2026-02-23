@@ -8,6 +8,7 @@
 *.o
 *.exe
 *~
+*.vs/*
 core
 
 # -----------------------------------------------------------------------
@@ -65,6 +66,7 @@ mcaster1-production.xml
 /conf/mcaster1.xml.dist
 /conf/mcaster1_minimal.xml.dist
 /conf/mcaster1_shoutcast_compat.xml.dist
+windows/mcaster1-windev.yaml
 
 # -----------------------------------------------------------------------
 # Test / CI artifacts

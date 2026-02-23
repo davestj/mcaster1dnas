@@ -1,15 +1,25 @@
 #!/bin/bash
-# Mcaster1DNAS Version Bump Script
+# Mcaster1DNAS Version Bump Script (Linux/macOS)
 # Automatically increments version based on branch and release type
 #
 # Usage:
 #   ./scripts/version-bump.sh [major|minor|patch|auto]
+#   ./scripts/version-bump.sh set 2.5.3-dev
 #
 # Branch-based release detection:
-#   - main/master → Production release (2.5.1)
-#   - rc/* → Release candidate (2.5.1-rc1, rc2, rc3...)
-#   - development → Beta release (2.5.1-beta.YYYYMMDD.HHMMSS)
-#   - feature/* → Alpha release (2.5.1-alpha.YYYYMMDD.HHMMSS)
+#   - main/master → Production release (2.5.2)
+#   - rc/* → Release candidate (2.5.2-rc1, rc2, rc3...)
+#   - development → Beta release (2.5.2-beta.YYYYMMDD.HHMMSS)
+#   - feature/* → Alpha release (2.5.2-alpha.YYYYMMDD.HHMMSS)
+#
+# Files updated:
+#   VERSION                   (canonical source)
+#   windows/config.h          (PACKAGE_VERSION, PACKAGE_STRING, VERSION)
+#   windows/git-version.ps1   ($baseVer fallback)
+#   GIT-VERSION-GEN           (BASE_VER fallback)
+#   windows/mcaster1dnas.iss  (AppVerName, OutputBaseFilename, VersionInfoVersion)
+#   build.sh                  (display line)
+#   README.md                 (version badge)
 
 set -e
 
@@ -142,7 +152,7 @@ generate_version_string() {
 # Update VERSION file
 update_version_file() {
     local new_version=$1
-    echo "$new_version" > "$VERSION_FILE"
+    printf '%s' "$new_version" > "$VERSION_FILE"
     success "Updated VERSION file to: $new_version"
 }
 
@@ -161,11 +171,87 @@ update_configure_ac() {
     fi
 }
 
+# Update windows/config.h
+update_windows_config_h() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/windows/config.h"
+    if [ ! -f "$f" ]; then warning "windows/config.h not found — skipped"; return; fi
+    sed -i.bak \
+        -e "s/#define PACKAGE_VERSION \"[^\"]*\"/#define PACKAGE_VERSION \"$new_version\"/" \
+        -e "s/#define PACKAGE_STRING  \"[^\"]*\"/#define PACKAGE_STRING  \"Mcaster1DNAS $new_version\"/" \
+        -e "s/#define VERSION         \"[^\"]*\"/#define VERSION         \"$new_version\"/" \
+        "$f"
+    rm -f "$f.bak"
+    success "windows/config.h updated"
+}
+
+# Update windows/git-version.ps1 fallback
+update_git_version_ps1() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/windows/git-version.ps1"
+    if [ ! -f "$f" ]; then warning "windows/git-version.ps1 not found — skipped"; return; fi
+    sed -i.bak "s/\\\$baseVer = \"[^\"]*\"/\$baseVer = \"$new_version\"/" "$f"
+    rm -f "$f.bak"
+    success "windows/git-version.ps1 fallback updated"
+}
+
+# Update GIT-VERSION-GEN fallback
+update_git_version_gen() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/GIT-VERSION-GEN"
+    if [ ! -f "$f" ]; then warning "GIT-VERSION-GEN not found — skipped"; return; fi
+    sed -i.bak "s/BASE_VER=\"[^\"]*\"/BASE_VER=\"$new_version\"/" "$f"
+    rm -f "$f.bak"
+    success "GIT-VERSION-GEN fallback updated"
+}
+
+# Update windows/mcaster1dnas.iss
+update_iss() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/windows/mcaster1dnas.iss"
+    if [ ! -f "$f" ]; then warning "mcaster1dnas.iss not found — skipped"; return; fi
+    # Numeric only for VersionInfoVersion (strip pre-release suffix)
+    local num_ver
+    num_ver=$(echo "$new_version" | sed 's/-.*$//')
+    sed -i.bak \
+        -e "s/AppVerName=Mcaster1DNAS v.*/AppVerName=Mcaster1DNAS v$new_version/" \
+        -e "s/OutputBaseFilename=mcaster1dnas_win32_v[^ ]*/OutputBaseFilename=mcaster1dnas_win32_v${new_version}_setup/" \
+        -e "s/VersionInfoVersion=.*/VersionInfoVersion=$num_ver.0/" \
+        "$f"
+    rm -f "$f.bak"
+    success "mcaster1dnas.iss updated"
+}
+
+# Update build.sh display line
+update_build_sh() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/build.sh"
+    if [ ! -f "$f" ]; then warning "build.sh not found — skipped"; return; fi
+    sed -i.bak "s/Mcaster1DNAS Build Script v[^ \"]*/Mcaster1DNAS Build Script v$new_version/" "$f"
+    rm -f "$f.bak"
+    success "build.sh updated"
+}
+
+# Update README.md version badge
+update_readme_badge() {
+    local new_version=$1
+    local f="$PROJECT_ROOT/README.md"
+    if [ ! -f "$f" ]; then warning "README.md not found — skipped"; return; fi
+    # shields.io uses -- for a literal dash in the badge label
+    local badge_ver
+    badge_ver=$(echo "$new_version" | sed 's/-/--/g')
+    sed -i.bak \
+        "s|badge/version-[^-]*-[^-]*-[^)]*-brightgreen|badge/version-${badge_ver}-brightgreen|g" \
+        "$f"
+    rm -f "$f.bak"
+    success "README.md badge updated"
+}
+
 # Update Makefile version target
 update_makefile() {
     local new_version=$1
     # This will be called by `make version`
-    info "Makefile will use version: $new_version"
+    info "Makefile will use version from VERSION file: $new_version"
 }
 
 # Create git tag for release
@@ -231,6 +317,22 @@ main() {
 
     # Determine new base version
     case "$bump_type" in
+        set)
+            # Explicit set: ./version-bump.sh set 2.5.3-dev
+            if [ -z "$2" ]; then
+                error "Usage: $0 set <version>  (e.g. set 2.5.3-dev)"
+            fi
+            new_base_version="$2"
+            update_version_file "$new_base_version"
+            update_windows_config_h "$new_base_version"
+            update_git_version_ps1 "$new_base_version"
+            update_git_version_gen "$new_base_version"
+            update_iss "$new_base_version"
+            update_build_sh "$new_base_version"
+            update_readme_badge "$new_base_version"
+            success "All files set to $new_base_version"
+            exit 0
+            ;;
         major)
             new_base_version=$(bump_major "$current_version")
             ;;
@@ -262,9 +364,15 @@ main() {
     # Generate full version string with suffixes
     local full_version=$(generate_version_string "$new_base_version")
 
-    # Update files
+    # Update all files
     update_version_file "$new_base_version"
     update_configure_ac "$full_version"
+    update_windows_config_h "$new_base_version"
+    update_git_version_ps1 "$new_base_version"
+    update_git_version_gen "$new_base_version"
+    update_iss "$new_base_version"
+    update_build_sh "$new_base_version"
+    update_readme_badge "$new_base_version"
 
     # Show version info
     show_version_info "$new_base_version"
@@ -280,9 +388,12 @@ main() {
 
     success "Version bump complete!"
     info "Next steps:"
-    echo "  1. Review changes: git diff VERSION configure.ac"
-    echo "  2. Commit changes: git add VERSION configure.ac && git commit -m 'chore: bump version to $full_version'"
-    echo "  3. Rebuild: autoreconf -fi && ./configure && make"
+    echo "  1. Review:  git diff VERSION configure.ac windows/config.h GIT-VERSION-GEN README.md"
+    echo "  2. Commit:  git add VERSION configure.ac windows/config.h windows/git-version.ps1"
+    echo "              git add GIT-VERSION-GEN windows/mcaster1dnas.iss build.sh README.md"
+    echo "              git commit -m 'chore: bump version to $full_version'"
+    echo "  3. Linux rebuild:   autoreconf -fi && ./configure && make"
+    echo "  4. Windows rebuild: msbuild windows/Mcaster1DNAS.sln /p:Configuration=Debug /p:Platform=x64"
 }
 
 # Run main function

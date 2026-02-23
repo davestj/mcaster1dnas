@@ -243,7 +243,8 @@ int client_send_401 (client_t *client, const char *realm)
     mc_http_t http = MC_HTTP_INIT;
     if (mc_http_setup_flags (&http, client, 401, 0, NULL) < 0) return -1;
     client_set_queue (client,NULL);
-    mc_http_printf (&http, "WWW-Authenticate", 0, "Basic realm=\"%s\"", (realm ? realm : http.in_realm));
+    mc_http_printf (&http, "WWW-Authenticate", 0, "Basic realm=\"%s\"",
+        (realm ? realm : (http.in_realm ? http.in_realm : "Mcaster1DNAS")));
     return client_http_send (&http);
 }
 

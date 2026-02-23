@@ -38,7 +38,6 @@ void CStatus::DoDataExchange(CDataExchange* pDX)
 {
 	CTabPageSSL::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CStatus)
-	DDX_Control(pDX, IDC_STATIC_GS, m_GS);
 	DDX_Control(pDX, IDC_GLOBALSTAT_LIST, m_GlobalStatList);
 	DDX_Text(pDX, IDC_RUNNINGFOR, m_RunningFor);
 	//}}AFX_DATA_MAP
@@ -70,7 +69,6 @@ BOOL CStatus::OnInitDialog()
 	AddAnchor(IDC_STATIC_RUN, BOTTOM_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_RUNNINGFOR, BOTTOM_LEFT, BOTTOM_RIGHT);
 	
-	m_GS.SetFont(&(g_mainDialog->labelFont), TRUE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

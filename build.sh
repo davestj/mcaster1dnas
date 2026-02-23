@@ -7,7 +7,7 @@
 set -e  # Exit on any error
 
 echo "========================================="
-echo "  Mcaster1DNAS Build Script v2.5.0"
+echo "  Mcaster1DNAS Build Script v2.5.2-dev"
 echo "========================================="
 echo ""
 

@@ -113,22 +113,22 @@
        =================================================================== -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Win32\Debug\</OutDir>
-    <IntDir>Win32\Debug\</IntDir>
+    <IntDir>Win32\Debug\Console\</IntDir>
     <TargetName>mcaster1</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Win32\Release\</OutDir>
-    <IntDir>Win32\Release\</IntDir>
+    <IntDir>Win32\Release\Console\</IntDir>
     <TargetName>mcaster1</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)x64\Debug\</OutDir>
-    <IntDir>x64\Debug\</IntDir>
+    <IntDir>x64\Debug\Console\</IntDir>
     <TargetName>mcaster1</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)x64\Release\</OutDir>
-    <IntDir>x64\Release\</IntDir>
+    <IntDir>x64\Release\Console\</IntDir>
     <TargetName>mcaster1</TargetName>
   </PropertyGroup>
 
@@ -375,6 +375,8 @@
     <ClCompile Include="..\src\source.c" />
     <ClCompile Include="..\src\stats.c" />
     <ClCompile Include="..\src\util.c" />
+    <ClCompile Include="..\src\ssl_gen.c" />
+    <ClCompile Include="win_applink.c" />
     <ClCompile Include="..\src\xslt.c" />
     <ClCompile Include="..\src\yp.c" />
 
@@ -451,6 +453,7 @@
     <ClInclude Include="..\src\source.h" />
     <ClInclude Include="..\src\stats.h" />
     <ClInclude Include="..\src\util.h" />
+    <ClInclude Include="..\src\ssl_gen.h" />
     <ClInclude Include="..\src\xslt.h" />
     <ClInclude Include="..\src\yp.h" />
     <ClInclude Include="..\src\avl\avl.h" />
@@ -461,6 +464,25 @@
     <ClInclude Include="..\src\thread\thread.h" />
     <ClInclude Include="..\src\timing\timing.h" />
   </ItemGroup>
+
+  <!-- ===================================================================
+       Resource file — embeds mcaster1.ico so Explorer/taskbar show it
+       =================================================================== -->
+  <ItemGroup>
+    <ResourceCompile Include="Mcaster1Console.rc" />
+  </ItemGroup>
+
+  <!-- ===================================================================
+       Post-build: copy vcpkg runtime DLLs to the output directory
+       The helper script resolves the correct bin path for each
+       platform (x64/Win32) and configuration (Debug/Release).
+       =================================================================== -->
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>powershell -ExecutionPolicy Bypass -NoProfile -File "$(SolutionDir)copy-vcpkg-deps.ps1" -OutDir "$(OutDir)\" -Platform "$(Platform)" -Config "$(Configuration)" -VcpkgRoot "$(VcpkgRoot)"</Command>
+      <Message>Copying vcpkg dependency DLLs to $(OutDir)...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

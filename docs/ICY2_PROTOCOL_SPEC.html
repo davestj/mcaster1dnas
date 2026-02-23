@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICY-META v2.2 Protocol Specification — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .badge-warn{background:#f59e0b18;border-color:#f59e0b44;color:#f59e0b}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    h4{font-size:.95rem;color:#7878b8;margin:1.4rem 0 .5rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .warn{background:#1a1200;border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#d4a835}
+    .version-row{background:#13131e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem 1.5rem;margin:1.5rem 0}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">&#x203A;</span>
+  <span style="color:#8888aa">ICY-META v2.2 Protocol Specification</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Protocol Reference</div>
+    <h1>ICY-META v2.2 Protocol Specification</h1>
+    <div class="sub">Full normative specification &mdash; all fields, client handshake, server implementation, and compliance</div>
+    <span class="badge">Spec v2.2</span>
+    <span class="badge badge-warn">&#x1F6A7; In Progress &mdash; v2.6.x</span>
+    <span class="badge">February 2026</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="note">
+    <strong>Status:</strong> Implementation in Progress &mdash; Mcaster1DNAS v2.6.x (February 2026).
+    v2.1 fields are production-ready. v2.2 additions listed here are being rolled in incrementally.
+    See also the implementation guide at <a href="ICY2_PROTOCOL.html">ICY2 Protocol</a>.
+  </div>
+
+  <div class="version-row">
+    <strong>Specification Version:</strong> 2.2 &nbsp;|&nbsp;
+    <strong>Release Date:</strong> February 2026 &nbsp;|&nbsp;
+    <strong>Supersedes:</strong> ICY-META v2.1 (Feb 15, 2026)<br>
+    <strong>Author:</strong> David St John (Saint John) &mdash; MediaCast1/Mcaster1DNAS &nbsp;|&nbsp;
+    <strong>CSSI Spec:</strong> ICY2-META-SPECS.md / https://casterclub.com/specs/icy-2
+  </div>
+
+  <h2>Overview</h2>
+  <p>ICY-META v2.2 is an extended metadata protocol for streaming media servers, providing rich
+  metadata support beyond the legacy ICY 1.x protocol. It maintains backward compatibility while
+  adding modern features for podcasts, video streams, social media integration, track-level metadata,
+  station programming, listener engagement, audio technical parameters, broadcast distribution, and
+  content verification.</p>
+
+  <h2>Design Principles</h2>
+  <ol>
+    <li><strong>Backward Compatible</strong> &mdash; ICY2 clients can connect to ICY1 servers; ICY1 clients can connect to ICY2 servers</li>
+    <li><strong>Zero Configuration</strong> &mdash; Auto-detection via version header, no server config changes needed</li>
+    <li><strong>HTTP-Based</strong> &mdash; Pure HTTP header communication, works over HTTP and HTTPS</li>
+    <li><strong>Extensible</strong> &mdash; Version numbering allows future enhancements (2.2, 2.3, etc.)</li>
+    <li><strong>Optional</strong> &mdash; All fields are optional; only send what&rsquo;s relevant</li>
+  </ol>
+
+  <h2>Protocol Detection</h2>
+
+  <h3>Version Header</h3>
+  <p>The presence of the <code>icy-metadata-version</code> header indicates ICY2 support:</p>
+  <pre><code>icy-metadata-version: 2.1</code></pre>
+  <p><strong>Server Behavior:</strong></p>
+  <ul>
+    <li>If header present with value <code>2.x</code> &rarr; Parse as ICY2</li>
+    <li>If header absent or invalid &rarr; Fall back to ICY 1.x legacy parsing</li>
+    <li>Version check uses prefix matching (<code>2.</code> matches <code>2.0</code>, <code>2.1</code>, <code>2.2</code>, etc.)</li>
+  </ul>
+
+  <h3>Client Handshake</h3>
+  <p>ICY2-compliant source clients send this header with their source PUT/POST request:</p>
+  <pre><code>PUT /mountpoint.mp3 HTTP/1.1
+Host: server.example.com:9443
+icy-metadata-version: 2.2
+icy-meta-station-id: unique-station-identifier
+icy-name: My Station Name
+icy-genre: Electronic
+icy-br: 128
+icy-pub: 1
+Authorization: Basic c291cmNlOnBhc3N3b3Jk
+Content-Type: audio/mpeg
+
+[audio data]</code></pre>
+  <div class="note">v2.1 clients sending <code>icy-station-id</code> (without <code>meta</code>) instead of
+  <code>icy-meta-station-id</code> are fully supported. Legacy ICY 1.x fields (<code>icy-name</code>,
+  <code>icy-genre</code>, <code>icy-br</code>, <code>icy-pub</code>) are always parsed regardless of ICY2
+  version and must always be included for directory and player compatibility.</div>
+
+  <h2>ICY 1.x Legacy Headers</h2>
+  <p>These are the original SHOUTcast/Icecast ICY protocol headers. They are never modified, never removed,
+  and are always parsed independently of any ICY2 logic. ICY2 fields are additional &mdash; these remain
+  exactly as they have always been for full backwards compatibility.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-name</code></td><td>String</td><td>Station or stream display name</td></tr>
+      <tr><td><code>icy-genre</code></td><td>String</td><td>Genre or content type</td></tr>
+      <tr><td><code>icy-url</code></td><td>URL</td><td>Station homepage or site</td></tr>
+      <tr><td><code>icy-pub</code></td><td>Boolean</td><td>Public listing flag (1 = yes)</td></tr>
+      <tr><td><code>icy-br</code></td><td>Integer</td><td>Bitrate in kbps</td></tr>
+      <tr><td><code>icy-metaint</code></td><td>Integer</td><td>Interval in bytes between metadata blocks</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Legacy auth fields (also unchanged):</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Field</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>adminpassword</code></td><td>Admin interface password</td></tr>
+      <tr><td><code>password</code></td><td>Source encoder password</td></tr>
+      <tr><td><code>user</code></td><td>Optional username (SHOUTcast v2 / Icecast2)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>ICY2 v2.1 Header Forms (Backwards Compatible)</h2>
+  <p>These are the original ICY2 v2.1 header names as implemented in the server&rsquo;s C source
+  (<code>icy2_meta_parse_headers()</code>). They use the <code>icy-</code> prefix without <code>meta</code>.
+  The server continues to accept these from any client that connected using the v2.1 format.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>v2.1 Header (icy- prefix)</th><th>v2.2 Header (icy-meta- prefix)</th><th>Stats Key</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-station-id</code></td><td><code>icy-meta-station-id</code></td><td><code>icy2-station-id</code></td></tr>
+      <tr><td><code>icy-podcast-host</code></td><td><code>icy-meta-podcast-host</code></td><td><code>icy2-podcast-host</code></td></tr>
+      <tr><td><code>icy-podcast-rss</code></td><td><code>icy-meta-podcast-rss</code></td><td><code>icy2-podcast-rss</code></td></tr>
+      <tr><td><code>icy-podcast-episode</code></td><td><code>icy-meta-podcast-episode</code></td><td><code>icy2-podcast-episode</code></td></tr>
+      <tr><td><code>icy-duration</code></td><td><code>icy-meta-duration</code></td><td><code>icy2-duration</code></td></tr>
+      <tr><td><code>icy-language</code></td><td><code>icy-meta-language</code></td><td><code>icy2-language</code></td></tr>
+      <tr><td><code>icy-video-type</code></td><td><code>icy-meta-videotype</code></td><td><code>icy2-video-type</code></td></tr>
+      <tr><td><code>icy-video-link</code></td><td><code>icy-meta-videolink</code></td><td><code>icy2-video-link</code></td></tr>
+      <tr><td><code>icy-video-title</code></td><td><code>icy-meta-videotitle</code></td><td><code>icy2-video-title</code></td></tr>
+      <tr><td><code>icy-video-platform</code></td><td><code>icy-meta-videoplatform</code></td><td><code>icy2-video-platform</code></td></tr>
+      <tr><td><code>icy-video-resolution</code></td><td><code>icy-meta-videoresolution</code></td><td><code>icy2-video-resolution</code></td></tr>
+      <tr><td><code>icy-dj-handle</code></td><td><code>icy-meta-dj-handle</code></td><td><code>icy2-dj-handle</code></td></tr>
+      <tr><td><code>icy-social-twitter</code></td><td><code>icy-meta-social-twitter</code></td><td><code>icy2-social-twitter</code></td></tr>
+      <tr><td><code>icy-social-ig</code></td><td><code>icy-meta-social-ig</code></td><td><code>icy2-social-instagram</code></td></tr>
+      <tr><td><code>icy-social-tiktok</code></td><td><code>icy-meta-social-tiktok</code></td><td><code>icy2-social-tiktok</code></td></tr>
+      <tr><td><code>icy-emoji</code></td><td><code>icy-meta-emoji</code></td><td><code>icy2-emoji</code></td></tr>
+      <tr><td><code>icy-hashtags</code></td><td><code>icy-meta-hashtag-array</code></td><td><code>icy2-hashtags</code></td></tr>
+      <tr><td><code>icy-auth-token</code></td><td><code>icy-meta-auth-token</code></td><td><code>icy2-auth-token</code></td></tr>
+      <tr><td><code>icy-nsfw</code></td><td><code>icy-meta-nsfw</code></td><td><code>icy2-nsfw</code></td></tr>
+      <tr><td><code>icy-ai-generated</code></td><td><code>icy-meta-ai-generator</code></td><td><code>icy2-ai-generated</code></td></tr>
+      <tr><td><code>icy-geo-region</code></td><td><code>icy-meta-geo-region</code></td><td><code>icy2-geo-region</code></td></tr>
+      <tr><td><code>icy-certificate-verify</code></td><td><code>icy-meta-certificate</code></td><td><code>icy2-certificate</code></td></tr>
+      <tr><td><code>icy-verification-status</code></td><td><code>icy-meta-verification-status</code></td><td><code>icy2-verification-status</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">The C parser tries <code>icy-meta-X</code> first, then falls back to <code>icy-X</code> for each field &mdash; both always work.</div>
+
+  <h2>Field Reference (v2.2)</h2>
+
+  <h3>Station Identity</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-station-id</code></td><td>String</td><td><code>icy2-station-id</code></td><td>Permanent unique station identifier</td></tr>
+      <tr><td><code>icy-meta-station-logo</code></td><td>URL</td><td><code>icy2-station-logo</code></td><td>Station logo/branding image</td></tr>
+      <tr><td><code>icy-meta-certissuer-id</code></td><td>String</td><td><code>icy2-certissuer-id</code></td><td>Certificate authority ID</td></tr>
+      <tr><td><code>icy-meta-cert-rootca</code></td><td>String</td><td><code>icy2-cert-rootca</code></td><td>Root CA hash</td></tr>
+      <tr><td><code>icy-meta-certificate</code></td><td>String</td><td><code>icy2-certificate</code></td><td>Base64 PEM certificate</td></tr>
+      <tr><td><code>icy-meta-ssh-pubkey</code></td><td>String</td><td><code>icy2-ssh-pubkey</code></td><td>SSH public key for auth</td></tr>
+      <tr><td><code>icy-meta-verification-status</code></td><td>Enum</td><td><code>icy2-verification-status</code></td><td>unverified/pending/verified/gold</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Programming / Show</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-show-title</code></td><td>String</td><td><code>icy2-show-title</code></td><td>Current program title</td></tr>
+      <tr><td><code>icy-meta-show-start</code></td><td>ISO8601</td><td><code>icy2-show-start</code></td><td>Current show start time</td></tr>
+      <tr><td><code>icy-meta-show-end</code></td><td>ISO8601</td><td><code>icy2-show-end</code></td><td>Current show end time</td></tr>
+      <tr><td><code>icy-meta-next-show</code></td><td>String</td><td><code>icy2-next-show</code></td><td>Next scheduled program</td></tr>
+      <tr><td><code>icy-meta-next-show-time</code></td><td>ISO8601</td><td><code>icy2-next-show-time</code></td><td>Next show start time</td></tr>
+      <tr><td><code>icy-meta-schedule-url</code></td><td>URL</td><td><code>icy2-schedule-url</code></td><td>Full program schedule URL</td></tr>
+      <tr><td><code>icy-meta-autodj</code></td><td>Boolean</td><td><code>icy2-autodj</code></td><td>1=automation active, 0=live</td></tr>
+      <tr><td><code>icy-meta-playlist-name</code></td><td>String</td><td><code>icy2-playlist-name</code></td><td>Current playlist or automation source</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>DJ / Host</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-dj-handle</code></td><td>String</td><td><code>icy2-dj-handle</code></td><td>Social handle (e.g., @djsynthwave)</td></tr>
+      <tr><td><code>icy-meta-dj-bio</code></td><td>String</td><td><code>icy2-dj-bio</code></td><td>Short biography or tagline, max 280 chars</td></tr>
+      <tr><td><code>icy-meta-dj-genre</code></td><td>String</td><td><code>icy2-dj-genre</code></td><td>Comma-separated genres, max 5</td></tr>
+      <tr><td><code>icy-meta-dj-showrating</code></td><td>Enum</td><td><code>icy2-dj-showrating</code></td><td>all-ages, teen, mature, explicit</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Track Metadata</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-track-artwork</code></td><td>URL</td><td><code>icy2-track-artwork</code></td><td>Album/track art URL &mdash; primary player display</td></tr>
+      <tr><td><code>icy-meta-track-album</code></td><td>String</td><td><code>icy2-track-album</code></td><td>Album or release name</td></tr>
+      <tr><td><code>icy-meta-track-year</code></td><td>Integer</td><td><code>icy2-track-year</code></td><td>Release year</td></tr>
+      <tr><td><code>icy-meta-track-label</code></td><td>String</td><td><code>icy2-track-label</code></td><td>Record label</td></tr>
+      <tr><td><code>icy-meta-track-bpm</code></td><td>Integer</td><td><code>icy2-track-bpm</code></td><td>Beats per minute</td></tr>
+      <tr><td><code>icy-meta-track-key</code></td><td>String</td><td><code>icy2-track-key</code></td><td>Musical key (e.g., 8B, Am)</td></tr>
+      <tr><td><code>icy-meta-track-genre</code></td><td>String</td><td><code>icy2-track-genre</code></td><td>Per-track genre</td></tr>
+      <tr><td><code>icy-meta-track-mbid</code></td><td>UUID</td><td><code>icy2-track-mbid</code></td><td>MusicBrainz Recording ID</td></tr>
+      <tr><td><code>icy-meta-track-isrc</code></td><td>String</td><td><code>icy2-track-isrc</code></td><td>International Standard Recording Code</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Podcast</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-podcast-host</code></td><td>String</td><td><code>icy2-podcast-host</code></td><td>Podcast creator/host name</td></tr>
+      <tr><td><code>icy-meta-podcast-rating</code></td><td>Enum</td><td><code>icy2-podcast-rating</code></td><td>all-ages, teen, mature, explicit</td></tr>
+      <tr><td><code>icy-meta-podcast-rss</code></td><td>URL</td><td><code>icy2-podcast-rss</code></td><td>RSS feed URL</td></tr>
+      <tr><td><code>icy-meta-podcast-episode</code></td><td>String</td><td><code>icy2-podcast-episode</code></td><td>Episode title or ID</td></tr>
+      <tr><td><code>icy-meta-duration</code></td><td>Integer</td><td><code>icy2-duration</code></td><td>Content runtime in seconds (all types)</td></tr>
+      <tr><td><code>icy-meta-language</code></td><td>String</td><td><code>icy2-language</code></td><td>ISO 639-1 language tag</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Video</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-videotype</code></td><td>Enum</td><td><code>icy2-video-type</code></td><td>live, short, clip, trailer, ad</td></tr>
+      <tr><td><code>icy-meta-videorating</code></td><td>Enum</td><td><code>icy2-video-rating</code></td><td>all-ages, teen, mature, explicit</td></tr>
+      <tr><td><code>icy-meta-videolink</code></td><td>URL</td><td><code>icy2-video-link</code></td><td>Video content URL</td></tr>
+      <tr><td><code>icy-meta-videotitle</code></td><td>String</td><td><code>icy2-video-title</code></td><td>Video title</td></tr>
+      <tr><td><code>icy-meta-videoposter</code></td><td>URL</td><td><code>icy2-video-poster</code></td><td>Thumbnail/preview image</td></tr>
+      <tr><td><code>icy-meta-videochannel</code></td><td>String</td><td><code>icy2-video-channel</code></td><td>Creator/channel handle</td></tr>
+      <tr><td><code>icy-meta-videoplatform</code></td><td>Enum</td><td><code>icy2-video-platform</code></td><td>youtube, tiktok, twitch, kick, rumble, vimeo</td></tr>
+      <tr><td><code>icy-meta-videostart</code></td><td>ISO8601</td><td><code>icy2-video-start</code></td><td>Scheduled video start time</td></tr>
+      <tr><td><code>icy-meta-videolive</code></td><td>Boolean</td><td><code>icy2-video-live</code></td><td>1=currently live</td></tr>
+      <tr><td><code>icy-meta-videocodec</code></td><td>String</td><td><code>icy2-video-codec</code></td><td>h264, vp9, av1</td></tr>
+      <tr><td><code>icy-meta-videofps</code></td><td>Integer</td><td><code>icy2-video-fps</code></td><td>Frames per second</td></tr>
+      <tr><td><code>icy-meta-videoresolution</code></td><td>String</td><td><code>icy2-video-resolution</code></td><td>e.g., 1080p, 4K</td></tr>
+      <tr><td><code>icy-meta-videonsfw</code></td><td>Boolean</td><td><code>icy2-video-nsfw</code></td><td>Video-specific NSFW flag</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Audio Technical</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-audio-codec</code></td><td>Enum</td><td><code>icy2-audio-codec</code></td><td>mp3, aac, aac-he, ogg, opus, flac</td></tr>
+      <tr><td><code>icy-meta-samplerate</code></td><td>Integer</td><td><code>icy2-samplerate</code></td><td>Sample rate in Hz</td></tr>
+      <tr><td><code>icy-meta-channels</code></td><td>Integer</td><td><code>icy2-channels</code></td><td>1=mono, 2=stereo, 6=5.1</td></tr>
+      <tr><td><code>icy-meta-loudness</code></td><td>Float</td><td><code>icy2-loudness</code></td><td>LUFS integrated loudness (EBU R128)</td></tr>
+      <tr><td><code>icy-meta-encoder</code></td><td>String</td><td><code>icy2-encoder</code></td><td>Encoder name and version</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Social</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-creator-handle</code></td><td>String</td><td><code>icy2-creator-handle</code></td><td>Platform-agnostic public identity</td></tr>
+      <tr><td><code>icy-meta-social-twitter</code></td><td>String</td><td><code>icy2-social-twitter</code></td><td>Twitter/X handle</td></tr>
+      <tr><td><code>icy-meta-social-twitch</code></td><td>String</td><td><code>icy2-social-twitch</code></td><td>Twitch handle</td></tr>
+      <tr><td><code>icy-meta-social-ig</code></td><td>String</td><td><code>icy2-social-instagram</code></td><td>Instagram username</td></tr>
+      <tr><td><code>icy-meta-social-tiktok</code></td><td>String</td><td><code>icy2-social-tiktok</code></td><td>TikTok profile name</td></tr>
+      <tr><td><code>icy-meta-social-youtube</code></td><td>URL</td><td><code>icy2-social-youtube</code></td><td>YouTube channel URL</td></tr>
+      <tr><td><code>icy-meta-social-facebook-page</code></td><td>URL</td><td><code>icy2-social-facebook</code></td><td>Facebook page URL</td></tr>
+      <tr><td><code>icy-meta-social-linkedin</code></td><td>URL</td><td><code>icy2-social-linkedin</code></td><td>LinkedIn profile URL</td></tr>
+      <tr><td><code>icy-meta-social-linktree</code></td><td>URL</td><td><code>icy2-social-linktree</code></td><td>Unified profile link</td></tr>
+      <tr><td><code>icy-meta-emoji</code></td><td>String</td><td><code>icy2-emoji</code></td><td>Mood/emotion indicators</td></tr>
+      <tr><td><code>icy-meta-hashtag-array</code></td><td>JSON</td><td><code>icy2-hashtags</code></td><td>JSON array of hashtag strings</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Listener Engagement</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-request-enabled</code></td><td>Boolean</td><td><code>icy2-request-enabled</code></td><td>1=requests open</td></tr>
+      <tr><td><code>icy-meta-request-url</code></td><td>URL</td><td><code>icy2-request-url</code></td><td>Song request / dedication form</td></tr>
+      <tr><td><code>icy-meta-chat-url</code></td><td>URL</td><td><code>icy2-chat-url</code></td><td>Live listener chat URL</td></tr>
+      <tr><td><code>icy-meta-tip-url</code></td><td>URL</td><td><code>icy2-tip-url</code></td><td>Listener donation/tip URL</td></tr>
+      <tr><td><code>icy-meta-events-url</code></td><td>URL</td><td><code>icy2-events-url</code></td><td>Upcoming events page</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Broadcast Distribution</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-crosspost-platforms</code></td><td>String</td><td><code>icy2-crosspost-platforms</code></td><td>Comma-sep active platforms (e.g., youtube,twitch)</td></tr>
+      <tr><td><code>icy-meta-stream-session-id</code></td><td>String</td><td><code>icy2-stream-session-id</code></td><td>Unique ID for this broadcast session</td></tr>
+      <tr><td><code>icy-meta-cdn-region</code></td><td>String</td><td><code>icy2-cdn-region</code></td><td>CDN distribution region (e.g., us-east, eu-west)</td></tr>
+      <tr><td><code>icy-meta-relay-origin</code></td><td>URL</td><td><code>icy2-relay-origin</code></td><td>Origin server URL if this is a relay mount</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Station Notices</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-notice</code></td><td>String</td><td><code>icy2-notice</code></td><td>General listener notice/announcement</td></tr>
+      <tr><td><code>icy-meta-notice-url</code></td><td>URL</td><td><code>icy2-notice-url</code></td><td>Click-through URL for notice</td></tr>
+      <tr><td><code>icy-meta-notice-expires</code></td><td>ISO8601</td><td><code>icy2-notice-expires</code></td><td>Datetime after which notice is hidden</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Access &amp; Authentication</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-auth-token</code></td><td>JWT</td><td><code>icy2-auth-token</code></td><td>Bearer JWT or custom token</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Content Flags &amp; Compliance</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Header</th><th>Type</th><th>Stats Key</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>icy-meta-nsfw</code></td><td>Boolean</td><td><code>icy2-nsfw</code></td><td>Binary NSFW filter flag for directory filtering</td></tr>
+      <tr><td><code>icy-meta-ai-generator</code></td><td>Boolean</td><td><code>icy2-ai-generated</code></td><td>AI-generated content transparency flag</td></tr>
+      <tr><td><code>icy-meta-geo-region</code></td><td>String</td><td><code>icy2-geo-region</code></td><td>Target region (ISO 3166-1, e.g., US, EU, GLOBAL)</td></tr>
+      <tr><td><code>icy-meta-license-type</code></td><td>Enum</td><td><code>icy2-license-type</code></td><td>cc-by, cc0, pro-licensed, all-rights-reserved</td></tr>
+      <tr><td><code>icy-meta-royalty-free</code></td><td>Boolean</td><td><code>icy2-royalty-free</code></td><td>1=royalty-free content</td></tr>
+      <tr><td><code>icy-meta-license-territory</code></td><td>String</td><td><code>icy2-license-territory</code></td><td>Comma-sep ISO country codes, or GLOBAL</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Server Implementation</h2>
+
+  <h3>Detection Logic</h3>
+  <pre><code>// Check for ICY2 version header
+const char *version = httpp_getvar(parser, "icy-metadata-version");
+if (version &amp;&amp; strncmp(version, "2.", 2) == 0) {
+    // Parse as ICY2
+    icy2_metadata *meta = icy2_meta_new();
+    icy2_meta_parse_headers(meta, parser);
+    icy2_meta_copy_to_stats(meta, source-&gt;stats);
+    icy2_meta_free(meta);
+} else {
+    // Fall back to ICY 1.x legacy parsing
+    parse_legacy_icy_headers(parser);
+}</code></pre>
+
+  <h3>Parser Implementation Notes</h3>
+  <p>The v2.2 parser accepts both <code>icy-meta-X</code> (spec-compliant) and legacy <code>icy-X</code> (v2.1 clients)
+  header forms during the migration period. Try <code>icy-meta-X</code> first; fall back to <code>icy-X</code>:</p>
+  <pre><code>/* Example: station-id -- try spec-compliant prefix first, fall back for v2.1 clients */
+str = httpp_getvar(parser, "icy-meta-station-id");
+if (!str) str = httpp_getvar(parser, "icy-station-id");
+if (str) meta-&gt;station_id = icy2_strdup_safe(str);</code></pre>
+
+  <h2>Version History</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Version</th><th>Release Date</th><th>Status</th><th>Key Features</th></tr></thead>
+    <tbody>
+      <tr><td>2.1</td><td>February 15, 2026</td><td>&#x2705; Released</td><td>Core station ID, podcast, video, social, content flags</td></tr>
+      <tr><td>2.2</td><td>February 2026</td><td>&#x1F6A7; In Progress</td><td>Track metadata, artwork, show scheduling, audio technical, notices, engagement, distribution, PKI, licensing</td></tr>
+      <tr><td>2.3</td><td>Q3 2026</td><td>&#x1F4A1; Proposed</td><td>Dynamic updates, multi-language, subscriber metadata, interactivity</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Client Best Practices</h2>
+  <ol>
+    <li>Always include <code>icy-metadata-version</code> &mdash; this triggers ICY2 parsing</li>
+    <li>Use consistent <code>station-id</code> &mdash; helps with stream tracking and analytics</li>
+    <li>Provide social media handles &mdash; enhances discoverability</li>
+    <li>Set appropriate content flags &mdash; NSFW, AI-generated for transparency</li>
+    <li>Include video metadata if streaming video alongside audio</li>
+    <li>Use emoji sparingly &mdash; 2&ndash;5 emoji max for UI enhancement</li>
+    <li>Validate URLs &mdash; ensure all URL fields are properly formatted</li>
+    <li>Keep hashtags relevant &mdash; 3&ndash;10 hashtags, space or comma-separated</li>
+  </ol>
+
+  <h2>License &amp; Attribution</h2>
+  <p>Copyright &copy; 2026 David St John (Saint John) &mdash; MediaCast1 / Mcaster1DNAS Project.<br>
+  Released under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License (CC BY 4.0)</a>.<br>
+  Implementation in Mcaster1DNAS is licensed under <strong>GNU GPL v2</strong>.</p>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> &mdash; implementation guide (mount defaults, admin API, stats XML)</li>
+      <li><a href="STATIC_MOUNTS.html">Static Mount Points</a> &mdash; podcast, socialcast, on-demand mounts</li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a> &mdash; track history ring buffer and XML API</li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> &mdash; cert generation CLI</li>
+      <li><a href="CHANGELOG-WIN.html">Windows Changelog</a> &mdash; ICY2 Windows implementation history</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+  &mdash; ICY-META Spec v2.2 &mdash; Last Updated February 21, 2026
+</footer>
+</body>
+</html>

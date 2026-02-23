@@ -279,7 +279,13 @@ int mc_params_printf (mc_params_t *pm, const char *name, int flags, const char *
         va_end(ap);
         if (ret >= 0 && ret < (int)sizeof content)
         {
-            mc_param_t hdr = { NULL, (char*)name, content, flags };
+            /* Positional init is wrong for mc_param_t field order; use explicit
+               assignments so name/value land in the right struct members. */
+            mc_param_t hdr;
+            memset (&hdr, 0, sizeof hdr);
+            hdr.name  = (char*)name;
+            hdr.value = content;
+            hdr.flags = (uint32_t)flags;
             return mc_params_apply (pm, &hdr);
         }
     }
@@ -316,7 +322,13 @@ int mc_http_printf (mc_http_t *http, const char *name, int flags, const char *fm
         va_end(ap);
         if (ret >= 0 && ret < (int)sizeof content)
         {
-            mc_param_t hdr = { NULL, (char*)name, content, flags };
+            /* Positional init is wrong for mc_param_t field order; use explicit
+               assignments so name/value land in the right struct members. */
+            mc_param_t hdr;
+            memset (&hdr, 0, sizeof hdr);
+            hdr.name  = (char*)name;
+            hdr.value = content;
+            hdr.flags = (uint32_t)flags;
             return mc_http_apply (http, &hdr);
         }
     }

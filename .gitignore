@@ -29,6 +29,7 @@ Makefile
 
 git-commit-messages.txt
 RESUME.md
+INSTRUCTIONS.md
 # Autoconf/libtool-generated m4 macros (created by autoreconf)
 /m4/libtool.m4
 /m4/ltoptions.m4

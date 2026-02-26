@@ -97,6 +97,7 @@ host_triplet = @host@
 @BUILD_THEORA_TRUE@am__append_5 = format_theora.c
 @BUILD_AUTHCMD_TRUE@am__append_6 = auth_cmd.c
 @HAVE_YAML_TRUE@am__append_7 = cfgfile_yaml.c
+@HAVE_OPENSSL_TRUE@am__append_8 = ssl_gen.c
 @WINDOWS_FALSE@bin_PROGRAMS = mcaster1$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -129,7 +130,7 @@ am__libmcaster1_la_SOURCES_DIST = cfgfile.c main.c logging.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
 	mpeg.c flv.c songdata_api.c songdata_api.h fnmatch.c yp.c \
 	format_vorbis.c format_speex.c format_theora.c auth_cmd.c \
-	cfgfile_yaml.c
+	cfgfile_yaml.c ssl_gen.c
 @BUILD_FNMATCH_TRUE@am__objects_1 = libmcaster1_la-fnmatch.lo
 @BUILD_YP_TRUE@am__objects_2 = libmcaster1_la-yp.lo
 @BUILD_VORBIS_TRUE@am__objects_3 = libmcaster1_la-format_vorbis.lo
@@ -137,7 +138,8 @@ am__libmcaster1_la_SOURCES_DIST = cfgfile.c main.c logging.c \
 @BUILD_THEORA_TRUE@am__objects_5 = libmcaster1_la-format_theora.lo
 @BUILD_AUTHCMD_TRUE@am__objects_6 = libmcaster1_la-auth_cmd.lo
 @HAVE_YAML_TRUE@am__objects_7 = libmcaster1_la-cfgfile_yaml.lo
-am__objects_8 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
+@HAVE_OPENSSL_TRUE@am__objects_8 = libmcaster1_la-ssl_gen.lo
+am__objects_9 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
 	libmcaster1_la-logging.lo libmcaster1_la-sighandler.lo \
 	libmcaster1_la-connection.lo libmcaster1_la-global.lo \
 	libmcaster1_la-util.lo libmcaster1_la-slave.lo \
@@ -156,8 +158,8 @@ am__objects_8 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
 	libmcaster1_la-flv.lo libmcaster1_la-songdata_api.lo \
 	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
-	$(am__objects_7)
-@WINDOWS_TRUE@am_libmcaster1_la_OBJECTS = $(am__objects_8)
+	$(am__objects_7) $(am__objects_8)
+@WINDOWS_TRUE@am_libmcaster1_la_OBJECTS = $(am__objects_9)
 libmcaster1_la_OBJECTS = $(am_libmcaster1_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -176,14 +178,15 @@ am__mcaster1_SOURCES_DIST = cfgfile.c main.c logging.c sighandler.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
 	mpeg.c flv.c songdata_api.c songdata_api.h fnmatch.c yp.c \
 	format_vorbis.c format_speex.c format_theora.c auth_cmd.c \
-	cfgfile_yaml.c
-@BUILD_FNMATCH_TRUE@am__objects_9 = fnmatch.$(OBJEXT)
-@BUILD_YP_TRUE@am__objects_10 = yp.$(OBJEXT)
-@BUILD_VORBIS_TRUE@am__objects_11 = format_vorbis.$(OBJEXT)
-@BUILD_SPEEX_TRUE@am__objects_12 = format_speex.$(OBJEXT)
-@BUILD_THEORA_TRUE@am__objects_13 = format_theora.$(OBJEXT)
-@BUILD_AUTHCMD_TRUE@am__objects_14 = auth_cmd.$(OBJEXT)
-@HAVE_YAML_TRUE@am__objects_15 = cfgfile_yaml.$(OBJEXT)
+	cfgfile_yaml.c ssl_gen.c
+@BUILD_FNMATCH_TRUE@am__objects_10 = fnmatch.$(OBJEXT)
+@BUILD_YP_TRUE@am__objects_11 = yp.$(OBJEXT)
+@BUILD_VORBIS_TRUE@am__objects_12 = format_vorbis.$(OBJEXT)
+@BUILD_SPEEX_TRUE@am__objects_13 = format_speex.$(OBJEXT)
+@BUILD_THEORA_TRUE@am__objects_14 = format_theora.$(OBJEXT)
+@BUILD_AUTHCMD_TRUE@am__objects_15 = auth_cmd.$(OBJEXT)
+@HAVE_YAML_TRUE@am__objects_16 = cfgfile_yaml.$(OBJEXT)
+@HAVE_OPENSSL_TRUE@am__objects_17 = ssl_gen.$(OBJEXT)
 am_mcaster1_OBJECTS = cfgfile.$(OBJEXT) main.$(OBJEXT) \
 	logging.$(OBJEXT) sighandler.$(OBJEXT) connection.$(OBJEXT) \
 	global.$(OBJEXT) util.$(OBJEXT) slave.$(OBJEXT) \
@@ -196,9 +199,10 @@ am_mcaster1_OBJECTS = cfgfile.$(OBJEXT) main.$(OBJEXT) \
 	format_ebml.$(OBJEXT) format_opus.$(OBJEXT) auth.$(OBJEXT) \
 	auth_htpasswd.$(OBJEXT) auth_url.$(OBJEXT) \
 	format_kate.$(OBJEXT) format_skeleton.$(OBJEXT) mpeg.$(OBJEXT) \
-	flv.$(OBJEXT) songdata_api.$(OBJEXT) $(am__objects_9) \
-	$(am__objects_10) $(am__objects_11) $(am__objects_12) \
-	$(am__objects_13) $(am__objects_14) $(am__objects_15)
+	flv.$(OBJEXT) songdata_api.$(OBJEXT) $(am__objects_10) \
+	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
+	$(am__objects_14) $(am__objects_15) $(am__objects_16) \
+	$(am__objects_17)
 mcaster1_OBJECTS = $(am_mcaster1_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -265,6 +269,7 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/libmcaster1_la-slave.Plo \
 	./$(DEPDIR)/libmcaster1_la-songdata_api.Plo \
 	./$(DEPDIR)/libmcaster1_la-source.Plo \
+	./$(DEPDIR)/libmcaster1_la-ssl_gen.Plo \
 	./$(DEPDIR)/libmcaster1_la-stats.Plo \
 	./$(DEPDIR)/libmcaster1_la-util.Plo \
 	./$(DEPDIR)/libmcaster1_la-xslt.Plo \
@@ -273,8 +278,8 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/params.Po ./$(DEPDIR)/refbuf.Po \
 	./$(DEPDIR)/sighandler.Po ./$(DEPDIR)/slave.Po \
 	./$(DEPDIR)/songdata_api.Po ./$(DEPDIR)/source.Po \
-	./$(DEPDIR)/stats.Po ./$(DEPDIR)/util.Po ./$(DEPDIR)/xslt.Po \
-	./$(DEPDIR)/yp.Po
+	./$(DEPDIR)/ssl_gen.Po ./$(DEPDIR)/stats.Po \
+	./$(DEPDIR)/util.Po ./$(DEPDIR)/xslt.Po ./$(DEPDIR)/yp.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -541,7 +546,7 @@ noinst_HEADERS = admin.h cfgfile.h cfgfile_yaml.h logging.h sighandler.h connect
     fnmatch_loop.c fnmatch.h \
     format.h format_ogg.h format_mp3.h format_ebml.h \
     format_vorbis.h format_theora.h format_flac.h format_speex.h format_midi.h format_opus.h \
-    format_kate.h format_skeleton.h mpeg.h flv.h
+    format_kate.h format_skeleton.h mpeg.h flv.h ssl_gen.h
 
 mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c \
 	connection.c global.c util.c slave.c source.c stats.c refbuf.c \
@@ -551,7 +556,8 @@ mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
 	mpeg.c flv.c songdata_api.c songdata_api.h $(am__append_1) \
 	$(am__append_2) $(am__append_3) $(am__append_4) \
-	$(am__append_5) $(am__append_6) $(am__append_7)
+	$(am__append_5) $(am__append_6) $(am__append_7) \
+	$(am__append_8)
 mcaster1_DEPENDENCIES = \
     net/libmcnet.la \
     thread/libmcthread.la \
@@ -740,6 +746,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-slave.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-songdata_api.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-source.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-ssl_gen.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-stats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-xslt.Plo@am__quote@ # am--include-marker
@@ -754,6 +761,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slave.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/songdata_api.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/source.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ssl_gen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stats.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xslt.Po@am__quote@ # am--include-marker
@@ -1073,6 +1081,13 @@ libmcaster1_la-cfgfile_yaml.lo: cfgfile_yaml.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-cfgfile_yaml.lo `test -f 'cfgfile_yaml.c' || echo '$(srcdir)/'`cfgfile_yaml.c
 
+libmcaster1_la-ssl_gen.lo: ssl_gen.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-ssl_gen.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-ssl_gen.Tpo -c -o libmcaster1_la-ssl_gen.lo `test -f 'ssl_gen.c' || echo '$(srcdir)/'`ssl_gen.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcaster1_la-ssl_gen.Tpo $(DEPDIR)/libmcaster1_la-ssl_gen.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ssl_gen.c' object='libmcaster1_la-ssl_gen.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-ssl_gen.lo `test -f 'ssl_gen.c' || echo '$(srcdir)/'`ssl_gen.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -1343,6 +1358,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-slave.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-songdata_api.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-source.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-ssl_gen.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-stats.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-util.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-xslt.Plo
@@ -1357,6 +1373,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/slave.Po
 	-rm -f ./$(DEPDIR)/songdata_api.Po
 	-rm -f ./$(DEPDIR)/source.Po
+	-rm -f ./$(DEPDIR)/ssl_gen.Po
 	-rm -f ./$(DEPDIR)/stats.Po
 	-rm -f ./$(DEPDIR)/util.Po
 	-rm -f ./$(DEPDIR)/xslt.Po
@@ -1470,6 +1487,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-slave.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-songdata_api.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-source.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-ssl_gen.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-stats.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-util.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-xslt.Plo
@@ -1484,6 +1502,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/slave.Po
 	-rm -f ./$(DEPDIR)/songdata_api.Po
 	-rm -f ./$(DEPDIR)/source.Po
+	-rm -f ./$(DEPDIR)/ssl_gen.Po
 	-rm -f ./$(DEPDIR)/stats.Po
 	-rm -f ./$(DEPDIR)/util.Po
 	-rm -f ./$(DEPDIR)/xslt.Po

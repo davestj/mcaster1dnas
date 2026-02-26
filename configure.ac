@@ -175,6 +175,7 @@ XIPH_PATH_OPENSSL([
     ],
     [ AC_MSG_NOTICE([SSL disabled!])
     ])
+AM_CONDITIONAL([HAVE_OPENSSL], [test "x$openssl_ok" = "xyes"])
 
 dnl -- YAML configuration support --
 AC_ARG_WITH([yaml],

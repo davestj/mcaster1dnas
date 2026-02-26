@@ -16,9 +16,9 @@
  * ----------------------------------------------------------------------- */
 #define PACKAGE         "mcaster1dnas"
 #define PACKAGE_NAME    "Mcaster1DNAS"
-#define PACKAGE_VERSION "2.5.2-dev"
-#define PACKAGE_STRING  "Mcaster1DNAS 2.5.2-dev"
-#define VERSION         "2.5.2-dev"
+#define PACKAGE_VERSION "2.5.2-beta"
+#define PACKAGE_STRING  "Mcaster1DNAS 2.5.2-beta"
+#define VERSION         "2.5.2-beta"
 
 /* -----------------------------------------------------------------------
  * Platform

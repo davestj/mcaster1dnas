@@ -179,7 +179,7 @@ void ServiceMain(int argc, char** argv)
     argv2 [0] = argv[0];
     argv2 [1] = (char*)"-c";
     if (argc < 2)
-        argv2 [2] = (char *)"mcaster1.xml";
+        argv2 [2] = (char *)"mcaster1dnas-console.yaml";
     else
         argv2 [2] = argv[1];
 

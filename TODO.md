@@ -4,7 +4,7 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 🎯 Current Version: 2.5.2-dev
+## 🎯 Current Version: 2.5.2-beta (Windows Beta Release)
 
 ### 🧪 In Testing - v2.6.0 Features (Alpha/RC1)
 
@@ -595,7 +595,7 @@ Features, improvements, and tasks planned for future releases.
 - [ ] Occasional race condition in client disconnect
 - [ ] SSL certificate reload without restart
 - [ ] Large playlist handling optimization
-- [ ] Windows service installation improvements
+- [x] Windows service installation — NSIS installer with correct service binary, UAC-elevated Start/Stop shortcuts (v2.5.2-beta)
 
 ### Code Quality
 - [ ] Increase unit test coverage (target: 80%)
@@ -717,7 +717,7 @@ Have ideas for features? Contact us:
 
 ---
 
-**Last Updated:** February 15, 2026
-**Current Version:** 2.5.1-rc1 (Pre-Release)
+**Last Updated:** February 24, 2026
+**Current Version:** 2.5.2-beta (Windows Beta Release)
 **Next Release:** 2.6.1 (Q2 2026 - Podcast Features)
 **Following Release:** 2.6.2 (Q3 2026 - Security & Authentication)

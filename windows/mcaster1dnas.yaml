@@ -1,7 +1,8 @@
 ---
-# Mcaster1DNAS Windows Development Configuration
-# Full absolute paths — works regardless of the exe working directory.
-# Ports: 9330 (HTTP, plain only), 9443 (HTTPS/SSL only)
+# Mcaster1DNAS Windows Configuration
+# Relative paths resolve from the directory the exe runs in.
+# Default install path: C:\Program Files (x86)\Mcaster1\Mcaster1DNAS\
+# Ports: 9033 (HTTP, plain only), 9344 (HTTPS/SSL only)  [GUI sidecar - service uses 9330/9443]
 
 location: "Earth"
 admin: "admin@mcaster1.com"
@@ -33,23 +34,23 @@ limits:
 # ssl: true   -> SSL/TLS only   (reject plain HTTP)
 # ssl: absent -> auto-detect    (backward-compatible peek at TLS handshake)
 listen-sockets:
-  - port: 9330
+  - port: 9033
     bind-address: "127.0.0.1"
     ssl: false
 
-  - port: 9443
+  - port: 9344
     bind-address: "127.0.0.1"
     ssl: true
 
-# Paths — absolute paths for Windows development
+# Paths - relative to exe working directory (install root)
 paths:
-  basedir:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug"
-  logdir:          "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs"
-  webroot:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/web"
-  adminroot:       "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/admin"
-  pidfile:         "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs/mcaster1.pid"
-  # Combined cert+key PEM — ssl-certificate under paths applies to all SSL listeners
-  ssl-certificate: "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/ssl/mcaster1dnas.pem"
+  basedir:         "."
+  logdir:          "./logs"
+  webroot:         "./web"
+  adminroot:       "./admin"
+  pidfile:         "./logs/mcaster1.pid"
+  # Combined key+cert PEM - ssl-certificate under paths applies to all SSL listeners
+  ssl-certificate: "./ssl/localhost.pem"
 
   # Aliases
   aliases:
@@ -92,7 +93,7 @@ directories:
   - yp-url: "http://dir.xiph.org/cgi-bin/yp-cgi"
     yp-url-timeout: 10
     touch-interval: 300
-    yp-logfile: "C:/Users/dstjohn/dev/00_mcaster1.com/mcaster1dnas/windows/x64/Debug/logs/yp-health.log"
+    yp-logfile: "./logs/yp-health.log"
 
 # Mount point definitions with ICY 2.2 metadata
 mounts:

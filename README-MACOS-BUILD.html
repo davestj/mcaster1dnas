@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mcaster1DNAS — macOS Build Guide</title>
+<style>
+  /* ─── Design System (from mcaster1.com) ─────────────────────────────────── */
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+    --color-brand-blue:   #0ea5e9;
+    --color-brand-cyan:   #06b6d4;
+    --color-dnas-green:   #22c55e;
+    --color-green-dark:   #16a34a;
+    --color-pro-blue:     #3b82f6;
+    --color-navy:         #1e40af;
+
+    --color-bg-dark1:     #0c1a2e;
+    --color-bg-dark2:     #0f3460;
+    --color-bg-light:     #f8fafc;
+    --color-bg-white:     #ffffff;
+    --color-bg-accent:    #f1f5f9;
+
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-text-light:   #9ca3af;
+
+    --color-border-light: #e2e8f0;
+    --color-border-med:   #cbd5e1;
+
+    --gradient-brand: linear-gradient(135deg, #0ea5e9, #22c55e);
+    --gradient-hero:  linear-gradient(135deg, #0c1a2e, #0f3460);
+
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.10);
+    --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.10);
+    --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.10);
+
+    --radius-sm:  0.375rem;
+    --radius-md:  0.5rem;
+    --radius-lg:  0.75rem;
+    --radius-xl:  1rem;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg-light);
+    color: var(--color-text-primary);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* ─── Hero banner ────────────────────────────────────────────────────────── */
+  .hero {
+    background: var(--gradient-hero);
+    padding: 3.5rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 165, 233, 0.12);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 1rem;
+    border-radius: 9999px;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 span {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.78);
+    font-size: 1.05rem;
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+  }
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+  /* ─── Layout ─────────────────────────────────────────────────────────────── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  /* ─── Section cards ──────────────────────────────────────────────────────── */
+  .card {
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  .card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .icon-blue  { background: linear-gradient(135deg,#0ea5e9,#0284c7); }
+  .icon-green { background: linear-gradient(135deg,#22c55e,#16a34a); }
+  .icon-teal  { background: linear-gradient(135deg,#06b6d4,#0891b2); }
+  .icon-purple{ background: linear-gradient(135deg,#7c3aed,#4f46e5); }
+
+  .card-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    flex: 1;
+  }
+  .card-header .step-num {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Code blocks ────────────────────────────────────────────────────────── */
+  pre, code {
+    font-family: var(--font-mono);
+    font-size: 0.87rem;
+  }
+  pre {
+    background: var(--color-bg-dark1);
+    color: #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.4rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+  }
+  pre .comment { color: #64748b; font-style: italic; }
+  pre .cmd     { color: var(--color-brand-blue); }
+  pre .flag    { color: var(--color-dnas-green); }
+  pre .path    { color: #fbbf24; }
+  pre .output  { color: #94a3b8; }
+  code {
+    background: var(--color-bg-accent);
+    color: #0f3460;
+    padding: 0.15em 0.45em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-med);
+    font-size: 0.84em;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border: none;
+    font-size: inherit;
+  }
+
+  /* ─── Tables ─────────────────────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  th {
+    background: var(--color-bg-accent);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.65rem 1rem;
+    border-bottom: 2px solid var(--color-border-med);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--color-border-light);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--color-bg-accent); }
+  td code { font-size: 0.82rem; }
+
+  /* ─── Badges ─────────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    border: 1px solid;
+    vertical-align: middle;
+  }
+  .badge-green  { background:#dcfce7; color:#15803d; border-color:#22c55e; }
+  .badge-blue   { background:#e0f2fe; color:#0369a1; border-color:#38bdf8; }
+  .badge-teal   { background:#cffafe; color:#0e7490; border-color:#22d3ee; }
+  .badge-purple { background:#ede9fe; color:#6d28d9; border-color:#a78bfa; }
+  .badge-orange { background:#fff7ed; color:#c2410c; border-color:#fb923c; }
+
+  /* ─── Info / warning / note blocks ──────────────────────────────────────── */
+  .callout {
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    border-left: 4px solid;
+    font-size: 0.93rem;
+  }
+  .callout-info    { background:#eff6ff; border-color:#3b82f6; color:#1e40af; }
+  .callout-success { background:#f0fdf4; border-color:#22c55e; color:#15803d; }
+  .callout-warn    { background:#fffbeb; border-color:#f59e0b; color:#92400e; }
+  .callout-tip     { background:#f0fdfa; border-color:#06b6d4; color:#0e7490; }
+  .callout strong  { font-weight: 700; }
+
+  /* ─── Lists ──────────────────────────────────────────────────────────────── */
+  ul, ol { padding-left: 1.5rem; margin: 0.75rem 0; }
+  li { margin: 0.35rem 0; }
+  li code { font-size: 0.82rem; }
+
+  /* ─── Section headings ───────────────────────────────────────────────────── */
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 1.5rem 0 0.6rem;
+  }
+  h3:first-child { margin-top: 0; }
+  p { margin: 0.6rem 0; }
+  p:first-child { margin-top: 0; }
+
+  /* ─── Quick-start banner ─────────────────────────────────────────────────── */
+  .quickstart {
+    background: var(--gradient-brand);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    color: #fff;
+  }
+  .quickstart h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .quickstart pre {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #f0f9ff;
+    margin: 0;
+  }
+
+  /* ─── Footer ─────────────────────────────────────────────────────────────── */
+  footer {
+    background: var(--color-bg-dark1);
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+  }
+  footer a { color: var(--color-brand-blue); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ─── Horizontal rule ────────────────────────────────────────────────────── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 2.5rem 1rem 2rem; }
+    .card { padding: 1.25rem; }
+    .hero-meta { flex-direction: column; align-items: center; gap: 0.5rem; }
+    pre { font-size: 0.8rem; padding: 1rem; }
+    table { font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Hero ────────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-badge">macOS Build Guide</div>
+  <h1>Mcaster1DNAS &mdash; <span>macOS ARM64</span> Build</h1>
+  <p>Complete instructions for compiling and running Mcaster1DNAS on Apple Silicon (arm64) and Intel Macs using Homebrew and GNU Autotools.</p>
+  <div class="hero-meta">
+    <span>&#9670; Version 2.5.2-dev</span>
+    <span>&#9670; Branch: macos-dev</span>
+    <span>&#9670; Platform: Darwin arm64 (Apple M-series)</span>
+    <span>&#9670; Build: Autotools (not CMake)</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ─── Quick Start ──────────────────────────────────────────────────────── -->
+  <div class="quickstart">
+    <h2>&#9889; Quick Start (Apple Silicon)</h2>
+    <pre><span class="comment"># Install all dependencies and build in one pass</span>
+<span class="cmd">brew install</span> <span class="flag">autoconf automake libtool pkg-config \
+  libogg libvorbis theora speex openssl@3 \
+  libxml2 libxslt libyaml curl</span>
+
+<span class="cmd">./build-macos.sh</span>          <span class="comment"># detects macOS, sets all Homebrew paths</span>
+<span class="cmd">./build/bin/mcaster1</span> <span class="flag">-c</span> <span class="path">mcaster1dnas-console.yaml</span></pre>
+  </div>
+
+  <!-- ─── Section 1: Overview ─────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">&#9670;</div>
+      <h2>Project Overview</h2>
+    </div>
+
+    <p>
+      <strong>Mcaster1DNAS</strong> (Digital Network Audio Server) is a fork of Icecast-KH / Icecast 2.x,
+      extended with ICY 2.2 extended metadata, YAML configuration, per-listener SSL enforcement,
+      static mount point definitions, and a REST song-history JSON API.
+    </p>
+    <p>
+      The primary server is written in C (cross-platform), targeting Linux, macOS, and Windows.
+      This guide covers macOS builds using GNU Autotools.
+    </p>
+
+    <h3>Platform Status</h3>
+    <table>
+      <tr><th>Platform</th><th>Arch</th><th>Status</th><th>Build Tool</th></tr>
+      <tr>
+        <td>macOS (Apple Silicon)</td>
+        <td><span class="badge badge-blue">arm64</span></td>
+        <td><span class="badge badge-green">Active</span></td>
+        <td>Autotools + Homebrew</td>
+      </tr>
+      <tr>
+        <td>macOS (Intel)</td>
+        <td><span class="badge badge-teal">x86_64</span></td>
+        <td><span class="badge badge-teal">Supported</span></td>
+        <td>Autotools + Homebrew</td>
+      </tr>
+      <tr>
+        <td>Linux (Debian/Ubuntu)</td>
+        <td><span class="badge badge-blue">x86_64 / arm64</span></td>
+        <td><span class="badge badge-green">Active</span></td>
+        <td>Autotools + apt</td>
+      </tr>
+      <tr>
+        <td>Linux (RHEL/Fedora)</td>
+        <td><span class="badge badge-blue">x86_64</span></td>
+        <td><span class="badge badge-green">Supported</span></td>
+        <td>Autotools + dnf</td>
+      </tr>
+      <tr>
+        <td>Windows (VS 2022)</td>
+        <td><span class="badge badge-purple">x64</span></td>
+        <td><span class="badge badge-green">Active</span></td>
+        <td>MSBuild + vcpkg</td>
+      </tr>
+    </table>
+
+    <div class="callout callout-info">
+      <strong>Note on arm64:</strong> This guide targets Apple Silicon (M1, M2, M3, M4 chips).
+      Homebrew installs to <code>/opt/homebrew</code> on arm64 vs <code>/usr/local</code> on Intel.
+      The <code>build-macos.sh</code> script detects the active Homebrew prefix automatically via
+      <code>brew --prefix</code>, so the same script works on both architectures.
+    </div>
+  </div>
+
+  <!-- ─── Section 2: Why configure fails ─────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-teal">&#9650;</div>
+      <h2>Why Plain <code>./configure</code> Fails on macOS</h2>
+    </div>
+
+    <p>
+      Running <code>./configure</code> without arguments fails on macOS Apple Silicon with:
+    </p>
+    <pre><span class="output">configure: error: must have Ogg Vorbis v1.0 or above installed</span></pre>
+
+    <p>
+      The root cause is that the legacy Xiph autoconf macros (<code>ogg.m4</code>,
+      <code>vorbis.m4</code>, <code>theora.m4</code>, <code>speex.m4</code>)
+      hard-code <code>/usr/local/include</code> as their fallback header search path
+      and do <em>not</em> call <code>pkg-config</code>. On Apple Silicon, Homebrew
+      installs to <code>/opt/homebrew</code>, so the macros never find
+      <code>ogg/ogg.h</code>.
+    </p>
+
+    <h3>Affected macros and their fix</h3>
+    <table>
+      <tr><th>Macro</th><th>Default fallback</th><th>Fix (passed to configure)</th></tr>
+      <tr>
+        <td><code>m4/ogg.m4</code></td>
+        <td><code>/usr/local</code></td>
+        <td><code>--with-ogg=$(brew --prefix)</code></td>
+      </tr>
+      <tr>
+        <td><code>m4/vorbis.m4</code></td>
+        <td><code>/usr/local</code></td>
+        <td><code>--with-vorbis=$(brew --prefix)</code></td>
+      </tr>
+      <tr>
+        <td><code>m4/theora.m4</code></td>
+        <td><code>/usr/local</code></td>
+        <td><code>--with-theora=$(brew --prefix)</code></td>
+      </tr>
+      <tr>
+        <td><code>m4/speex.m4</code></td>
+        <td><code>/usr/local</code></td>
+        <td><code>--with-speex=$(brew --prefix)</code></td>
+      </tr>
+      <tr>
+        <td><code>m4/xiph_openssl.m4</code></td>
+        <td>calls pkg-config</td>
+        <td>Works; add keg-only path to <code>PKG_CONFIG_PATH</code></td>
+      </tr>
+    </table>
+
+    <p>
+      Additionally, <code>libxml2</code>, <code>openssl@3</code>, and <code>curl</code>
+      are <em>keg-only</em> formulae (Homebrew does not link them into its main prefix
+      because macOS ships system versions). We must add their individual pkgconfig
+      directories to <code>PKG_CONFIG_PATH</code>.
+    </p>
+  </div>
+
+  <!-- ─── Section 3: Dependencies ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-green">&#10003;</div>
+      <h2>Step 1 &mdash; Install Dependencies via Homebrew</h2>
+      <span class="step-num">Step 1 of 5</span>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>Tip:</strong> If you already ran <code>./build-macos.sh</code>, it checks for
+      missing packages and prints the exact <code>brew install</code> command to run.
+    </div>
+
+    <h3>Install all required packages</h3>
+    <pre><span class="comment"># Autotools build chain</span>
+<span class="cmd">brew install</span> <span class="flag">autoconf automake libtool pkg-config</span>
+
+<span class="comment"># Audio codec libraries</span>
+<span class="cmd">brew install</span> <span class="flag">libogg libvorbis theora speex</span>
+
+<span class="comment"># TLS / SSL</span>
+<span class="cmd">brew install</span> <span class="flag">openssl@3</span>
+
+<span class="comment"># XML / XSLT (used for web interface templates)</span>
+<span class="cmd">brew install</span> <span class="flag">libxml2 libxslt</span>
+
+<span class="comment"># YAML configuration support</span>
+<span class="cmd">brew install</span> <span class="flag">libyaml</span>
+
+<span class="comment"># HTTP client (YP directory support)</span>
+<span class="cmd">brew install</span> <span class="flag">curl</span></pre>
+
+    <h3>Dependency reference table</h3>
+    <table>
+      <tr><th>Package</th><th>Homebrew formula</th><th>Purpose</th><th>Keg-only?</th></tr>
+      <tr>
+        <td>autoconf</td>
+        <td><code>autoconf</code></td>
+        <td>generates configure script</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>automake</td>
+        <td><code>automake</code></td>
+        <td>generates Makefile.in</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>GNU libtool</td>
+        <td><code>libtool</code></td>
+        <td>provides glibtoolize (autogen.sh)</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>pkg-config</td>
+        <td><code>pkg-config</code></td>
+        <td>library discovery helper</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>libogg</td>
+        <td><code>libogg</code></td>
+        <td>Ogg container / bitstream</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>libvorbis</td>
+        <td><code>libvorbis</code></td>
+        <td>Vorbis audio codec</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>theora</td>
+        <td><code>theora</code></td>
+        <td>Theora video codec</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>speex</td>
+        <td><code>speex</code></td>
+        <td>Speex audio codec</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>OpenSSL 3</td>
+        <td><code>openssl@3</code></td>
+        <td>TLS/SSL for HTTPS streaming</td>
+        <td><span class="badge badge-orange">Yes</span></td>
+      </tr>
+      <tr>
+        <td>libxml2</td>
+        <td><code>libxml2</code></td>
+        <td>XML config parsing</td>
+        <td><span class="badge badge-orange">Yes</span></td>
+      </tr>
+      <tr>
+        <td>libxslt</td>
+        <td><code>libxslt</code></td>
+        <td>XSL web interface templates</td>
+        <td><span class="badge badge-orange">Yes</span></td>
+      </tr>
+      <tr>
+        <td>libyaml</td>
+        <td><code>libyaml</code></td>
+        <td>YAML configuration support</td>
+        <td><span class="badge badge-green">No</span></td>
+      </tr>
+      <tr>
+        <td>curl</td>
+        <td><code>curl</code></td>
+        <td>YP directory HTTP client</td>
+        <td><span class="badge badge-orange">Yes</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ─── Section 4: Quick build ───────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">&#9654;</div>
+      <h2>Step 2 &mdash; Build with build-macos.sh</h2>
+      <span class="step-num">Step 2 of 5</span>
+    </div>
+
+    <p>
+      The recommended build path uses <code>build-macos.sh</code>, which detects the OS,
+      verifies Homebrew packages, sets all required environment variables, and runs
+      configure + make automatically.
+    </p>
+
+    <h3>Basic build (output to <code>./build/</code>)</h3>
+    <pre><span class="cmd">./build-macos.sh</span></pre>
+
+    <h3>Common options</h3>
+    <table>
+      <tr><th>Flag</th><th>Effect</th></tr>
+      <tr><td><code>--prefix /usr/local</code></td><td>Install to <code>/usr/local</code> instead of <code>./build/</code></td></tr>
+      <tr><td><code>--clean</code></td><td>Run <code>make clean</code> before building</td></tr>
+      <tr><td><code>--no-install</code></td><td>Compile only; skip <code>make install</code></td></tr>
+      <tr><td><code>--regenerate</code></td><td>Force <code>./autogen.sh</code> before configure</td></tr>
+      <tr><td><code>--no-yaml</code></td><td>Build without libyaml (YAML config disabled)</td></tr>
+      <tr><td><code>--no-ssl</code></td><td>Build without OpenSSL (HTTPS disabled)</td></tr>
+    </table>
+
+    <h3>Examples</h3>
+    <pre><span class="comment"># Clean build, install to /usr/local</span>
+<span class="cmd">./build-macos.sh</span> <span class="flag">--clean --prefix /usr/local</span>
+
+<span class="comment"># Compile only (do not install)</span>
+<span class="cmd">./build-macos.sh</span> <span class="flag">--no-install</span>
+
+<span class="comment"># Regenerate autotools files first (needed after configure.ac changes)</span>
+<span class="cmd">./build-macos.sh</span> <span class="flag">--regenerate --clean</span></pre>
+  </div>
+
+  <!-- ─── Section 5: Manual configure ─────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-teal">&#9881;</div>
+      <h2>Step 3 &mdash; Manual Configure (Advanced)</h2>
+      <span class="step-num">Step 3 of 5</span>
+    </div>
+
+    <p>
+      If you prefer to run configure directly, we must export the Homebrew paths
+      before calling it. The environment variables below are what
+      <code>build-macos.sh</code> sets internally.
+    </p>
+
+    <h3>Apple Silicon (arm64 &mdash; Homebrew at /opt/homebrew)</h3>
+    <pre><span class="comment"># Capture the active Homebrew prefix once</span>
+<span class="cmd">export</span> <span class="flag">BREW</span>="$(<span class="cmd">brew</span> --prefix)"
+
+<span class="comment"># Keg-only packages need explicit pkgconfig paths</span>
+<span class="cmd">export</span> <span class="flag">PKG_CONFIG_PATH</span>="${BREW}/lib/pkgconfig:${BREW}/opt/openssl@3/lib/pkgconfig:${BREW}/opt/curl/lib/pkgconfig:${BREW}/opt/libxml2/lib/pkgconfig:${BREW}/opt/libxslt/lib/pkgconfig:${BREW}/opt/libyaml/lib/pkgconfig"
+
+<span class="cmd">export</span> <span class="flag">CPPFLAGS</span>="-I${BREW}/include -I${BREW}/opt/openssl@3/include -I${BREW}/opt/libxml2/include/libxml2"
+<span class="cmd">export</span> <span class="flag">LDFLAGS</span>="-L${BREW}/lib -L${BREW}/opt/openssl@3/lib -L${BREW}/opt/libxml2/lib"
+
+<span class="comment"># Run configure; --with-ogg/vorbis/theora/speex point the legacy Xiph m4 macros
+# to the Homebrew prefix instead of their /usr/local fallback</span>
+<span class="cmd">./configure</span> \
+    <span class="flag">--prefix="${HOME}/mcaster1-dev"</span> \
+    <span class="flag">--with-ogg="${BREW}"</span> \
+    <span class="flag">--with-vorbis="${BREW}"</span> \
+    <span class="flag">--with-theora="${BREW}"</span> \
+    <span class="flag">--with-speex="${BREW}"</span> \
+    <span class="flag">--with-yaml</span>
+
+<span class="cmd">make</span> <span class="flag">-j$(sysctl -n hw.logicalcpu)</span></pre>
+
+    <h3>Intel Mac (x86_64 &mdash; Homebrew at /usr/local)</h3>
+    <pre><span class="comment"># On Intel, Homebrew matches the legacy /usr/local fallback, so --with-XXX
+# flags are optional. keg-only PKG_CONFIG_PATH still required.</span>
+<span class="cmd">export</span> <span class="flag">BREW</span>="$(<span class="cmd">brew</span> --prefix)"    <span class="comment"># resolves to /usr/local on Intel</span>
+
+<span class="cmd">export</span> <span class="flag">PKG_CONFIG_PATH</span>="${BREW}/opt/openssl@3/lib/pkgconfig:${BREW}/opt/curl/lib/pkgconfig:${BREW}/opt/libxml2/lib/pkgconfig"
+<span class="cmd">export</span> <span class="flag">CPPFLAGS</span>="-I${BREW}/opt/openssl@3/include"
+<span class="cmd">export</span> <span class="flag">LDFLAGS</span>="-L${BREW}/opt/openssl@3/lib"
+
+<span class="cmd">./configure</span> <span class="flag">--prefix="${HOME}/mcaster1-dev" --with-yaml</span>
+<span class="cmd">make</span> <span class="flag">-j$(sysctl -n hw.logicalcpu)</span></pre>
+
+    <h3>Linux (Debian/Ubuntu)</h3>
+    <pre><span class="comment"># Install system packages first</span>
+<span class="cmd">sudo apt-get install</span> <span class="flag">-y \
+    autoconf automake libtool pkg-config \
+    libogg-dev libvorbis-dev libtheora-dev libspeex-dev \
+    libssl-dev libxml2-dev libxslt1-dev libyaml-dev libcurl4-openssl-dev</span>
+
+<span class="comment"># On Linux, pkg-config finds everything; no env var overrides needed</span>
+<span class="cmd">./configure</span> <span class="flag">--prefix=/usr/local --with-yaml</span>
+<span class="cmd">make</span> <span class="flag">-j$(nproc)</span>
+<span class="cmd">sudo make install</span></pre>
+
+    <h3>Linux (RHEL/Fedora)</h3>
+    <pre><span class="cmd">sudo dnf install</span> <span class="flag">-y \
+    autoconf automake libtool pkgconf-pkg-config \
+    libogg-devel libvorbis-devel libtheora-devel speex-devel \
+    openssl-devel libxml2-devel libxslt-devel libyaml-devel libcurl-devel</span>
+
+<span class="cmd">./configure</span> <span class="flag">--prefix=/usr/local --with-yaml</span>
+<span class="cmd">make</span> <span class="flag">-j$(nproc)</span>
+<span class="cmd">sudo make install</span></pre>
+  </div>
+
+  <!-- ─── Section 6: Platform differences ─────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-purple">&#9670;</div>
+      <h2>Platform Differences &mdash; Source Code Compatibility</h2>
+    </div>
+
+    <p>
+      The server source is already written for cross-platform compatibility.
+      The table below documents the Linux-specific APIs used in the codebase and
+      how each one is handled on macOS.
+    </p>
+
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Linux API</th>
+        <th>macOS handling</th>
+        <th>Guard</th>
+      </tr>
+      <tr>
+        <td>Signal I/O</td>
+        <td><code>signalfd()</code></td>
+        <td>Excluded at compile time; traditional <code>sigaction()</code> used instead</td>
+        <td><code>#ifdef HAVE_SIGNALFD</code></td>
+      </tr>
+      <tr>
+        <td>Close-on-exec pipe</td>
+        <td><code>pipe2(fd, O_CLOEXEC)</code></td>
+        <td>Falls back to <code>pipe()</code> + <code>fcntl(FD_CLOEXEC)</code></td>
+        <td><code>#ifdef HAVE_PIPE2</code></td>
+      </tr>
+      <tr>
+        <td>Privilege drop</td>
+        <td><code>setresuid/setresgid</code></td>
+        <td>Falls back to POSIX <code>setuid/setgid</code></td>
+        <td><code>#ifdef HAVE_SETRESUID</code></td>
+      </tr>
+      <tr>
+        <td>Executable path</td>
+        <td><code>/proc/self/exe</code></td>
+        <td><code>_NSGetExecutablePath()</code> from <code>mach-o/dyld.h</code></td>
+        <td><code>#ifdef __APPLE__</code></td>
+      </tr>
+      <tr>
+        <td>Epoll / I/O events</td>
+        <td><code>epoll_*</code></td>
+        <td>Not used; codebase uses POSIX <code>poll()</code> throughout</td>
+        <td>N/A (poll is portable)</td>
+      </tr>
+      <tr>
+        <td>High-res clock</td>
+        <td><code>clock_gettime()</code></td>
+        <td>Available on macOS 10.12+; detected by configure</td>
+        <td><code>HAVE_CLOCK_GETTIME</code></td>
+      </tr>
+    </table>
+
+    <div class="callout callout-success">
+      <strong>Good news:</strong> We do not use <code>epoll</code> anywhere in the server.
+      The connection loop uses POSIX <code>poll()</code>, which works identically on Linux,
+      macOS, and all BSD derivatives. No kqueue shim is needed.
+    </div>
+  </div>
+
+  <!-- ─── Section 7: autogen.sh macOS notes ────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-teal">&#9881;</div>
+      <h2>Step 4 &mdash; Regenerating Build Files (autogen.sh)</h2>
+      <span class="step-num">Step 4 of 5</span>
+    </div>
+
+    <p>
+      We only need to run <code>autogen.sh</code> when <code>configure.ac</code>,
+      <code>Makefile.am</code>, or any <code>m4/*.m4</code> file changes. The generated
+      <code>configure</code> script is checked in; a fresh clone can skip this step.
+    </p>
+
+    <div class="callout callout-warn">
+      <strong>macOS note:</strong> Homebrew installs GNU libtool as <code>glibtoolize</code>
+      because macOS ships its own <code>libtoolize</code> stub. The updated
+      <code>autogen.sh</code> detects Darwin and selects <code>glibtoolize</code> automatically.
+    </div>
+
+    <h3>Regenerate the build system</h3>
+    <pre><span class="comment"># autogen.sh now auto-detects glibtoolize on macOS</span>
+<span class="cmd">./autogen.sh</span>
+<span class="output">  OS         : Darwin
+  libtoolize : glibtoolize
+  aclocal ...
+  autoheader
+  glibtoolize
+  automake
+  autoconf</span></pre>
+
+    <h3>Manual override (if glibtoolize is in a non-standard location)</h3>
+    <pre><span class="cmd">LIBTOOLIZE</span>="/opt/homebrew/opt/libtool/bin/glibtoolize" <span class="cmd">./autogen.sh</span></pre>
+  </div>
+
+  <!-- ─── Section 8: Running the server ───────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-green">&#9654;</div>
+      <h2>Step 5 &mdash; Run and Verify</h2>
+      <span class="step-num">Step 5 of 5</span>
+    </div>
+
+    <h3>Start the server with the console config</h3>
+    <pre><span class="comment"># Start in foreground (Ctrl-C to stop)</span>
+<span class="cmd">./build/bin/mcaster1</span> <span class="flag">-c</span> <span class="path">mcaster1dnas-console.yaml</span>
+
+<span class="comment"># Start in background (daemonize)</span>
+<span class="cmd">./build/bin/mcaster1</span> <span class="flag">-c</span> <span class="path">mcaster1dnas-console.yaml</span> <span class="flag">-b</span>
+
+<span class="comment"># Print version and exit</span>
+<span class="cmd">./build/bin/mcaster1</span> <span class="flag">--version</span></pre>
+
+    <h3>Verify the server is running</h3>
+    <pre><span class="comment"># Web interface (plain HTTP)</span>
+<span class="cmd">open</span> http://127.0.0.1:9330/status.xsl
+
+<span class="comment"># Web interface (HTTPS — accepts self-signed cert warning)</span>
+<span class="cmd">open</span> https://127.0.0.1:9443/status.xsl
+
+<span class="comment"># Admin interface (uses source-password from config)</span>
+<span class="cmd">open</span> https://127.0.0.1:9443/admin/
+
+<span class="comment"># Song history REST API</span>
+<span class="cmd">curl</span> <span class="flag">-s</span> http://127.0.0.1:9330/songdata.xsl | head -20</pre>
+
+    <h3>Port reference</h3>
+    <table>
+      <tr><th>Port</th><th>Protocol</th><th>Config file</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>9330</code></td>
+        <td><span class="badge badge-blue">HTTP</span></td>
+        <td><code>mcaster1dnas-console.yaml</code></td>
+        <td>Console / server plain HTTP</td>
+      </tr>
+      <tr>
+        <td><code>9443</code></td>
+        <td><span class="badge badge-green">HTTPS</span></td>
+        <td><code>mcaster1dnas-console.yaml</code></td>
+        <td>Console / server TLS</td>
+      </tr>
+      <tr>
+        <td><code>9033</code></td>
+        <td><span class="badge badge-blue">HTTP</span></td>
+        <td><code>windows/mcaster1dnas.yaml</code></td>
+        <td>GUI sidecar (Windows only)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ─── Section 9: Troubleshooting ──────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-orange" style="background:linear-gradient(135deg,#f59e0b,#d97706);">&#9888;</div>
+      <h2>Troubleshooting</h2>
+    </div>
+
+    <h3>configure fails: "must have Ogg Vorbis installed"</h3>
+    <p>We did not pass <code>--with-ogg</code> / <code>--with-vorbis</code> to configure, or the
+    wrong Homebrew prefix was used. Use <code>build-macos.sh</code> which handles this automatically.</p>
+    <pre><span class="output">configure: error: must have Ogg Vorbis v1.0 or above installed</span>
+
+<span class="comment"># Verify libogg is installed</span>
+<span class="cmd">brew list libogg</span>
+<span class="cmd">pkg-config</span> <span class="flag">--cflags --libs ogg</span>
+
+<span class="comment"># Fix: use build-macos.sh</span>
+<span class="cmd">./build-macos.sh</span> <span class="flag">--clean --regenerate</span></pre>
+
+    <h3>autogen.sh fails: "libtoolize: command not found"</h3>
+    <p>Homebrew libtool provides <code>glibtoolize</code>, not <code>libtoolize</code>.
+    The updated autogen.sh auto-detects this on Darwin. If needed, override manually:</p>
+    <pre><span class="cmd">brew install libtool</span>
+<span class="cmd">LIBTOOLIZE</span>="$(brew --prefix)/opt/libtool/bin/glibtoolize" <span class="cmd">./autogen.sh</span></pre>
+
+    <h3>SSL / OpenSSL errors at configure</h3>
+    <p><code>openssl@3</code> is keg-only. The <code>PKG_CONFIG_PATH</code> must include
+    its pkgconfig directory explicitly:</p>
+    <pre><span class="cmd">export PKG_CONFIG_PATH</span>="$(brew --prefix)/opt/openssl@3/lib/pkgconfig"
+<span class="cmd">./configure</span> <span class="flag">...</span></pre>
+
+    <h3>Linker errors: "library not found for -lssl"</h3>
+    <pre><span class="cmd">export LDFLAGS</span>="-L$(brew --prefix)/opt/openssl@3/lib"
+<span class="cmd">./configure</span> <span class="flag">...</span></pre>
+
+    <h3>Check what configure detected</h3>
+    <pre><span class="comment"># Read the generated config.h summary</span>
+<span class="cmd">grep</span> <span class="flag">-E "HAVE_OPENSSL|HAVE_YAML|HAVE_OGG|HAVE_VORBIS|HAVE_THEORA"</span> <span class="path">config.h</span></pre>
+
+    <h3>Check full configure output</h3>
+    <pre><span class="cmd">tail</span> <span class="flag">-100</span> <span class="path">config.log</span> <span class="flag">| grep</span> <span class="flag">-E "error|warning"</span></pre>
+  </div>
+
+  <!-- ─── Section 10: Git workflow ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-purple">&#9670;</div>
+      <h2>Git Workflow</h2>
+    </div>
+
+    <pre><span class="comment"># Branch hierarchy</span>
+<span class="output">macos-dev  →  development  →  main</span>
+
+<span class="comment"># macOS-specific work happens on macos-dev</span>
+<span class="cmd">git checkout</span> <span class="flag">macos-dev</span>
+
+<span class="comment"># PRs target development branch</span>
+<span class="comment"># Never force-push development or main</span></pre>
+
+    <p>
+      macOS-specific files on <code>macos-dev</code>:
+    </p>
+    <ul>
+      <li><code>build-macos.sh</code> &mdash; universal macOS/Linux build script</li>
+      <li><code>autogen.sh</code> &mdash; updated for <code>glibtoolize</code> on macOS</li>
+      <li><code>README-MACOS-BUILD.html</code> &mdash; this document</li>
+    </ul>
+  </div>
+
+</div><!-- /.container -->
+
+<footer>
+  <p>
+    <strong>Mcaster1DNAS</strong> &mdash; Digital Network Audio Server &mdash; v2.5.2-dev
+    &mdash; Branch: <code>macos-dev</code>
+    &mdash; Platform: macOS arm64 (Apple Silicon)
+  </p>
+  <p style="margin-top:0.5rem;">
+    Fork of <a href="https://github.com/karlheyes/icecast-kh">Icecast-KH</a> by Karl Heyes &amp; <a href="https://icecast.org/">Icecast2</a> by Xiph.Org &mdash;
+    Maintained by <a href="https://github.com/davestj">David St John</a> &mdash;
+    <a href="https://mcaster1.com/">mcaster1.com</a>
+  </p>
+</footer>
+
+</body>
+</html>

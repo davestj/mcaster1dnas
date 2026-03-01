@@ -799,7 +799,7 @@ static int icecurl_getpass(void *client, char *prompt, char *buffer, int buflen)
 #endif
 
 #if LIBCURL_VERSION_NUM >= 0x072000
-size_t icecurl_server_running (void *clientp, curl_off_t dltotal, curl_off_t dlnow,
+int icecurl_server_running (void *clientp, curl_off_t dltotal, curl_off_t dlnow,
         curl_off_t ultotal, curl_off_t ulnow)
 {
     static time_t shutdown_time = (time_t)0;

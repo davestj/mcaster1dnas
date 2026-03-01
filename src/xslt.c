@@ -201,7 +201,15 @@ int xslt_SaveResultToBuf (refbuf_t **bptr, int *len, xmlDocPtr result, xsltStyle
     xsltSaveResultTo (buf, result, style);
     *bptr = x.head;
     *len = x.len;
+#if LIBXML_VERSION < 21200
+    /* libxml2 < 2.12: xsltSaveResultTo does not close the output buffer,
+     * so we must do it here to avoid a resource leak. */
     xmlOutputBufferClose(buf);
+#endif
+    /* libxml2 >= 2.12: xmlSaveFileTo / htmlSaveFileTo (called internally by
+     * xsltSaveResultTo) now close and free the output buffer themselves.
+     * Calling xmlOutputBufferClose again would be a double-free, triggering
+     * the macOS allocator abort "POINTER_BEING_FREED_WAS_NOT_ALLOCATED". */
     return 0;
 }
 

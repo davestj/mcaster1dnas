@@ -1,6 +1,11 @@
 #!/bin/sh
 # Run this to set up the build system: configure, makefiles, etc.
 # (based on the version in enlightenment's cvs)
+#
+# We detect macOS (Darwin) and Linux and select the correct libtoolize
+# command for each platform. On macOS with Homebrew, GNU libtool ships as
+# glibtoolize. On Linux, it is libtoolize. The $LIBTOOLIZE environment
+# variable overrides autodetection when set by the caller (e.g. build-macos.sh).
 
 package="mcaster1"
 
@@ -11,6 +16,31 @@ test -z "$srcdir" && srcdir=.
 cd "$srcdir"
 DIE=0
 
+# ── Detect OS and pick the correct libtoolize ─────────────────────────────────
+OS_TYPE="$(uname -s 2>/dev/null)"
+if test -z "$LIBTOOLIZE"; then
+    case "$OS_TYPE" in
+        Darwin)
+            # We prefer the Homebrew-installed glibtoolize over the macOS system stub.
+            if command -v glibtoolize > /dev/null 2>&1; then
+                LIBTOOLIZE=glibtoolize
+            elif command -v libtoolize > /dev/null 2>&1; then
+                LIBTOOLIZE=libtoolize
+            else
+                LIBTOOLIZE=""
+            fi
+            ;;
+        *)
+            # Linux and other POSIX systems use plain libtoolize.
+            if command -v libtoolize > /dev/null 2>&1; then
+                LIBTOOLIZE=libtoolize
+            else
+                LIBTOOLIZE=""
+            fi
+            ;;
+    esac
+fi
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
         echo
         echo "You must have autoconf installed to compile $package."
@@ -19,7 +49,7 @@ DIE=0
         DIE=1
 }
 VERSIONGREP="sed -e s/.*[^0-9\.]\([0-9]\.[0-9]\).*/\1/"
-                                                                                
+
 # do we need automake?
 if test -r Makefile.am; then
     echo Checking for automake version
@@ -70,20 +100,29 @@ if test -r Makefile.am; then
       }
 fi
 
-(libtoolize --version)  > /dev/null 2>&1 || {
-	echo
-	echo "You must have libtool installed to compile $package."
-	echo "Download the appropriate package for your system,"
-	echo "or get the source from one of the GNU ftp sites"
-	echo "listed in http://www.gnu.org/order/ftp.html"
-	DIE=1
-}
+if test -z "$LIBTOOLIZE"; then
+    echo
+    echo "You must have libtool installed to compile $package."
+    echo "  Linux:  sudo apt-get install libtool  (or equivalent)"
+    echo "  macOS:  brew install libtool"
+    echo ""
+    echo "Note: on macOS with Homebrew, glibtoolize is used instead of libtoolize."
+    DIE=1
+else
+    ($LIBTOOLIZE --version) > /dev/null 2>&1 || {
+        echo
+        echo "libtoolize command '$LIBTOOLIZE' not functional."
+        DIE=1
+    }
+fi
 
 if test "$DIE" -eq 1; then
         exit 1
 fi
 
 echo "Generating configuration files for $package, please wait...."
+echo "  OS         : $OS_TYPE"
+echo "  libtoolize : $LIBTOOLIZE"
 
 ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I m4"
 if test -n "$ACLOCAL"; then
@@ -94,8 +133,8 @@ fi
 echo "  autoheader"
 autoheader
 
-echo "  libtoolize"
-libtoolize --automake --copy
+echo "  $LIBTOOLIZE"
+$LIBTOOLIZE --automake --copy
 
 if test -n "$AUTOMAKE"; then
   echo "  $AUTOMAKE"
@@ -106,6 +145,10 @@ echo "  autoconf"
 autoconf
 
 if test -z "$*"; then
-        echo "now run ./configure"
+        echo ""
+        echo "Build system generated. Next step:"
+        echo "  macOS:  ./build-macos.sh"
+        echo "  Linux:  ./build-macos.sh    (also handles Linux)"
+        echo "  Manual: ./configure [OPTIONS]"
 fi
 cd $olddir

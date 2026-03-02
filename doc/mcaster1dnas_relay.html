@@ -1,76 +1,245 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relaying - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root{--mcaster-blue:#0ea5e9;--dnas-green:#22c55e;--text-primary:#1f2937;--text-secondary:#6b7280;--bg-white:#fff;--bg-light:#f8fafc;--bg-accent:#f1f5f9;--border-light:#e2e8f0;--shadow-medium:0 4px 6px -1px rgb(0 0 0 / 0.1);--gradient-brand:linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));--radius-md:0.5rem;--radius-lg:0.75rem;--font-sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;--font-mono:'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-sans);line-height:1.6;color:var(--text-primary);background:var(--bg-light)}
+        .breadcrumb{background:var(--bg-white);padding:1rem 0;border-bottom:1px solid var(--border-light)}
+        .breadcrumb-container{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-size:0.875rem}
+        .breadcrumb a{color:var(--mcaster-blue);text-decoration:none}
+        .hero{background:var(--gradient-brand);color:white;padding:4rem 0 2rem 0}
+        .hero-content{max-width:1200px;margin:0 auto;padding:0 1rem}
+        .hero h1{font-size:3rem;font-weight:800;margin-bottom:0.5rem}
+        .hero p{font-size:1.25rem;opacity:0.95}
+        .container{max-width:1200px;margin:0 auto;padding:3rem 1rem}
+        .content-card{background:var(--bg-white);border-radius:var(--radius-lg);padding:3rem;box-shadow:var(--shadow-medium);margin-bottom:2rem}
+        .content-card h2{font-size:2rem;font-weight:700;color:var(--text-primary);margin:2.5rem 0 1rem 0;display:flex;align-items:center;gap:0.75rem}
+        .content-card h2:first-child{margin-top:0}
+        .content-card h2 i{color:var(--mcaster-blue)}
+        .content-card h3{font-size:1.5rem;font-weight:600;color:var(--text-primary);margin:2rem 0 1rem 0}
+        .content-card p{font-size:1.125rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem}
+        .content-card ul{margin:1rem 0 1.5rem 2rem}
+        .content-card li{color:var(--text-secondary);line-height:1.8;margin-bottom:0.75rem}
+        .code-block{background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:var(--radius-md);overflow-x:auto;margin:1.5rem 0;font-family:var(--font-mono);font-size:0.875rem;line-height:1.6}
+        .alert-box{padding:1.5rem;border-radius:var(--radius-md);margin:1.5rem 0;display:flex;align-items:flex-start;gap:1rem}
+        .alert-info{background:#dbeafe;border:1px solid #3b82f6}
+        .alert-warning{background:#fef3c7;border:1px solid #f59e0b}
+        .alert-icon{font-size:1.25rem;flex-shrink:0}
+        .alert-info .alert-icon{color:#1e40af}
+        .alert-warning .alert-icon{color:#d97706}
+        .alert-content{flex-grow:1}
+        .alert-info .alert-content{color:#1e3a8a}
+        .alert-warning .alert-content{color:#92400e}
+        @media (max-width:768px){.hero h1{font-size:2rem}.content-card{padding:2rem 1.5rem}}
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 Relaying</h1>
-<hr id='titlebar' />
-<br />
-<br />
-<br />
-<h2>Overview</h2>
-<p>Relaying is the process by which one server mirrors one or more streams from a remote server.  The servers need not be of the same type (i.e. mcaster1 can relay from Shoutcast).  Relaying is used primarily for large broadcasts that need to distribute listening clients across multiple physical machines.</p>
-<br />
-<br />
-<h2>Type of Relays</h2>
-<p>There are two types of relays that mcaster1 supports.  The first type is when both master and slave servers are mcaster1dnas servers.  In this case, a "master-slave" relay can be setup such that all that needs to be done is configure the slave server with the connection information (serverip:port) of the master server and the slave will mirror all mountpoints on the master server.  The slave will also periodically check the master server to see if any new mountpoints have attached and if so will relay those as well.  The second type of relay is a "single-broadcast" relay.  In this case, the slave server is configured with a serverip+port+mount and only the mountpoint specified is relayed.  In order to relay a broadcast stream on a Shoutcast server, you must use the "single-broadcast" relay and specify a mountpoint of "/".</p>
-<br />
-<br />
-<br />
-<h2>Setting Up A Master-Slave Relay</h2>
-<p>In order to setup a relay of this type both servers (the one you wish to relay and the one
-doing the relaying) need to be mcaster1dnas servers. The following configuration snippet is used
-as an example:</p>
-<pre>
-    &lt;master-server&gt;192.168.1.11&lt;/master-server&gt;
-    &lt;master-server-port&gt;8001&lt;/master-server-port&gt;
-    &lt;master-update-interval&gt;120&lt;/master-update-interval&gt;
-    &lt;master-username&gt;relay&lt;/master-username&gt;
-    &lt;master-password&gt;hackme&lt;/master-password&gt;
-</pre>
-<p>In this example, this configuration is setup in the server which will be doing the relaying
-(slave server).  The master server in this case need not be configured (and actually is unaware
-of the relaying being performed) as a relay.  When the slave server is started, it will connect
-to the master server located at 192.168.1.11:8001 and will begin to relay all non-hidden
-mountpoints connected to the master server.  Additionally, every master-update-interval (120
-seconds in this case) the slave server will poll the master server to see if any new mountpoints
-have connected, and if so, the slave server will relay those as well.  Note that the names of
-the mountpoints on the slave server will be identical to those on the master server.</p>
-<p>To extend on the idea of load sharing, it is possible for a slave mcaster1dnas to communicate
-certain information to allow for new listeners to be redirected from the master server to the
-slave. In such cases, the master will send to the listener a HTTP 302 response code with a URL
-of the slave server which has been randomly selected.</p>
-</p>To enable this certain settings have to be enabled. In the master</p>
-<pre>
-    &lt;max-redirect-slaves&gt;5&lt;/max-redirect-slaves&gt;
-</pre>
-<p>This limits the redirection mechanism to 5 slaves, the default is 0, preventing any attempts
-to redirect new listeners. In the slave </p>
-<pre>
-    &lt;master-redirect&gt;1&lt;/master-redirect&gt;
-</pre>
-<br />
-<br />
-<br />
-<h2>Setting Up A Single-Broadcast Relay</h2>
-<p>In this case, the master server need not be an mcaster1dnas server.  Supported master servers for a single-broadcast relay are Shoutcast, Icecast1.x, and of course Mcaster1DNAS. The following configuration snippet is used as an example:</p>
-<pre>   
-    &lt;relay&gt;
-        &lt;server&gt;192.168.1.11&lt;/server&gt;
-        &lt;port&gt;8001&lt;/port&gt;
-        &lt;mount&gt;/example.ogg&lt;/mount&gt;
-        &lt;local-mount&gt;/different.ogg&lt;/local-mount&gt;
-        &lt;relay-shoutcast-metadata&gt;0&lt;/relay-shoutcast-metadata&gt;
-    &lt;/relay&gt;
-</pre>
-<p>In this example, this configuration is also setup in the server which will be doing the relaying (slave server).  The master server in this case need not be configured (and actually is unaware of the relaying being performed) as a relay.  When the slave server is started, it will connect to the master server located at 192.168.1.11:8001 and will begin to relay only the mountpoint specified (/example.ogg in this case).  Using this type of relay, the user can override the local mountpoint name and make it something entirely different than the one on the master server.  Additionally, if the server is a Shoutcast server, then the &lt;mount&gt; must be specified as /.  And if you want the Shoutcast relay stream to have metadata contained within it (Shoutcast metadata is embedded in the stream itself) then the &lt;relay-shoutcast-metadata&gt; needs to be set to 1.</p>
-<br />
-<br />
-<br />
-</div>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Relaying</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-network-wired"></i> Stream Relaying</h1>
+            <p>Configure load balancing and geographic distribution</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content-card">
+            <h2><i class="fas fa-info-circle"></i> Overview</h2>
+            <p>
+                Relaying enables one Mcaster1DNAS server to mirror streams from another server, distributing listeners across
+                multiple physical machines. This is essential for large-scale broadcasts requiring geographic distribution or
+                load balancing. The master server provides the original content while slave servers relay it to their own listeners.
+            </p>
+
+            <h2><i class="fas fa-layer-group"></i> Types of Relays</h2>
+            <p>Mcaster1DNAS v2.5.1-rc1 supports two relay types:</p>
+
+            <h3>1. Master-Slave Relay</h3>
+            <p>
+                Requires both master and slave to be Mcaster1DNAS servers. The slave automatically mirrors ALL mountpoints
+                from the master and periodically checks for new mountpoints to relay. This provides complete automatic
+                replication.
+            </p>
+            <ul>
+                <li><strong>Automatic Discovery:</strong> Slave detects new mountpoints automatically</li>
+                <li><strong>Complete Mirroring:</strong> All non-hidden mountpoints are relayed</li>
+                <li><strong>Load Distribution:</strong> Supports listener redirection from master to slaves</li>
+                <li><strong>Zero Configuration on Master:</strong> Master server requires no special setup</li>
+            </ul>
+
+            <h3>2. Single-Broadcast Relay</h3>
+            <p>
+                Relays a specific single mountpoint from any compatible server (Shoutcast, Icecast 1.x, or Mcaster1DNAS).
+                This provides fine-grained control over which streams to relay.
+            </p>
+            <ul>
+                <li><strong>Selective Relaying:</strong> Choose exactly which mountpoints to relay</li>
+                <li><strong>Cross-Platform:</strong> Works with Shoutcast and Icecast 1.x</li>
+                <li><strong>Custom Mountpoint Names:</strong> Rename mountpoints on the slave</li>
+                <li><strong>Metadata Control:</strong> Optional Shoutcast metadata relay</li>
+            </ul>
+
+            <h2><i class="fas fa-server"></i> Master-Slave Relay Configuration (YAML)</h2>
+            <p>
+                Configure the slave server to automatically mirror all mountpoints from a master server.
+                This configuration goes in the slave server's YAML file.
+            </p>
+
+            <div class="code-block"><pre># Slave Server Configuration (mcaster1.yaml)
+relay:
+  master:
+    server: 192.168.1.11
+    port: 8001
+    username: relay
+    password: hackme
+    update_interval: 120  # Check for new mounts every 120 seconds
+    redirect: true        # Enable listener redirection from master</pre></div>
+
+            <h3>Configuration Parameters</h3>
+            <ul>
+                <li><strong>server:</strong> IP address or hostname of the master server</li>
+                <li><strong>port:</strong> Port number of the master server (default: 8000)</li>
+                <li><strong>username:</strong> Authentication username (usually "relay")</li>
+                <li><strong>password:</strong> Authentication password</li>
+                <li><strong>update_interval:</strong> Seconds between checks for new mountpoints (default: 120)</li>
+                <li><strong>redirect:</strong> Allow master to redirect new listeners to this slave</li>
+            </ul>
+
+            <div class="alert-box alert-info">
+                <i class="fas fa-info-circle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Note:</strong> The master server does not need to be configured for relaying. It remains
+                    unaware that slaves are pulling its streams. All mountpoint names on the slave will match the master.
+                </div>
+            </div>
+
+            <h3>Listener Redirection</h3>
+            <p>
+                Enable load distribution by allowing the master to redirect new listeners to slave servers using HTTP 302 responses.
+            </p>
+
+            <h4>Master Server Configuration:</h4>
+            <div class="code-block"><pre># Master Server (mcaster1.yaml)
+relay:
+  max_redirect_slaves: 5  # Allow up to 5 slaves for redirection</pre></div>
+
+            <h4>Slave Server Configuration:</h4>
+            <div class="code-block"><pre># Slave Server (mcaster1.yaml)
+relay:
+  master:
+    server: 192.168.1.11
+    port: 8001
+    username: relay
+    password: hackme
+    redirect: true  # Register for redirection</pre></div>
+
+            <h2><i class="fas fa-broadcast-tower"></i> Single-Broadcast Relay Configuration (YAML)</h2>
+            <p>
+                Relay specific mountpoints with full control over configuration. This works with any Icecast-compatible
+                server including Shoutcast.
+            </p>
+
+            <div class="code-block"><pre># Slave Server Configuration (mcaster1.yaml)
+relay:
+  relays:
+    - server: 192.168.1.11
+      port: 8001
+      mount: /example.ogg
+      local_mount: /different.ogg  # Optional: rename on slave
+      username: relay
+      password: hackme
+
+    - server: shoutcast.example.com
+      port: 8000
+      mount: /                     # Shoutcast always uses /
+      local_mount: /shoutcast.mp3
+      relay_shoutcast_metadata: true  # Include embedded metadata</pre></div>
+
+            <h3>Single-Relay Parameters</h3>
+            <ul>
+                <li><strong>server:</strong> Remote server address</li>
+                <li><strong>port:</strong> Remote server port</li>
+                <li><strong>mount:</strong> Mountpoint on remote server (use "/" for Shoutcast)</li>
+                <li><strong>local_mount:</strong> Mountpoint name on this slave (optional, defaults to remote mount name)</li>
+                <li><strong>username:</strong> Authentication username (if required)</li>
+                <li><strong>password:</strong> Authentication password (if required)</li>
+                <li><strong>relay_shoutcast_metadata:</strong> Include Shoutcast embedded metadata (default: false)</li>
+            </ul>
+
+            <div class="alert-box alert-warning">
+                <i class="fas fa-exclamation-triangle alert-icon"></i>
+                <div class="alert-content">
+                    <strong>Shoutcast Relaying:</strong> When relaying from Shoutcast servers, always use <code>mount: /</code>
+                    and set <code>relay_shoutcast_metadata: true</code> to preserve song information embedded in the stream.
+                </div>
+            </div>
+
+            <h2><i class="fas fa-sitemap"></i> Use Cases and Architecture</h2>
+
+            <h3>Geographic Distribution</h3>
+            <p>
+                Deploy slaves in different geographic regions to reduce latency for listeners worldwide.
+            </p>
+            <div class="code-block"><pre># Master in USA, Slaves in EU and Asia
+Master (USA): stream.example.com
+Slave (EU):   eu.stream.example.com
+Slave (Asia): asia.stream.example.com</pre></div>
+
+            <h3>Load Balancing</h3>
+            <p>
+                Distribute thousands of listeners across multiple servers to prevent overload.
+            </p>
+            <div class="code-block"><pre># DNS round-robin or load balancer
+stream1.example.com → Slave 1 (relay from master)
+stream2.example.com → Slave 2 (relay from master)
+stream3.example.com → Slave 3 (relay from master)</pre></div>
+
+            <h3>Failover and Redundancy</h3>
+            <p>
+                Configure multiple slaves so that if one fails, others continue serving listeners.
+            </p>
+
+            <h2><i class="fas fa-chart-line"></i> Monitoring Relay Performance</h2>
+            <p>
+                Mcaster1DNAS v2.5.1-rc1 provides enhanced relay statistics:
+            </p>
+            <ul>
+                <li><strong>Connection Status:</strong> Monitor relay connection health</li>
+                <li><strong>Bandwidth Metrics:</strong> Track data transfer between servers</li>
+                <li><strong>Listener Counts:</strong> See distribution across master and slaves</li>
+                <li><strong>Latency Monitoring:</strong> Detect delays in relay propagation</li>
+            </ul>
+
+            <div class="code-block"><pre>http://slaveserver:8000/admin/stats.xml</pre></div>
+
+            <h2><i class="fas fa-shield-alt"></i> Security Considerations</h2>
+            <ul>
+                <li><strong>Authentication:</strong> Always use strong passwords for relay connections</li>
+                <li><strong>IP Restrictions:</strong> Configure firewalls to limit which servers can relay</li>
+                <li><strong>HTTPS Relay:</strong> Use SSL/TLS for relay connections in production</li>
+                <li><strong>Bandwidth Limits:</strong> Monitor and cap relay bandwidth to prevent abuse</li>
+            </ul>
+
+            <div style="background:var(--bg-accent);border-left:4px solid var(--dnas-green);padding:1.5rem;border-radius:var(--radius-lg);margin-top:2rem">
+                <p style="margin:0;color:var(--text-primary)">
+                    <strong><i class="fas fa-lightbulb"></i> Next Steps:</strong>
+                    Learn about <a href="mcaster1dnas_config_file.html" style="color:var(--mcaster-blue);font-weight:600">Configuration Options</a>
+                    or explore <a href="mcaster1dnas_yp.html" style="color:var(--mcaster-blue);font-weight:600">YP Directory Setup</a>.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

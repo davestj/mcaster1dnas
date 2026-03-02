@@ -922,6 +922,7 @@ static void _set_defaults(mc_config_t *configuration)
     configuration->fileserve = CONFIG_DEFAULT_FILESERVE;
     configuration->touch_interval = CONFIG_DEFAULT_TOUCH_FREQ;
     configuration->on_demand = 0;
+    configuration->song_history_limit = 25;
     configuration->dir_list = NULL;
     configuration->hostname = (char *)xmlCharStrdup (CONFIG_DEFAULT_HOSTNAME);
     configuration->port = 0;
@@ -1844,6 +1845,7 @@ static int _parse_limits (cfg_xml *cfg, void *arg)
         { "header-timeout",     config_get_int,         &config->header_timeout },
         { "source-timeout",     config_get_int,         &config->source_timeout },
         { "inactivity-timeout", config_get_int,         &config->inactivity_timeout },
+        { "song-history-limit", config_get_int,         &config->song_history_limit },
         { NULL, NULL, NULL },
     };
     if (parse_xml_tags (cfg, mcaster1_tags) < 0)

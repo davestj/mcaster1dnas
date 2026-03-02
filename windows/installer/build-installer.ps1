@@ -26,7 +26,7 @@ $SolutionFile = Join-Path $WindowsDir "Mcaster1DNAS.sln"
 
 # Read version from VERSION file
 $VersionFile = Join-Path $RepoRoot "VERSION"
-$Version     = if (Test-Path $VersionFile) { (Get-Content $VersionFile -Raw).Trim() } else { "2.5.2-dev" }
+$Version     = if (Test-Path $VersionFile) { (Get-Content $VersionFile -Raw).Trim() } else { "2.5.3-beta" }
 
 function Write-Banner($msg) {
     Write-Host ""

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Mcaster1DNAS
-AppVerName=Mcaster1DNAS v2.5.2-dev
+AppVerName=Mcaster1DNAS v2.5.3-beta
 AppPublisherURL=https://www.mcaster1.com
 AppSupportURL=https://www.mcaster1.com
 AppUpdatesURL=https://www.mcaster1.com
@@ -13,10 +13,10 @@ AllowNoIcons=yes
 LicenseFile=..\LICENSE
 InfoAfterFile=..\README
 OutputDir=.
-OutputBaseFilename=mcaster1dnas_win32_v2.5.2-dev_setup
+OutputBaseFilename=mcaster1dnas_win32_v2.5.3-beta_setup
 WizardImageFile=mcaster1dnaslogo2.bmp
 WizardImageStretch=no
-VersionInfoVersion=2.5.2
+VersionInfoVersion=2.5.3
 ; uncomment the following line if you want your installation to run on NT 3.51 too.
 ; MinVersion=4,3.51
 

@@ -326,12 +326,13 @@
 <div class="hero">
   <div class="hero-badge">macOS Build Guide</div>
   <h1>Mcaster1DNAS &mdash; <span>macOS ARM64</span> Build</h1>
-  <p>Complete instructions for compiling and running Mcaster1DNAS on Apple Silicon (arm64) and Intel Macs using Homebrew and GNU Autotools.</p>
+  <p>Complete instructions for compiling the server binary (Autotools) and native Qt6 GUI application on Apple Silicon (arm64) and Intel Macs using Homebrew.</p>
   <div class="hero-meta">
-    <span>&#9670; Version 2.5.2-dev</span>
+    <span>&#9670; Version 2.5.3-beta</span>
+    <span>&#9670; Updated: 2026-03-06</span>
     <span>&#9670; Branch: macos-dev</span>
     <span>&#9670; Platform: Darwin arm64 (Apple M-series)</span>
-    <span>&#9670; Build: Autotools (not CMake)</span>
+    <span>&#9670; Server: Autotools &bull; GUI: CMake + Qt6</span>
   </div>
 </div>
 
@@ -340,13 +341,20 @@
   <!-- ─── Quick Start ──────────────────────────────────────────────────────── -->
   <div class="quickstart">
     <h2>&#9889; Quick Start (Apple Silicon)</h2>
-    <pre><span class="comment"># Install all dependencies and build in one pass</span>
-<span class="cmd">brew install</span> <span class="flag">autoconf automake libtool pkg-config \
+    <pre><span class="comment"># Install all dependencies (server + Qt6 GUI)</span>
+<span class="cmd">brew install</span> <span class="flag">autoconf automake libtool pkg-config qt \
   libogg libvorbis theora speex openssl@3 \
   libxml2 libxslt libyaml curl</span>
 
+<span class="comment"># Build the server binary</span>
 <span class="cmd">./build-macos.sh</span>          <span class="comment"># detects macOS, sets all Homebrew paths</span>
-<span class="cmd">./build/bin/mcaster1</span> <span class="flag">-c</span> <span class="path">mcaster1dnas-console.yaml</span></pre>
+<span class="cmd">./build/bin/mcaster1</span> <span class="flag">-c</span> <span class="path">mcaster1dnas-console.yaml</span>
+
+<span class="comment"># Build + launch the Qt6 GUI application</span>
+<span class="cmd">cmake</span> <span class="flag">-B</span> <span class="path">macos/build-qt</span> <span class="flag">-S macos -DCMAKE_PREFIX_PATH</span>=$(brew --prefix qt) <span class="flag">-DCMAKE_BUILD_TYPE</span>=Release
+<span class="cmd">cmake</span> <span class="flag">--build</span> <span class="path">macos/build-qt</span> <span class="flag">-j</span>$(sysctl -n hw.logicalcpu)
+<span class="cmd">codesign</span> <span class="flag">--force --sign -</span> <span class="path">macos/build-qt/Mcaster1DNAS.app</span>
+<span class="cmd">open</span> <span class="path">macos/build-qt/Mcaster1DNAS.app</span></pre>
   </div>
 
   <!-- ─── Section 1: Overview ─────────────────────────────────────────────── -->
@@ -892,7 +900,192 @@
     <pre><span class="cmd">tail</span> <span class="flag">-100</span> <span class="path">config.log</span> <span class="flag">| grep</span> <span class="flag">-E "error|warning"</span></pre>
   </div>
 
-  <!-- ─── Section 10: Git workflow ─────────────────────────────────────────── -->
+  <!-- ─── Section 10: macOS Qt6 GUI ──────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-purple">&#9670;</div>
+      <h2>macOS Qt6 GUI Application (Mcaster1DNAS.app)</h2>
+    </div>
+
+    <p>
+      In addition to the headless server binary, <strong>macos-dev</strong> ships a full
+      native macOS GUI built with <strong>Qt6 + CMake</strong>. It mirrors the Windows MFC
+      application and runs the server <em>in-process</em> on a background thread — the same
+      architecture as <code>Mcaster1Win.exe</code>.
+    </p>
+
+    <h3>Phase Status (2.5.3-beta, updated 2026-03-06)</h3>
+    <table>
+      <tr><th>Phase</th><th>Feature</th><th>Status</th></tr>
+      <tr><td>Phase 1</td><td>Scaffold: CMakeLists, MainWindow, ServerThread, TrayIcon, config discovery</td><td><span class="badge badge-green">&#10003; Complete</span></td></tr>
+      <tr><td>Phase 2</td><td>Log viewer (4 tabs, color-coded), StatsTab, 500 ms UI poll timer</td><td><span class="badge badge-green">&#10003; Complete</span></td></tr>
+      <tr><td>Phase 3</td><td>ConfigDialog (6 tabs), Mount/Relay editors, YAML + XML save, ConsoleTab</td><td><span class="badge badge-green">&#10003; Complete</span></td></tr>
+      <tr><td>Phase 4</td><td>SSL Cert tab (inspect + generate), ICY2.2 structured mount fields (70+ keys), Web UI/Admin toolbar buttons</td><td><span class="badge badge-green">&#10003; Complete</span></td></tr>
+      <tr><td>Phase 5</td><td>Config button crash fixes (log rwlock + log_close bug), animated ON AIR/STOPPED banner overlay, Credits/Help tabs (QtWebEngine)</td><td><span class="badge badge-purple">In Progress</span></td></tr>
+    </table>
+
+    <h3>Build the GUI</h3>
+    <pre><span class="comment"># One-time CMake configure (Qt6 from Homebrew)</span>
+<span class="cmd">cmake</span> <span class="flag">-B</span> <span class="path">macos/build-qt</span> <span class="flag">-S</span> <span class="path">macos</span> \
+  <span class="flag">-DCMAKE_PREFIX_PATH</span>=$(brew --prefix qt) \
+  <span class="flag">-DCMAKE_BUILD_TYPE</span>=Debug
+
+<span class="comment"># Build</span>
+<span class="cmd">cmake</span> <span class="flag">--build</span> <span class="path">macos/build-qt</span> <span class="flag">-j</span>$(sysctl -n hw.logicalcpu)
+
+<span class="comment"># Ad-hoc codesign (required on Apple Silicon after every rebuild)</span>
+<span class="cmd">codesign</span> <span class="flag">--force --sign -</span> <span class="path">macos/build-qt/Mcaster1DNAS.app</span>
+
+<span class="comment"># Launch</span>
+<span class="cmd">open</span> <span class="path">macos/build-qt/Mcaster1DNAS.app</span>
+
+<span class="comment"># Or via Makefile alias (autotools wrapper)</span>
+<span class="cmd">make</span> <span class="flag">gui</span>          <span class="comment"># Debug build</span>
+<span class="cmd">make</span> <span class="flag">gui-release</span>  <span class="comment"># Release build</span>
+<span class="cmd">make</span> <span class="flag">gui-clean</span>    <span class="comment"># Remove cmake build dir</span></pre>
+
+    <h3>Tab Layout</h3>
+    <table>
+      <tr><th>Tab</th><th>File</th><th>Description</th></tr>
+      <tr><td>Overview</td><td><code>OverviewTab / OverviewHeader</code> (MainWindow.cpp)</td><td>Compact 71 px header banner with animated ON AIR (green broadcast tower) or STOPPED (red octagon) badge overlay; server stats below</td></tr>
+      <tr><td>Stats</td><td><code>StatsTab.h/cpp</code></td><td>QTableWidget populated by StatsPoller (5 s, in-process stats_get_xml)</td></tr>
+      <tr><td>Log: Access</td><td><code>LogTab.h/cpp</code></td><td>QPlainTextEdit, 2 s tail, color-coded log levels</td></tr>
+      <tr><td>Log: Error</td><td><code>LogTab.h/cpp</code></td><td>EROR=red, WARN=yellow, INFO=cyan, DBUG=gray</td></tr>
+      <tr><td>Log: Playlist</td><td><code>LogTab.h/cpp</code></td><td>Playlist events tail</td></tr>
+      <tr><td>Config</td><td><code>ConfigTab.h/cpp</code></td><td>Raw YAML/XML editor with Save button</td></tr>
+      <tr><td>Console</td><td><code>ConsoleTab.h/cpp</code></td><td>Live server stdout/stderr via <code>pipe()+dup2(STDOUT_FILENO)+QSocketNotifier</code></td></tr>
+      <tr><td>Credits</td><td><code>HtmlTab.h</code> (header-only)</td><td>QWebEngineView loading <code>docs/CREDITS.html</code> from app bundle Resources</td></tr>
+      <tr><td>Help</td><td><code>HtmlTab.h</code></td><td>QWebEngineView loading <code>docs/index.html</code> — full documentation landing page</td></tr>
+    </table>
+
+    <h3>Configuration Manager (ConfigDialog)</h3>
+    <p>
+      Opened via the <strong>&#9881; Config</strong> toolbar button or <em>Tools &rarr; Configuration Manager</em>.
+      Six tabs cover the full server configuration:
+    </p>
+    <table>
+      <tr><th>Tab</th><th>Coverage</th></tr>
+      <tr><td>Global</td><td>Hostname, admin, listen sockets, authentication passwords</td></tr>
+      <tr><td>Mounts</td><td>Mount point editor with full ICY2.2 structured metadata (70+ fields in 8 groups)</td></tr>
+      <tr><td>Relays</td><td>Relay server list — add/edit/remove</td></tr>
+      <tr><td>System</td><td>Limits, timeouts, paths, logging</td></tr>
+      <tr><td>Security</td><td>chroot, run-as user/group, HTTP headers</td></tr>
+      <tr><td>SSL Cert</td><td>Inspect current cert (subject/issuer/SANs/validity) + generate self-signed or CSR via ssl_gen_run()</td></tr>
+    </table>
+
+    <h3>Key Architecture Notes</h3>
+    <ul>
+      <li><strong>In-process server</strong> — <code>ServerThread</code> calls <code>server_init()</code> + <code>server_process()</code> on a QThread; shares <code>global.*</code> with UI.</li>
+      <li><strong>Config discovery</strong> — walks 6 directory levels up from <code>.app/Contents/MacOS/</code> to find <code>mcaster1dnas.yaml</code> at repo root.</li>
+      <li><strong>No <code>config_clear()</code> before server starts</strong> — that function calls <code>global_lock()</code> which aborts if <code>server_init()</code> has never run. <code>ConfigDialog::loadFromFile()</code> uses <code>config_parse_file()</code> on a local <code>mc_config_t</code> without locking.</li>
+      <li><strong>Safe <code>config_parse_file()</code> from GUI thread</strong> — <code>config_parse_file()</code> calls <code>log_write()</code> which needs the logging rwlock alive. Pattern: <code>init_log_subsys()</code> &rarr; <code>config_parse_file(...)</code> &rarr; <code>log_shutdown()</code>. Both <code>ConfigDialog::loadFromFile()</code> and <code>discoverServerUrl()</code> use this pattern. Required includes in <code>extern "C"</code> block: <code>logging.h</code>, <code>log/log.h</code>.</li>
+      <li><strong><code>OverviewHeader</code> banner</strong> — <code>header-banner-v2.png</code> (1926&times;142 px) is pre-scaled to half height at load (<code>scaledToHeight(h/2)</code> = 71 px) and drawn to fill widget width via <code>p.drawPixmap(0,0,W,H,m_px)</code>. The status badge (bW=50, bH=61) is sized proportionally to the 71 px banner height. These two numbers are coupled — always scale together.</li>
+      <li><strong>Codesign after every rebuild</strong> — Apple Silicon caches the code-directory. After <code>cmake --build</code> replaces the binary, run <code>codesign --force --sign - macos/build-qt/Mcaster1DNAS.app</code> or the app receives SIGKILL on launch.</li>
+      <li><strong>Toolbar</strong> — &#9881; Config | &#9654; Start | &#9632; Stop | &#127760; Web UI | &#128295; Admin | [status icon] | [uptime]</li>
+      <li><strong>QtWebEngineWidgets</strong> — Credits and Help tabs use <code>QWebEngineView</code>. Docs are copied to <code>Contents/Resources/docs/</code> (not <code>MacOS/</code> — codesign rejects non-code files there) via CMake POST_BUILD step.</li>
+    </ul>
+  </div>
+
+  <!-- ─── Section 11: Critical Bug Fixes (macOS) ───────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-red">&#9670;</div>
+      <h2>Critical Bug Fixes — macOS (macos-dev branch)</h2>
+    </div>
+
+    <h3>1. src/xslt.c — XSLT crash on libxml2 &ge; 2.12 <span class="badge badge-green">Fixed 2.5.3-beta</span></h3>
+    <p>
+      <strong>Symptom:</strong> Server worker thread crashes with
+      <code>_platform_memmove &rarr; xmlBufAdd &rarr; xmlOutputBufferWrite &rarr; htmlDocContentDumpFormatOutput &rarr; xsltSaveResultTo</code>
+      whenever a browser or curl fetches any XSLT page (e.g. <code>/status.xsl</code>).
+    </p>
+    <p>
+      <strong>Root cause:</strong> The old <code>xslt_SaveResultToBuf()</code> created a custom
+      output buffer with <code>xmlOutputBufferCreateIO(encoder=NULL)</code> then passed it to
+      <code>xsltSaveResultTo()</code>. On libxml2 &ge; 2.12 (Homebrew 2.15.1), the internal
+      <code>xmlBuf</code> allocation strategy changed: <code>htmlDocContentDumpFormatOutput</code>
+      calls <code>xmlBufAdd</code> on a buffer whose memory state is incompatible with the new
+      IO-buffer initialization, crashing in <code>_platform_memmove</code>.
+    </p>
+    <p>
+      <strong>Fix:</strong> <code>xslt_SaveResultToBuf()</code> now uses
+      <code>xsltSaveResultToString()</code> (guarded by <code>#ifdef HAVE_XSLTSAVERESULTTOSTRING</code>,
+      always defined when Homebrew's libxslt &ge; 1.1.18 is present) and copies the result into a
+      single <code>refbuf_t</code>. The old <code>xmlOutputBufferCreateIO</code> path is retained
+      in the <code>#else</code> branch for systems with old libxslt.
+    </p>
+
+    <h3>2. src/cfgfile.h + cfgfile.c — const xmlError* <span class="badge badge-green">Fixed 2.5.2-dev</span></h3>
+    <p>libxml2 2.12+ changed <code>xmlStructuredErrorFunc</code> to pass a <code>const xmlError *</code>. Fixed by changing the parameter type in <code>config_xml_parse_failure()</code>.</p>
+
+    <h3>3. src/slave.c — CURLOPT_XFERINFOFUNCTION return type <span class="badge badge-green">Fixed 2.5.2-dev</span></h3>
+    <p><code>icecurl_server_running()</code> returned <code>size_t</code>; curl expects <code>int</code>. Fixed return type.</p>
+
+    <h3>4. src/xslt.c — double-free after xsltSaveResultTo on libxml2 &ge; 2.12 <span class="badge badge-green">Fixed 2.5.2-dev</span></h3>
+    <p><code>htmlSaveFileTo</code> now closes the output buffer internally in libxml2 &ge; 2.12. Added <code>#if LIBXML_VERSION &lt; 21200</code> guard around <code>xmlOutputBufferClose(buf)</code>. (Superseded by fix #1 above which avoids the custom IO buffer entirely.)</p>
+
+    <h3>5. autogen.sh — glibtoolize detection <span class="badge badge-green">Fixed 2.5.2-dev</span></h3>
+    <p>Homebrew installs <code>libtoolize</code> as <code>glibtoolize</code>. <code>autogen.sh</code> now probes both names and falls back gracefully.</p>
+
+    <h3>6. Qt6 GUI — Config button crash (NULL logging rwlock) <span class="badge badge-purple">Fixed 2.5.3-beta</span></h3>
+    <p>
+      <strong>Symptom:</strong> Clicking the <em>&#9881; Config</em> toolbar button crashes with
+      <code>KERN_INVALID_ADDRESS at 0x0</code> when the server has not yet been started.
+    </p>
+    <p>
+      <strong>Root cause:</strong> <code>config_parse_file()</code> calls <code>log_write()</code>
+      internally. <code>log_write()</code> acquires <code>_logger_rwl</code> (a pthread rwlock),
+      which is <code>NULL</code> until <code>init_log_subsys()</code> runs — normally called inside
+      <code>initialize_subsystems()</code> when the server starts. Calling <code>config_parse_file()</code>
+      from the GUI thread before the server starts dereferences a NULL rwlock.
+    </p>
+    <p>
+      <strong>Fix:</strong> Wrap every <code>config_parse_file()</code> call in GUI code with
+      <code>init_log_subsys()</code> before and <code>log_shutdown()</code> after.
+      Add <code>#include "logging.h"</code> and <code>#include "log/log.h"</code> to the
+      <code>extern "C"</code> block. Applied to <code>ConfigDialog::loadFromFile()</code> and
+      <code>MainWindow::discoverServerUrl()</code>.
+    </p>
+
+    <h3>7. src/log/log.c — log_close() latent NULL mutex crash <span class="badge badge-purple">Fixed 2.5.3-beta</span></h3>
+    <p>
+      <strong>Symptom:</strong> <code>log_shutdown()</code> crashes with
+      <code>KERN_INVALID_ADDRESS at 0x10</code> (= offset of <code>sys_mutex</code> in <code>mutex_t</code>
+      without <code>THREAD_DEBUG</code>: 8-byte <code>char*</code> + 4-byte <code>int</code> + 4-byte padding = 16 = 0x10).
+    </p>
+    <p>
+      <strong>Root cause:</strong> Without <code>log_callback</code> (no log worker thread),
+      <code>log_close()</code> called <code>_log_close_internal()</code> on all 20 pre-allocated
+      <code>loglist[]</code> entries — including unused ones whose <code>mutex</code> was never
+      initialized (remains NULL pointer). The <code>_log_close_internal()</code> function contract
+      requires &ldquo;enter with q lock&rdquo; — but <code>log_close()</code> never called
+      <code>_lock_q()</code> on the non-callback path, so even the contract was violated.
+    </p>
+    <p>
+      <strong>Fix:</strong> In <code>src/log/log.c::log_close()</code>, non-callback path:
+    </p>
+    <pre><span class="comment">// 1. Skip unused (uninitialized) entries</span>
+<span class="flag">if</span> (loglist [log_id].in_use == 0) <span class="flag">break</span>;
+<span class="comment">// 2. Satisfy _log_close_internal() contract ("enter with q lock")</span>
+<span class="cmd">_lock_q</span> (log_id);
+<span class="cmd">_log_close_internal</span> (log_id);</pre>
+
+    <h3>8. Overview tab — header banner scaling <span class="badge badge-purple">Fixed 2.5.3-beta</span></h3>
+    <p>
+      <strong>Symptom:</strong> <code>header-banner-v2.png</code> (1926&times;142 px) rendered at full
+      natural height dominated the Overview tab. Status indicator badge sized independently of the banner
+      caused mismatched proportions.
+    </p>
+    <p>
+      <strong>Fix:</strong> Pre-scale the pixmap to half height at load time:
+      <code>m_px = m_px.scaledToHeight(m_px.height()/2, Qt::SmoothTransformation)</code> &rarr; 71 px.
+      Draw to fill widget width: <code>p.drawPixmap(0, 0, W, H, m_px)</code>.
+      Badge proportionally sized to 71 px: bW=50, bH=61, bY=(H-bH)/2.
+      <strong>These two values are coupled</strong> — always scale together.
+    </p>
+  </div>
+
+  <!-- ─── Section 13: Git workflow ─────────────────────────────────────────── -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon icon-purple">&#9670;</div>
@@ -915,6 +1108,9 @@
       <li><code>build-macos.sh</code> &mdash; universal macOS/Linux build script</li>
       <li><code>autogen.sh</code> &mdash; updated for <code>glibtoolize</code> on macOS</li>
       <li><code>README-MACOS-BUILD.html</code> &mdash; this document</li>
+      <li><code>macos/</code> &mdash; Qt6 GUI application (CMakeLists.txt, MainWindow, ConfigDialog, LogTab, StatsTab, TrayIcon, etc.)</li>
+      <li><code>mcaster1dnas.yaml</code> &mdash; macOS GUI default config (ports 9330/9443, 127.0.0.1)</li>
+      <li><code>src/xslt.c</code> &mdash; xslt crash fix for libxml2 &ge; 2.12 (HAVE_XSLTSAVERESULTTOSTRING path)</li>
     </ul>
   </div>
 
@@ -922,7 +1118,7 @@
 
 <footer>
   <p>
-    <strong>Mcaster1DNAS</strong> &mdash; Digital Network Audio Server &mdash; v2.5.2-dev
+    <strong>Mcaster1DNAS</strong> &mdash; Digital Network Audio Server &mdash; v2.5.3-beta
     &mdash; Branch: <code>macos-dev</code>
     &mdash; Platform: macOS arm64 (Apple Silicon)
   </p>

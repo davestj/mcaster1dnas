@@ -1,0 +1,12 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/images">
+    <file alias="running.png">images/running.png</file>
+    <file alias="stopped.png">images/stopped.png</file>
+    <file alias="logo.png">images/logo.png</file>
+    <file alias="header-banner-v2.png">../../image_resources/header-banner-v2.png</file>
+</qresource>
+<qresource prefix="/icons">
+    <file alias="mcaster1.png">icons/mcaster1.iconset/icon_256x256.png</file>
+    <file alias="mcaster1_32.png">icons/mcaster1.iconset/icon_32x32.png</file>
+</qresource>
+</RCC>

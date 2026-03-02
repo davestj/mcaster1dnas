@@ -157,14 +157,21 @@
 
 <header>
   <h1>Mcaster1DNAS</h1>
-  <p>Digital Network Audio Server &mdash; Windows Edition</p>
-  <span class="version-badge">v2.5.2-dev</span>
+  <p>Digital Network Audio Server &mdash; macOS &amp; Windows</p>
+  <span class="version-badge">v2.5.3-beta</span>
 </header>
 
 <main>
 
   <div class="section-title">Core Documentation</div>
   <div class="doc-grid">
+
+    <a class="doc-card" href="MACOS_GUI.html">
+      <div class="icon">&#x1F34F;</div>
+      <h3>macOS GUI Guide</h3>
+      <p>Building, installing and operating the Mcaster1DNAS Qt6 native app on Apple Silicon and Intel Mac.</p>
+      <span class="tag">MACOS_GUI.html</span>
+    </a>
 
     <a class="doc-card" href="WINDOWS_GUI.html">
       <div class="icon">&#x1F5A5;&#xFE0F;</div>
@@ -234,6 +241,13 @@
       <span class="tag">YAML_IMPLEMENTATION.html</span>
     </a>
 
+    <a class="doc-card" href="CREDITS.html">
+      <div class="icon">&#x1F3C6;</div>
+      <h3>Credits</h3>
+      <p>Project contributors, Icecast heritage, Xiph.Org acknowledgements, and all open-source library credits.</p>
+      <span class="tag">CREDITS.html</span>
+    </a>
+
   </div>
 
   <div class="section-title">Default Port Assignments</div>
@@ -248,28 +262,34 @@
     </thead>
     <tbody>
       <tr>
+        <td>macOS GUI App / Console</td>
+        <td><code>9330</code></td>
+        <td><code>9443</code></td>
+        <td>mcaster1dnas.yaml</td>
+      </tr>
+      <tr>
         <td>Windows Service / Console</td>
         <td><code>9330</code></td>
         <td><code>9443</code></td>
         <td>mcaster1dnas-console.yaml</td>
       </tr>
       <tr>
-        <td>GUI Application (sidecar)</td>
+        <td>Windows GUI (sidecar)</td>
         <td><code>9033</code></td>
         <td><code>9344</code></td>
-        <td>mcaster1dnas.yaml</td>
+        <td>windows/mcaster1dnas.yaml</td>
       </tr>
     </tbody>
   </table>
 
   <div class="section-title">Quick Links</div>
   <div class="quick-links">
-    <a class="quick-link" href="http://127.0.0.1:9330/">Service Status (HTTP)</a>
-    <a class="quick-link" href="https://127.0.0.1:9443/">Service Status (HTTPS)</a>
-    <a class="quick-link" href="http://127.0.0.1:9033/">GUI Status (HTTP)</a>
-    <a class="quick-link" href="https://127.0.0.1:9344/">GUI Status (HTTPS)</a>
-    <a class="quick-link" href="https://127.0.0.1:9443/admin/stats.xsl">Service Admin</a>
-    <a class="quick-link" href="https://127.0.0.1:9344/admin/stats.xsl">GUI Admin</a>
+    <a class="quick-link" href="http://127.0.0.1:9330/">macOS / Service Status (HTTP)</a>
+    <a class="quick-link" href="https://127.0.0.1:9443/">macOS / Service Status (HTTPS)</a>
+    <a class="quick-link" href="https://127.0.0.1:9443/admin/stats.xsl">macOS / Service Admin</a>
+    <a class="quick-link" href="http://127.0.0.1:9033/">Windows GUI Status (HTTP)</a>
+    <a class="quick-link" href="https://127.0.0.1:9344/">Windows GUI Status (HTTPS)</a>
+    <a class="quick-link" href="https://127.0.0.1:9344/admin/stats.xsl">Windows GUI Admin</a>
     <a class="quick-link" href="https://mcaster1.com">mcaster1.com</a>
     <a class="quick-link" href="https://github.com/davestj/mcaster1dnas/issues">Report Issue</a>
   </div>
@@ -277,7 +297,7 @@
 </main>
 
 <footer>
-  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  Mcaster1DNAS v2.5.3-beta &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
   <a href="https://mcaster1.com" style="color:#00c9ff44; text-decoration:none;">mcaster1.com</a>
 </footer>
 

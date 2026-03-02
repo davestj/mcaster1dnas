@@ -16,7 +16,7 @@ DEF_VER=$(date "+%Y%m%d%H%M%S")
 if test -f $VERSION_FILE; then
 	BASE_VER=$(cat $VERSION_FILE | tr -d '\n' | tr -d '\r')
 else
-	BASE_VER="2.5.2-dev"
+	BASE_VER="2.5.3-beta"
 	echo "Warning: VERSION file not found, using default: $BASE_VER" >&2
 fi
 

@@ -977,6 +977,47 @@ FORCE:
 # V=1 to show lines
 # file-prefix-map to filter out absolute path lines in binary
 #
+# ── macOS / Linux Qt6 GUI ──────────────────────────────────────────────────────
+# Keeps the autotools workflow intact: ./autogen.sh && ./configure && make && make gui
+# CMake drives the Qt6 build; autotools drives the server core build.
+# Qt6 must be installed: brew install qt (macOS) or qt6-base-dev (Ubuntu/Debian)
+.PHONY: gui gui-clean gui-release
+
+gui:
+	@if [ ! -f "config.h" ]; then \
+	    echo "ERROR: config.h not found. Run ./configure first."; exit 1; \
+	fi
+	@echo "==> Building macOS/Linux Qt6 GUI..."
+	@QT_PREFIX="$$(brew --prefix qt 2>/dev/null || echo /usr)" && \
+	 cmake -B macos/build-qt -S macos \
+	    -DCMAKE_PREFIX_PATH="$$QT_PREFIX" \
+	    -DCMAKE_BUILD_TYPE=Debug \
+	    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
+	 cmake --build macos/build-qt -j$$(sysctl -n hw.logicalcpu 2>/dev/null || nproc 2>/dev/null || echo 4)
+	@echo "==> GUI build complete."
+	@if [ "$$(uname -s)" = "Darwin" ]; then \
+	    echo "    App: macos/build-qt/Mcaster1DNAS.app"; \
+	    echo "    Run: open macos/build-qt/Mcaster1DNAS.app"; \
+	else \
+	    echo "    Binary: macos/build-qt/Mcaster1DNAS"; \
+	fi
+
+gui-release:
+	@if [ ! -f "config.h" ]; then \
+	    echo "ERROR: config.h not found. Run ./configure first."; exit 1; \
+	fi
+	@echo "==> Building Qt6 GUI (Release)..."
+	@QT_PREFIX="$$(brew --prefix qt 2>/dev/null || echo /usr)" && \
+	 cmake -B macos/build-qt -S macos \
+	    -DCMAKE_PREFIX_PATH="$$QT_PREFIX" \
+	    -DCMAKE_BUILD_TYPE=Release && \
+	 cmake --build macos/build-qt -j$$(sysctl -n hw.logicalcpu 2>/dev/null || nproc 2>/dev/null || echo 4)
+
+gui-clean:
+	@echo "==> Cleaning Qt6 GUI build..."
+	@rm -rf macos/build-qt
+	@echo "    Done."
+
 debug:
 	$(MAKE) all CFLAGS="-Wno-unused-parameter @DEBUG@"
 

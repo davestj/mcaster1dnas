@@ -1,8 +1,8 @@
 # CLAUDE.md — Mcaster1DNAS Project Guide
 
-> **Last updated:** 2026-02-23
-> **Branch:** `windows-dev` (base: `development`)
-> **Version:** 2.5.2-dev
+> **Last updated:** 2026-03-06
+> **Branch:** `macos-dev` / `windows-dev` (base: `development`)
+> **Version:** 2.5.3-beta
 
 This file is the authoritative context document for Claude Code sessions working on this project.
 Read it at the start of every session to avoid re-discovering context.
@@ -17,10 +17,12 @@ Read it at the start of every session to avoid re-discovering context.
 - Per-listener `ssl: true/false` enforcement
 - Static mount point definitions with ICY 2.2 field support
 - Song history / now-playing JSON REST API (`/songdata`)
+- **macOS-native Qt6 GUI** (`Mcaster1DNAS.app`) — Config Manager, SSL cert tab, ICY2.2 structured fields, Web UI/Admin launch
 - Windows-native GUI (MFC, VS2022) + Windows Service
 - NSIS installer for Windows distribution
 
-**Repository root:** `C:\Users\dstjohn\dev\00_mcaster1.com\mcaster1dnas`
+**Repository root (macOS):** `/Users/dstjohn/dev/01_mcaster1.com/mcaster1dnas`
+**Repository root (Windows):** `C:\Users\dstjohn\dev\00_mcaster1.com\mcaster1dnas`
 
 ---
 
@@ -29,6 +31,21 @@ Read it at the start of every session to avoid re-discovering context.
 ```
 mcaster1dnas/
   src/                  Cross-platform C server core (Linux/macOS/Windows)
+  macos/                macOS Qt6 GUI application
+    CMakeLists.txt        Qt6 CMake project (compiles src/*.c + macos/*.cpp in one binary)
+    main.cpp              QApplication entry point
+    MainWindow.h/cpp      QMainWindow — tabs, toolbar, tray, server lifecycle
+    ServerThread.h/cpp    QThread — calls server_init() + server_process()
+    StatsPoller.h/cpp     QThread worker — calls stats_get_xml() every 5 s
+    LogTab.h/cpp          QPlainTextEdit + QTimer file tail (color-coded)
+    StatsTab.h/cpp        QTableWidget — populated by StatsPoller signals
+    ConfigTab.h/cpp       Raw YAML/XML editor with Save button
+    ConsoleTab.h/cpp      Server stdout/stderr via pipe
+    ConfigDialog.h/cpp    6-tab Configuration Manager dialog
+    TrayIcon.h/cpp        QSystemTrayIcon — Start/Stop/Show/Quit
+    server_bridge.h       Guards net/sock.h IOVEC for C++ compilation
+    Info.plist            macOS app bundle metadata
+    build-macos-gui.sh    Standalone GUI build script
   windows/              Windows-specific code and build files
     Mcaster1DNAS.sln      VS2022 solution (3 projects)
     Mcaster1Console.vcxproj  Console app (mcaster1.exe)
@@ -46,7 +63,7 @@ mcaster1dnas/
       build-installer.ps1      Build pipeline (MSBuild + NSIS)
       prepare-images.ps1       PNG -> BMP for NSIS MUI2
       splash.bmp / sidebar.bmp / header.bmp
-      mcaster1dnas_win64_v2.5.2-dev_setup.exe  (built output)
+      mcaster1dnas_win64_v2.5.3-beta_setup.exe  (built output)
   admin/                XSL admin interface templates
   web/                  XSL public status + web player
   ssl/
@@ -100,11 +117,120 @@ powershell -ExecutionPolicy Bypass -File build-installer.ps1 -Config Debug
 > fills any gaps before the verification check. If you skip this and get verification errors,
 > run: `cp $vcpkg\installed\x64-windows\bin\*.dll windows\x64\Debug\`
 
-### Linux / macOS
+### Linux / macOS (server binary — autotools)
 
 ```bash
 ./autogen.sh && ./configure && make
 ```
+
+For Apple Silicon the configure command must explicitly point to Homebrew libraries (see MEMORY.md
+for the full `PKG_CONFIG_PATH` / `--with-xslt-config` incantation). Use `build-macos.sh` which
+handles all of this automatically.
+
+### macOS Qt6 GUI (cmake — separate from autotools)
+
+```bash
+# One-time configure (Qt6 from Homebrew)
+cmake -B macos/build-qt -S macos \
+  -DCMAKE_PREFIX_PATH=$(brew --prefix qt) \
+  -DCMAKE_BUILD_TYPE=Debug
+
+# Build + codesign
+cmake --build macos/build-qt -j$(sysctl -n hw.logicalcpu)
+codesign --force --sign - macos/build-qt/Mcaster1DNAS.app
+
+# Launch
+open macos/build-qt/Mcaster1DNAS.app
+
+# Autotools aliases (delegate to cmake internally)
+make gui           # Debug
+make gui-release   # Release
+make gui-clean     # Remove build-qt/
+```
+
+---
+
+## macOS Qt6 GUI Architecture
+
+**Binary:** `Mcaster1DNAS.app` (in-process server — same model as Windows MFC)
+
+**Key files (macos/):**
+
+| File | Purpose |
+|------|---------|
+| `CMakeLists.txt` | Qt6 CMake project — compiles all `src/*.c` server files + Qt6 C++ GUI files |
+| `main.cpp` | `QApplication` entry; calls `MainWindow(argc, argv)` |
+| `MainWindow.h/cpp` | `QMainWindow` — 6 tabs, toolbar, tray, 500 ms poll timer, server lifecycle |
+| `ServerThread.h/cpp` | `QThread` subclass — calls `server_init()` + `server_process()` |
+| `StatsPoller.h/cpp` | `QObject` worker on `QThread` — calls `stats_get_xml()` every 5 s |
+| `LogTab.h/cpp` | `QPlainTextEdit` + 2 s QTimer file tail; color-coded by log level |
+| `StatsTab.h/cpp` | `QTableWidget` updated by StatsPoller signals |
+| `ConfigTab.h/cpp` | Raw YAML/XML editor with Save button |
+| `ConsoleTab.h/cpp` | Server stdout/stderr via `QProcess` pipe |
+| `ConfigDialog.h/cpp` | 6-tab QDialog — full Configuration Manager |
+| `TrayIcon.h/cpp` | `QSystemTrayIcon` — Start / Stop / Show Window / Quit menu |
+| `server_bridge.h` | Guards `net/sock.h` IOVEC for C++ compilation units |
+| `Info.plist` | macOS app bundle metadata |
+
+**Toolbar layout:**
+```
+[Logo] | [⚙ Config] | [▶ Start] [■ Stop] | [🌐 Web UI] [🔧 Admin] | [status icon] | [spacer] | [uptime]
+```
+
+**ConfigDialog tabs:**
+- **Global** — hostname, admin, listen sockets table, auth passwords
+- **Mounts** — add/edit/duplicate/remove; editor has 5 sub-tabs incl. ICY2.2 structured fields (70+ keys, 8 groups)
+- **Relays** — relay server list management
+- **System** — limits, timeouts, paths, logging config
+- **Security** — chroot, run-as user/group, HTTP headers, SSL paths
+- **SSL Cert** — inspect current PEM (subject/issuer/validity/SANs via OpenSSL X509 API) + generate cert/CSR via `ssl_gen_run()`
+
+**Critical macOS-specific gotchas:**
+
+1. **`config_clear()` aborts when server not yet started** — `config_clear()` calls `global_lock()` which calls `thread_mutex_lock_c()` → `abort()` because the server's pthread mutex is uninitialized until `server_init()` runs. Never call `config_clear()` on a local `mc_config_t` in the GUI. `ConfigDialog::loadFromFile()` uses `config_parse_file()` directly and deliberately omits `config_clear()`.
+
+2. **Config discovery from `.app` bundle** — `open` sets CWD to `/`; the binary lives at `.../Mcaster1DNAS.app/Contents/MacOS/`. `discoverConfig()` walks 6 directory levels up from the binary path to find `mcaster1dnas.yaml` at the repo root.
+
+3. **Codesign after every rebuild** — Apple Silicon caches the code-directory; after `cmake --build` replaces the binary, run `codesign --force --sign - macos/build-qt/Mcaster1DNAS.app` or the app gets SIGKILL on launch.
+
+4. **`discoverServerUrl()` / Web UI buttons** — reads live config via `config_get_config_unlocked()` when server running, or parses config file directly (without `config_clear()`). Maps `0.0.0.0` / `::` / `*` to `127.0.0.1`. Prefers HTTPS port over HTTP.
+
+5. **`#ifdef HAVE_XSLTSAVERESULTTOSTRING` in xslt.c** — on libxml2 ≥ 2.12, the old `xmlOutputBufferCreateIO` + `xsltSaveResultTo` path crashes in `xmlBufAdd → _platform_memmove`. Fixed by using `xsltSaveResultToString` when available (always true with Homebrew libxslt ≥ 1.1.18).
+
+6. **`config_parse_file()` needs logging rwlock** — `config_parse_file()` calls `log_write()` internally, which acquires `_logger_rwl`. That rwlock is NULL until `init_log_subsys()` runs (normally called inside `initialize_subsystems()` when the server starts). Calling `config_parse_file()` from the GUI thread (e.g. `ConfigDialog::loadFromFile()`, `discoverServerUrl()`) before the server starts → `KERN_INVALID_ADDRESS at 0x0` crash.
+   **Pattern:** `init_log_subsys()` → `config_parse_file(...)` → `log_shutdown()`. Include `"logging.h"` and `"log/log.h"` in the `extern "C"` block. `log_shutdown()` itself had a latent bug fixed in `src/log/log.c` (see macOS Source Fixes below).
+
+7. **`OverviewHeader` banner scaling** — `header-banner-v2.png` (1926×142 px) is pre-scaled to half height at load time: `m_px.scaledToHeight(m_px.height()/2, Qt::SmoothTransformation)` → 71 px. Drawn to fill widget width via `p.drawPixmap(0, 0, W, H, m_px)`. Badge dimensions: bW=50, bH=61, bY=(H-bH)/2 — proportional to 71px banner. These numbers must stay paired — scaling one without the other makes the badge look over- or under-sized.
+
+---
+
+## macOS Mandatory Prerequisites (Homebrew)
+
+```bash
+brew install autoconf automake libtool pkg-config qt \
+  libogg libvorbis theora speex \
+  openssl@3 libxml2 libxslt libyaml curl
+```
+
+> **Critical:** `openssl@3`, `libxml2`, `libxslt`, `curl` are keg-only — must pass explicit
+> `PKG_CONFIG_PATH` entries and `--with-xslt-config` to configure. Use `build-macos.sh`
+> which handles all of this. Do NOT use `/usr/bin/xslt-config` (links system libxml2 ~2.9,
+> causes ABI mismatch / SIGBUS at runtime).
+
+---
+
+## macOS Source Fixes (macos-dev branch)
+
+| File | Fix |
+|------|-----|
+| `src/xslt.c` | `xslt_SaveResultToBuf` — use `xsltSaveResultToString` (HAVE_XSLTSAVERESULTTOSTRING path) instead of `xsltSaveResultTo` + `xmlOutputBufferCreateIO`; crash on libxml2 ≥ 2.12 |
+| `src/cfgfile.h:422` + `src/cfgfile.c:2149` | `xmlErrorPtr` → `const xmlError *` in `config_xml_parse_failure()` (libxml2 2.12+ API) |
+| `src/slave.c:802` | `icecurl_server_running()` return type `size_t` → `int` (CURLOPT_XFERINFOFUNCTION) |
+| `src/log/log.c` | `log_close()` latent bug: skips `in_use==0` entries and calls `_lock_q()` before `_log_close_internal()` on the non-callback path (NULL mutex crash at offset 0x10) |
+| `autogen.sh` | Added `glibtoolize` detection (Homebrew libtool on macOS) |
+| `macos/server_bridge.h` | Guards `net/sock.h` IOVEC include for C++ compilation |
+| `macos/ConfigDialog.cpp` | `loadFromFile()` — wraps `config_parse_file()` with `init_log_subsys()` + `log_shutdown()` |
+| `macos/MainWindow.cpp` | `discoverServerUrl()` — same `init_log_subsys()`/`log_shutdown()` wrap; `OverviewHeader` banner pre-scaled to 71 px |
 
 ---
 
@@ -112,13 +238,13 @@ powershell -ExecutionPolicy Bypass -File build-installer.ps1 -Config Debug
 
 | Component | HTTP | HTTPS | Config file | Bound to |
 |-----------|------|-------|-------------|----------|
+| macOS GUI app / Console | **9330** | **9443** | `mcaster1dnas.yaml` (repo root) | `127.0.0.1` |
 | Windows Service / Console | **9330** | **9443** | `mcaster1dnas-console.yaml` | `0.0.0.0` |
-| GUI Application (sidecar) | **9033** | **9344** | `windows/mcaster1dnas.yaml` | `127.0.0.1` |
+| Windows GUI (sidecar) | **9033** | **9344** | `windows/mcaster1dnas.yaml` | `127.0.0.1` |
 
-Both can run simultaneously. Service handles production traffic; GUI sidecar is for development
-and admin use without interrupting the service.
+Both Windows binaries can run simultaneously. The macOS GUI runs the server in-process on the same ports.
 
-**Firewall rules** are managed by the NSIS installer for all 4 ports.
+**Firewall rules** are managed by the NSIS installer for all Windows ports.
 
 ---
 
@@ -308,10 +434,11 @@ PowerShell 5.1 to treat them as string terminators → cascading parse errors.
 ## Git Workflow
 
 ```
+macos-dev    →  development  →  main
 windows-dev  →  development  →  main
 ```
 
-- Work happens on `windows-dev`
+- macOS work happens on `macos-dev`; Windows work on `windows-dev`
 - PRs target `development` branch
 - Do NOT force-push `development` or `main`
 
@@ -336,8 +463,27 @@ b73b861  Merge pull request #8 from davestj/development
 
 ---
 
-## What Works (Verified 2026-02-23)
+## What Works (Verified 2026-03-06)
 
+### macOS (macos-dev branch)
+- [x] Server binary builds cleanly on Apple Silicon arm64 via `build-macos.sh`
+- [x] HTTP 200 at `http://127.0.0.1:9330/status.xsl` — no crash
+- [x] HTTPS 200 at `https://127.0.0.1:9443/status.xsl` — **xslt crash fixed in 2.5.3-beta**
+- [x] HTTP 401 at `https://127.0.0.1:9443/admin/` (correct auth enforcement)
+- [x] Qt6 GUI (`Mcaster1DNAS.app`) builds and launches
+- [x] Start/Stop server from Qt6 GUI toolbar
+- [x] Log tabs tail all 3 log files with color coding
+- [x] Stats tab populates via in-process `stats_get_xml()` every 5 s
+- [x] ConfigDialog opens and loads config from running server or file — **crash fixed** (init_log_subsys + log_close bug)
+- [x] SSL Cert tab inspects PEM + generates cert via `ssl_gen_run()`
+- [x] ICY2.2 structured mount fields (70+ keys) in mount editor
+- [x] Web UI + Admin toolbar buttons open browser to configured URL (prefers HTTPS)
+- [x] System tray icon with Start/Stop/Show/Quit menu
+- [x] Overview tab — animated ON AIR (green broadcast tower) / STOPPED (red octagon) badge overlaid on header-banner-v2.png at 71 px compact height
+- [x] Console tab — live stdout/stderr capture via pipe + QSocketNotifier
+- [x] Credits + Help tabs — embedded HTML via QtWebEngineWidgets
+
+### Windows (windows-dev branch)
 - [x] `mcaster1Service.exe` runs as Windows Service, auto-starts, uses `mcaster1dnas-console.yaml`
 - [x] HTTP 200 at `http://127.0.0.1:9330/status.xsl`
 - [x] HTTP 200 at `https://127.0.0.1:9443/status.xsl` (TLS, localhost.pem)
@@ -372,5 +518,6 @@ b73b861  Merge pull request #8 from davestj/development
 
 ## Memory Files
 
-- `C:\Users\dstjohn\.claude\memory\mcaster1dnas-windows-dev.md` — session notes
-- `C:\Users\dstjohn\.claude\plans\sorted-snuggling-stearns.md` — implementation plan (Windows SSL Gen + CLI Modernization)
+- `/Users/dstjohn/.claude/projects/.../memory/MEMORY.md` — macOS session memory (auto-loaded)
+- `C:\Users\dstjohn\.claude\memory\mcaster1dnas-windows-dev.md` — Windows session notes
+- `docs/PLANNING.html` — Phase progress tracker (all platforms, all phases)

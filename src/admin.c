@@ -454,6 +454,10 @@ static int admin_handle_general_request (client_t *client, const char *uri)
         return client_send_401 (client, NULL);
     }
 
+    /* Bare /admin/ (empty uri after stripping prefix) — serve stats page */
+    if (*uri == '\0')
+        uri = "stats.xsl";
+
     cmd = find_admin_command (admin_general, uri);
     xmlSetStructuredErrorFunc ((char*)uri, config_xml_parse_failure);
     if (cmd == NULL)

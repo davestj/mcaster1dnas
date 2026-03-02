@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>macOS GUI Guide — Mcaster1DNAS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+nav .sep{color:#333355}
+.page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+.page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+.page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+.page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+.badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+.content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+p{margin-bottom:1rem;color:#c8c8d8}
+a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+strong{color:#dde}
+code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+.ascii{background:#0a0a18;border:1px solid #1a1a38;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem;font-family:"Cascadia Code","Fira Code",Consolas,monospace;font-size:.83rem;line-height:1.55;color:#8888cc}
+.table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+.note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+.credit-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.4rem 1.6rem;margin-bottom:1rem}
+.credit-card h3{color:#00c9ff;font-size:1rem;margin:0 0 .4rem}
+.credit-card .role{font-size:.78rem;color:#5555aa;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.credit-card p{color:#9898b8;font-size:.9rem;margin:0}
+.credit-card a{color:#00c9ff99}
+footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+.see-also{background:#13131e;border:1px solid #1e1e38;border-radius:8px;padding:1.2rem 1.6rem;margin:2.5rem 0 0}
+.see-also h3{color:#7878a8;font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 .7rem}
+.see-also ul{margin:0;list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.see-also ul li{margin:0}
+.see-also ul li a{display:inline-block;background:#0f0f1c;border:1px solid #2a2a4a;color:#00c9ff;padding:.28rem .9rem;border-radius:99px;font-size:.82rem;transition:border-color .15s}
+.see-also ul li a:hover{border-color:#00c9ff66;text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">/</span>
+  <span>macOS GUI Guide</span>
+</nav>
+
+<div class="page-header">
+  <div class="meta">Mcaster1DNAS &mdash; Documentation</div>
+  <h1>macOS Qt6 GUI Guide</h1>
+  <div class="sub">Mcaster1DNAS.app &mdash; native macOS ARM64 desktop application</div>
+  <span class="badge">v2.5.3-beta</span>
+  <span class="badge">Qt6 6.x</span>
+  <span class="badge">macOS ARM64</span>
+  <span class="badge">Apple Silicon</span>
+</div>
+
+<div class="content">
+
+  <!-- ================================================================ -->
+  <h2>Overview</h2>
+
+  <p><strong>Mcaster1DNAS.app</strong> is the native macOS GUI for Mcaster1DNAS, built with Qt6.
+  It runs the full streaming server <em>in-process</em> (same model as the Windows MFC GUI),
+  providing a unified desktop experience without requiring a separate terminal session or daemon.
+  Requires macOS 12 or later on Apple Silicon (M-series).</p>
+
+  <ul>
+    <li>Full in-process Mcaster1DNAS server (no separate process or daemon)</li>
+    <li>Start/Stop server from toolbar with live status indicator</li>
+    <li>Real-time stats via <code>StatsPoller</code> (calls <code>stats_get_xml()</code> every 5 seconds)</li>
+    <li>Live log tailing for Access, Error, and Playlist logs with color-coded severity</li>
+    <li>Server console output capture via pipe (stdout/stderr)</li>
+    <li>6-tab Configuration Manager dialog (Global, Mounts, Relays, System, Security, SSL Cert)</li>
+    <li>Config button automatically disabled while server is running (thread-safe)</li>
+    <li>Web UI and Admin toolbar buttons open browser to the live server</li>
+    <li>System tray icon with Start / Stop / Show Window / Quit menu</li>
+    <li>ICY 2.2 structured metadata fields (70+ keys across 8 groups) for mount points</li>
+    <li>Integrated Credits and Help documentation tabs</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2>Building from Source</h2>
+
+  <p>The macOS build uses the autotools chain for the server core and delegates to CMake
+  internally for the Qt6 GUI. Always use the <code>make gui</code> target &mdash; do not
+  invoke CMake directly.</p>
+
+<pre><code># Step 1 -- Regenerate build system
+./autogen.sh
+
+# Step 2 -- Configure (Apple Silicon / Homebrew)
+BREW=/opt/homebrew
+PKG_CONFIG_PATH="$BREW/lib/pkgconfig:$BREW/opt/openssl@3/lib/pkgconfig:$BREW/opt/curl/lib/pkgconfig:$BREW/opt/libxml2/lib/pkgconfig:$BREW/opt/libxslt/lib/pkgconfig:$BREW/opt/libyaml/lib/pkgconfig" \
+CPPFLAGS="-I$BREW/include -I$BREW/opt/openssl@3/include -I$BREW/opt/libxml2/include/libxml2 -I$BREW/opt/curl/include -I$BREW/opt/libyaml/include" \
+LDFLAGS="-L$BREW/lib -L$BREW/opt/openssl@3/lib -L$BREW/opt/libxml2/lib -L$BREW/opt/curl/lib" \
+./configure --prefix=$(pwd)/build \
+  --with-ogg=$BREW --with-vorbis=$BREW --with-theora=$BREW --with-speex=$BREW \
+  --with-xslt-config=$BREW/opt/libxslt/bin/xslt-config \
+  --with-yaml
+
+# Step 3 -- Build server binary
+make -j$(sysctl -n hw.logicalcpu)
+
+# Step 4 -- Build Qt6 GUI (delegates to cmake internally)
+make gui
+
+# Step 5 -- Codesign (required on Apple Silicon after every rebuild)
+codesign --force --sign - macos/build-qt/Mcaster1DNAS.app
+
+# Step 6 -- Launch
+open macos/build-qt/Mcaster1DNAS.app</code></pre>
+
+  <div class="note">
+    <strong>IMPORTANT:</strong> Always use <code>./autogen.sh</code> &rarr; <code>./configure</code>
+    &rarr; <code>make</code> &rarr; <code>make gui</code>. Do not invoke <code>cmake</code>
+    directly. The <code>make gui</code> target handles cmake configuration with the correct
+    Homebrew <code>PKG_CONFIG_PATH</code> to avoid ABI mismatches between system
+    <code>libxslt</code> and Homebrew <code>libxml2</code>.
+  </div>
+
+  <p>For convenience, <code>build-macos.sh</code> in the repository root performs the full
+  configure and build sequence automatically, including platform detection and Homebrew
+  package verification.</p>
+
+  <!-- ================================================================ -->
+  <h2>Critical Homebrew Dependencies</h2>
+
+  <p>Install all required packages before building. Several packages are keg-only and must be
+  explicitly referenced via <code>PKG_CONFIG_PATH</code> &mdash; the <code>configure</code>
+  command above and <code>build-macos.sh</code> handle this automatically.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Homebrew Formula</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>autoconf / automake / libtool</strong></td>
+          <td><code>autoconf automake libtool</code></td>
+          <td>Build system tools; Homebrew installs <code>glibtoolize</code> (auto-detected by <code>autogen.sh</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>libxml2</strong></td>
+          <td><code>libxml2</code></td>
+          <td>Keg-only &mdash; must use Homebrew, NOT system. ABI changed in 2.12+.</td>
+        </tr>
+        <tr>
+          <td><strong>libxslt</strong></td>
+          <td><code>libxslt</code></td>
+          <td>Keg-only &mdash; must use Homebrew (system <code>/usr/bin/xslt-config</code> links against system libxml2 ~2.9, causing SIGBUS)</td>
+        </tr>
+        <tr>
+          <td><strong>libyaml</strong></td>
+          <td><code>libyaml</code></td>
+          <td>YAML config parser (<code>cfgfile_yaml.c</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>OpenSSL 3</strong></td>
+          <td><code>openssl@3</code></td>
+          <td>TLS/SSL listeners and cert generation. Keg-only.</td>
+        </tr>
+        <tr>
+          <td><strong>libcurl</strong></td>
+          <td><code>curl</code></td>
+          <td>YP directory submission and relay health checks. Keg-only.</td>
+        </tr>
+        <tr>
+          <td><strong>libogg / libvorbis / libtheora / libspeex</strong></td>
+          <td><code>libogg libvorbis theora speex</code></td>
+          <td>Codec support. If removed by <code>brew autoremove</code>, reinstall explicitly.</td>
+        </tr>
+        <tr>
+          <td><strong>Qt6</strong></td>
+          <td><code>qt</code></td>
+          <td>Provides Qt6WebEngineWidgets for Credits and Help tabs in the GUI</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>App Bundle Structure</h2>
+
+<pre><code>Mcaster1DNAS.app/
+├── Contents/
+│   ├── Info.plist
+│   ├── MacOS/
+│   │   ├── Mcaster1DNAS          ← server + GUI binary (in-process)
+│   │   └── docs/                 ← documentation (Credits, Help tabs)
+│   │       ├── index.html
+│   │       ├── CREDITS.html
+│   │       ├── MACOS_GUI.html
+│   │       └── ...
+│   └── Resources/
+│       └── qt.conf</code></pre>
+
+  <p>The server and GUI are compiled into a single binary. There is no companion daemon or
+  helper process &mdash; <code>server_init()</code> and <code>server_process()</code> run
+  on a dedicated <code>QThread</code> (<code>ServerThread</code>) inside the same process as
+  the Qt event loop.</p>
+
+  <!-- ================================================================ -->
+  <h2>Toolbar Layout</h2>
+
+  <div class="ascii">┌─────────────────────────────────────────────────────────────────────────────────┐
+│ [●] │ [⚙ Config] │ │ [▶ Start] [■ Stop] │ │ [🌐 Web UI] [🔧 Admin] │ │ [●●] │ [uptime] │
+└─────────────────────────────────────────────────────────────────────────────────┘
+      ↑ grayed when running ↑                                        ↑ status dot</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Control</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Logo separator</td>
+          <td>Brand separator (non-interactive)</td>
+        </tr>
+        <tr>
+          <td><strong>&#9881; Config</strong></td>
+          <td>Opens the Configuration Manager dialog. <strong>DISABLED while server is running</strong> to prevent concurrent config modification.</td>
+        </tr>
+        <tr>
+          <td><strong>&#9654; Start</strong></td>
+          <td>Starts the server using the currently discovered config file. Spawns <code>ServerThread</code>, begins console capture.</td>
+        </tr>
+        <tr>
+          <td><strong>&#9632; Stop</strong></td>
+          <td>Sends <code>MC_HALTING</code> signal and waits for the server thread to exit gracefully. Restores stdout.</td>
+        </tr>
+        <tr>
+          <td><strong>&#127760; Web UI</strong></td>
+          <td>Opens the system browser to the HTTP/HTTPS status page. Prefers HTTPS port if configured.</td>
+        </tr>
+        <tr>
+          <td><strong>&#128295; Admin</strong></td>
+          <td>Opens the system browser to <code>/admin/stats.xsl</code>. Browser will prompt for HTTP auth credentials.</td>
+        </tr>
+        <tr>
+          <td>Status dot</td>
+          <td>Green = server running / Red = server stopped. Updates every 500&nbsp;ms.</td>
+        </tr>
+        <tr>
+          <td>Uptime</td>
+          <td>Live <code>HH:MM:SS</code> uptime counter. Updates every 500&nbsp;ms while server is running.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>Tab Reference</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tab</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Overview</strong></td>
+          <td>Server summary: status, sources, clients, listeners, active config file path</td>
+        </tr>
+        <tr>
+          <td><strong>Stats</strong></td>
+          <td>Live mount-point and listener table, populated by <code>StatsPoller</code> calling <code>stats_get_xml()</code> every 5 seconds</td>
+        </tr>
+        <tr>
+          <td><strong>Access Log</strong></td>
+          <td>Live tail of <code>access.log</code> with color-coded request entries</td>
+        </tr>
+        <tr>
+          <td><strong>Error Log</strong></td>
+          <td>Live tail of <code>error.log</code> &mdash; ERROR lines in red, WARN in yellow, INFO in blue</td>
+        </tr>
+        <tr>
+          <td><strong>Playlist Log</strong></td>
+          <td>Live tail of <code>playlist.log</code> showing song history entries as they are written</td>
+        </tr>
+        <tr>
+          <td><strong>Config</strong></td>
+          <td>Raw YAML/XML editor for the active config file. Includes an "Open in Editor" button to launch the file in an external editor.</td>
+        </tr>
+        <tr>
+          <td><strong>Console</strong></td>
+          <td>Captured <code>stdout</code>/<code>stderr</code> from the server process via <code>pipe()</code> + <code>dup2()</code>. Displays the startup banner and all server <code>printf()</code> output.</td>
+        </tr>
+        <tr>
+          <td><strong>Credits</strong></td>
+          <td>Embedded <code>CREDITS.html</code> &mdash; project credits and open source acknowledgements</td>
+        </tr>
+        <tr>
+          <td><strong>Help</strong></td>
+          <td>Embedded <code>docs/index.html</code> &mdash; full documentation navigator for all project docs</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>Configuration Manager</h2>
+
+  <p>The Configuration Manager is a 6-tab <code>QDialog</code> opened from the toolbar
+  <strong>Config</strong> button or via <strong>Tools &rarr; Configuration Manager</strong>.
+  It is disabled (grayed out) while the server is running, because modifying config while
+  the server holds C-level mutexes is not thread-safe.</p>
+
+  <div class="note">
+    When the server is running, the Config button is grayed out. Stop the server first to
+    open the Configuration Manager, make changes, save, then restart.
+  </div>
+
+  <h3>Dialog Tabs</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tab</th>
+          <th>Contents</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Global</strong></td>
+          <td>Hostname, admin email, server-id, fileserve toggle, listen sockets table (add/remove port + bind address + SSL entries), source and relay authentication passwords</td>
+        </tr>
+        <tr>
+          <td><strong>Mounts</strong></td>
+          <td>Add / Edit / Duplicate / Remove mount points. Each mount opens a 5-tab editor: Basic, Stream Info, Access Control, Advanced, and ICY2 Metadata (70+ keys across 8 groups)</td>
+        </tr>
+        <tr>
+          <td><strong>Relays</strong></td>
+          <td>Relay server management: remote server, port, mount, SSL toggle, on-demand relay, ICY meta relay, check interval</td>
+        </tr>
+        <tr>
+          <td><strong>System</strong></td>
+          <td>Resource limits, connection timeouts, queue and burst sizes, file paths, logging configuration (log level, rotate size)</td>
+        </tr>
+        <tr>
+          <td><strong>Security</strong></td>
+          <td>Process isolation (chroot path, run-as user/group), TLS (certificate path, key path, CA bundle, cipher list), HTTP response headers table</td>
+        </tr>
+        <tr>
+          <td><strong>SSL Cert</strong></td>
+          <td>Inspect the current PEM certificate (subject, issuer, validity dates, SANs via OpenSSL X.509 API) and generate a new self-signed certificate or CSR via <code>ssl_gen_run()</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Save Behavior</h3>
+
+  <ul>
+    <li><strong>Save</strong> &mdash; writes to the active config file in the auto-detected format (YAML or XML, based on file extension and content)</li>
+    <li><strong>Save as YAML&hellip;</strong> &mdash; writes to a new <code>.yaml</code> file via <code>QFileDialog</code>, then prompts to activate it as the running config</li>
+    <li><strong>Save as XML&hellip;</strong> &mdash; writes to a new <code>.xml</code> file via <code>QFileDialog</code>, then prompts to activate it</li>
+    <li>After saving (server stopped): dialog confirms the config is saved and ready for the next Start</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2>Config Auto-Discovery</h2>
+
+  <p>When launched from Finder, the Dock, or a shortcut, macOS sets the working directory
+  to <code>$HOME</code>. The app uses a discovery algorithm to locate the config file
+  regardless of how it was launched:</p>
+
+  <ol>
+    <li><strong><code>-c &lt;path&gt;</code></strong> command-line argument (if provided)</li>
+    <li><strong><code>&lt;binary dir&gt;/mcaster1dnas.yaml</code></strong> &mdash; directory containing the <code>Mcaster1DNAS</code> binary inside the <code>.app</code> bundle</li>
+    <li><strong>Walk up 6 parent directories</strong> from the binary path, checking each level for <code>mcaster1dnas.yaml</code></li>
+    <li><strong><code>QFileDialog</code> prompt</strong> &mdash; asks the user to locate the config file if none is found automatically</li>
+  </ol>
+
+  <p>This handles both Finder/Dock launch (<code>CWD=$HOME</code>) and terminal launch
+  (<code>open macos/build-qt/Mcaster1DNAS.app</code> from the repo root).</p>
+
+  <!-- ================================================================ -->
+  <h2>Port Defaults</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Port</th>
+          <th>Protocol</th>
+          <th>Bind Address</th>
+          <th>Config Key</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>9330</strong></td>
+          <td>HTTP</td>
+          <td><code>127.0.0.1</code></td>
+          <td><code>listen-sockets[0].port</code></td>
+        </tr>
+        <tr>
+          <td><strong>9443</strong></td>
+          <td>HTTPS / TLS</td>
+          <td><code>127.0.0.1</code></td>
+          <td><code>listen-sockets[1].port</code> + <code>ssl: 1</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The default config file is <code>mcaster1dnas.yaml</code> in the repository root.
+  The SSL listener uses <code>ssl/localhost.pem</code> (combined PEM: private key block
+  followed by certificate block). These ports are bound to <code>127.0.0.1</code> only
+  and are not exposed on external interfaces.</p>
+
+  <!-- ================================================================ -->
+  <h2>Known Issues / Gotchas</h2>
+
+  <h3>Codesign after every rebuild</h3>
+  <p>Apple Silicon caches the code-directory. After <code>cmake --build</code> replaces the
+  binary, the cached signature is stale and macOS will <code>SIGKILL</code> the app on
+  launch. Always run:</p>
+<pre><code>codesign --force --sign - macos/build-qt/Mcaster1DNAS.app</code></pre>
+  <p>The <code>make gui</code> target performs this automatically after every build.</p>
+
+  <h3>Do NOT use the -b (daemon) flag</h3>
+  <p><code>fork()</code> after multi-threaded initialization is unsafe on Darwin. The GUI
+  manages the server lifecycle internally via <code>ServerThread</code>. Do not pass
+  <code>-b</code> to the binary or attempt to daemonize it. Use the GUI Start button or
+  launch as a foreground process from the terminal.</p>
+
+  <h3>ABI mismatch: system vs Homebrew libxslt</h3>
+  <p>macOS ships <code>/usr/bin/xslt-config</code> which links <code>libxslt</code> against
+  the system <code>libxml2</code> (~2.9). Homebrew's <code>libxml2</code> is 2.15+ and
+  changed internal struct layouts (<code>xmlBuf</code>) between these versions. Linking
+  against the system <code>libxslt</code> while using Homebrew <code>libxml2</code> causes
+  a <code>SIGBUS</code> (ABI mismatch) whenever the server transforms an XSLT page. The
+  <code>make gui</code> target and the configure command above both force Homebrew's
+  <code>xslt-config</code> via <code>--with-xslt-config</code>.</p>
+
+  <h3><code>config_clear()</code> abort</h3>
+  <p><code>config_clear()</code> calls <code>global_lock()</code> which calls
+  <code>thread_mutex_lock_c()</code>. If the server has never been initialized, the
+  underlying pthread mutex is uninitialized and this results in <code>abort()</code>.
+  Never call <code>config_clear()</code> on a local <code>mc_config_t</code> in GUI code.
+  <code>ConfigDialog::loadFromFile()</code> calls <code>config_parse_file()</code> directly
+  and deliberately omits <code>config_clear()</code>.</p>
+
+  <h3>Relative paths in YAML config</h3>
+  <p>YAML config paths like <code>./ssl/localhost.pem</code>, <code>./logs</code>, and
+  <code>./web</code> are resolved relative to the working directory. <code>ServerThread</code>
+  performs a <code>chdir()</code> to the directory containing the config file before calling
+  <code>server_init()</code>, mirroring the <code>SetCurrentDirectoryA(exedir)</code> call
+  in the Windows <code>Mcaster1Win.cpp</code> <code>InitInstance()</code>. This ensures
+  all relative paths resolve correctly regardless of how the <code>.app</code> was launched.</p>
+
+  <!-- ================================================================ -->
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="index.html">Documentation Home</a></li>
+      <li><a href="CREDITS.html">Credits &amp; Acknowledgements</a></li>
+      <li><a href="ICY2_PROTOCOL.html">ICY 2.2 Protocol</a></li>
+      <li><a href="YAML_IMPLEMENTATION.html">YAML Configuration</a></li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Cert Generation</a></li>
+      <li><a href="STATIC_MOUNTS.html">Static Mounts</a></li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a></li>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a></li>
+    </ul>
+  </div>
+
+</div><!-- /.content -->
+
+<footer>
+  Mcaster1DNAS v2.5.3-beta &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" target="_blank" rel="noopener">mcaster1.com</a>
+</footer>
+
+</body>
+</html>

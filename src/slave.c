@@ -968,7 +968,7 @@ static size_t streamlist_data (void *ptr, size_t size, size_t nmemb, void *strea
     struct master_conn_details *master = stream;
     size_t passed_len = size*nmemb;
     size_t len = passed_len;
-    char *buffer = ptr, *buf = ptr;
+    char *buffer = (char*)ptr, *buf = (char*)ptr;
     int prev = 0;
 
     if (master->ok == 0)
@@ -1034,7 +1034,7 @@ static size_t streamlist_data (void *ptr, size_t size, size_t nmemb, void *strea
         len -= offset;
         if (len == 0 && prev)
         {
-            buf = ptr + prev;
+            buf = (char*)ptr + prev;
             len =  passed_len - prev;
             free (master->buffer);
             master->buffer = NULL;

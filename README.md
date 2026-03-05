@@ -371,6 +371,115 @@ See **[YAML_IMPLEMENTATION.md](YAML_IMPLEMENTATION.md)** for complete YAML usage
 
 ---
 
+## 🪟 Windows — Native GUI (Beta)
+
+Mcaster1DNAS ships a full native Windows GUI application (`mcaster1win.exe`) built with
+**Visual Studio 2022 (version 17 / MSBuild v17)** targeting Windows 10/11 x64.
+This is a significant upgrade from the original Icecast2 Windows port and is actively
+developed on the `windows-dev` branch.
+
+### What's New in the Windows Beta
+
+#### Resizable Window (ResizableLib)
+The GUI now integrates **ResizableLib by Paolo Messina** (Artistic License 2.0), replacing
+brittle hand-coded pixel math with declarative anchor-based layout:
+- Drag any edge or corner — all controls reflow correctly
+- Maximize/restore works seamlessly across all tab pages
+- Window position and size persist between sessions (stored in the Windows registry)
+- All four tab pages (Status, Stats, Config, Log) resize independently with proper anchoring
+
+#### Command-Line Interface
+The GUI application supports command-line flags for scripted and automated use:
+
+```
+mcaster1win.exe [options]
+
+  -c <file>   Use specified config file (YAML or XML, auto-detected)
+  -s          Auto-start the server on launch
+  -m          Start minimised to the system tray
+  -v          Print version and exit
+  -h          Print help and exit
+```
+
+Example — start with a specific YAML config, auto-start the server, minimised:
+```
+mcaster1win.exe -c C:\mcaster1\mcaster1.yaml -s -m
+```
+
+#### Auto-Versioned Builds
+Every build stamps the git commit hash and branch into the window title at compile time:
+```
+Mcaster1DNAS v2.5.1-dev.c2bad3c — running
+```
+
+#### YAML Configuration on Windows
+YAML config (`mcaster1.yaml`) is fully supported. A Windows-specific CRT DLL boundary crash
+in libyaml was identified and fixed — the config file is now read into memory by the exe's own
+CRT before being handed to `yaml.dll`, eliminating the incompatible `FILE*` struct layout issue.
+Both YAML and XML configs start the server identically on Windows.
+
+### Building on Windows
+
+#### Prerequisites
+
+1. **Visual Studio 2022** (Community, Professional, or Enterprise) with:
+   - "Desktop development with C++" workload
+   - MSVC v143 toolset
+   - Windows 10/11 SDK
+
+2. **vcpkg** (package manager) with the following packages installed for `x64-windows`:
+   ```
+   vcpkg install libxml2 libxslt curl openssl libyaml ogg vorbis theora speex pthreads
+   ```
+   Set `VCPKG_ROOT` environment variable to your vcpkg install path.
+
+3. **Git** — required for the PreBuildEvent version stamping script.
+
+#### Build Steps
+
+```
+# Open in Visual Studio 2022:
+windows\Mcaster1DNAS.sln
+
+# Select configuration: Debug | x64  (or Release | x64)
+# Build → Build Solution   (or Ctrl+Shift+B)
+
+# Output:
+windows\x64\Debug\mcaster1win.exe
+```
+
+Or from a Developer Command Prompt / PowerShell:
+```powershell
+cd windows
+msbuild Mcaster1Win.vcxproj /p:Configuration=Debug /p:Platform=x64
+```
+
+#### Config Files
+
+Place either `mcaster1.yaml` or `mcaster1.xml` in the same directory as `mcaster1win.exe`.
+The server auto-detects the format. Sample configs are included in `windows\x64\Debug\`.
+
+### Windows Roadmap
+
+| Feature | Status |
+|---------|--------|
+| Resizable GUI (ResizableLib) | **Done** |
+| CLI flags (-c -s -m -v -h) | **Done** |
+| YAML config support (CRT fix) | **Done** |
+| Auto-version stamping | **Done** |
+| Mcaster1DNAS visual rebrand | **Done** |
+| Config dialog editor (GUI) | Planned |
+| Podcast & On-Demand File Manager | Planned |
+| RSS Podcast Feed Generator | Planned |
+| Podcast core server features | Planned |
+| Windows Installer (Inno Setup) | Planned |
+| Windows Service integration | Planned |
+| Dark mode (Win10/11) | Planned |
+
+> For full Windows-specific change history see [CHANGELOG-WIN.md](CHANGELOG-WIN.md).
+
+---
+
 ## 📚 Documentation
 
 Comprehensive documentation is available:
@@ -552,7 +661,7 @@ We welcome contributions! Please:
 - ✅ Linux (Debian, Ubuntu, CentOS, RHEL, Fedora)
 - ✅ BSD (FreeBSD, OpenBSD, NetBSD)
 - ✅ macOS (10.13+)
-- ✅ Windows (with Cygwin or MSVC)
+- ✅ Windows 10/11 — **native GUI via Visual Studio 2022 (v17)** (`mcaster1win.exe`)
 
 ---
 
@@ -630,9 +739,12 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 ✅ Integrated browser audio player — VU meters, volume control, keyboard shortcuts
 ✅ Full public codec stats — bitrate, samplerate, channels, codec for all formats
 ✅ Opus ICY metadata support — now playing, artist/title, song history tracking
-✅ Windows build support via MSBuild/Visual Studio 2022
+✅ Windows native GUI (`mcaster1win.exe`) — Visual Studio 2022 (v17), fully resizable via ResizableLib
+✅ Windows YAML config CRT crash fixed — in-memory parse, no DLL FILE* boundary crossing
+✅ Windows auto-versioning — git commit hash stamped into window title at build time
+✅ Complete Mcaster1DNAS visual rebrand — new bitmaps, icons, installer branding
 
-### Upcoming Features
+### Upcoming Features (Cross-Platform)
 - [ ] Real-time statistics dashboard (WebSocket/SSE)
 - [ ] Dark mode toggle
 - [ ] Stream health monitoring with visual indicators
@@ -642,6 +754,16 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 - [ ] Automated stream scheduling system
 - [ ] Interactive API documentation
 - [ ] Plugin architecture for extensibility
+
+### Upcoming Features (Windows GUI)
+- [ ] **Config Dialog Editor** — visual YAML/XML editor built into the GUI
+- [ ] **Enhanced Windows documentation** — dependency setup guide, config wizard
+- [ ] **Podcast & On-Demand File Manager** — manage episode files and on-demand assets from the GUI
+- [ ] **RSS Podcast Feed Generator** — built-in RSS 2.0 / Apple Podcasts feed publisher
+- [ ] **Podcast core server features** — episode scheduling, chapter markers, per-episode listener analytics
+- [ ] **Windows Installer (Inno Setup / MSI)** — automated installer with DLL bundling
+- [ ] **Windows Service integration** — install/start/stop as a Windows Service from the GUI
+- [ ] **Dark mode** — Windows 10/11 dark mode support
 
 ---
 

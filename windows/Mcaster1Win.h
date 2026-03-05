@@ -24,6 +24,8 @@ class CMcaster1WinApp : public CWinApp
 public:
 	char m_configFile[1024];
 	HICON m_pIconList[2];
+	BOOL m_bAutoStart;   // -s: start server immediately on startup
+	BOOL m_bMinimize;    // -m: hide to system tray on startup
 	CMcaster1WinApp();
 
 // Overrides

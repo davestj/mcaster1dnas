@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Mcaster1Console.vcxproj
+  Visual Studio 2022 (v143 toolset) project for the mcaster1.exe server binary.
+
+  Compiles all src/*.c files into a Windows console application.
+  Dependencies supplied by vcpkg (x64-windows / x86-windows).
+
+  vcpkg root: $(VCPKG_ROOT)  e.g. C:\Users\dstjohn\dev\vcpkg
+  If VCPKG_ROOT is not set, set the VcpkgRoot property below to your vcpkg path.
+-->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- ===================================================================
+       Project Configurations
+       =================================================================== -->
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <!-- ===================================================================
+       Globals
+       =================================================================== -->
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6D9A2E70-5F55-4C9A-AF3B-2E6F9D0F4B5C}</ProjectGuid>
+    <RootNamespace>Mcaster1Console</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <!-- vcpkg root - override if VCPKG_ROOT env var is not set -->
+    <VcpkgRoot Condition="'$(VcpkgRoot)'==''">$(USERPROFILE)\dev\vcpkg</VcpkgRoot>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <!-- ===================================================================
+       Configuration properties (toolset, CRT, output type)
+       =================================================================== -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+
+  <!-- ===================================================================
+       User property sheets
+       =================================================================== -->
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+
+  <PropertyGroup Label="UserMacros" />
+
+  <!-- ===================================================================
+       Output directories
+       =================================================================== -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Win32\Debug\</OutDir>
+    <IntDir>Win32\Debug\</IntDir>
+    <TargetName>mcaster1</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Win32\Release\</OutDir>
+    <IntDir>Win32\Release\</IntDir>
+    <TargetName>mcaster1</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)x64\Debug\</OutDir>
+    <IntDir>x64\Debug\</IntDir>
+    <TargetName>mcaster1</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)x64\Release\</OutDir>
+    <IntDir>x64\Release\</IntDir>
+    <TargetName>mcaster1</TargetName>
+  </PropertyGroup>
+
+  <!-- ===================================================================
+       Compiler + Linker settings — Debug|Win32
+       =================================================================== -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        $(ProjectDir);
+        $(ProjectDir)..\src;
+        $(ProjectDir)..\src\net;
+        $(ProjectDir)..\src\thread;
+        $(ProjectDir)..\src\httpp;
+        $(ProjectDir)..\src\log;
+        $(ProjectDir)..\src\avl;
+        $(ProjectDir)..\src\timing;
+        $(ProjectDir)..\;
+        $(VcpkgRoot)\installed\x86-windows\include;
+        $(VcpkgRoot)\installed\x86-windows\include\libxml2;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4018;4244;4267;4996;4013;4133;4047;4715</DisableSpecificWarnings>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+        $(VcpkgRoot)\installed\x86-windows\debug\lib;
+        $(VcpkgRoot)\installed\x86-windows\lib;
+        %(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+        ws2_32.lib;winmm.lib;advapi32.lib;
+        libxml2.lib;libxslt.lib;
+        libcurl.lib;
+        pthreadVSE3.lib;
+        ogg.lib;vorbis.lib;
+        theora.lib;theoradec.lib;
+        speex.lib;
+        iconv.lib;charset.lib;
+        libssl.lib;libcrypto.lib;
+        yaml.lib;zlib.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ===================================================================
+       Compiler + Linker settings — Release|Win32
+       =================================================================== -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        $(ProjectDir);
+        $(ProjectDir)..\src;
+        $(ProjectDir)..\src\net;
+        $(ProjectDir)..\src\thread;
+        $(ProjectDir)..\src\httpp;
+        $(ProjectDir)..\src\log;
+        $(ProjectDir)..\src\avl;
+        $(ProjectDir)..\src\timing;
+        $(ProjectDir)..\;
+        $(VcpkgRoot)\installed\x86-windows\include;
+        $(VcpkgRoot)\installed\x86-windows\include\libxml2;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4018;4244;4267;4996;4013;4133;4047;4715</DisableSpecificWarnings>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+        $(VcpkgRoot)\installed\x86-windows\lib;
+        %(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+        ws2_32.lib;winmm.lib;advapi32.lib;
+        libxml2.lib;libxslt.lib;
+        libcurl.lib;
+        pthreadVSE3.lib;
+        ogg.lib;vorbis.lib;
+        theora.lib;theoradec.lib;
+        speex.lib;
+        iconv.lib;charset.lib;
+        libssl.lib;libcrypto.lib;
+        yaml.lib;zlib.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ===================================================================
+       Compiler + Linker settings — Debug|x64
+       =================================================================== -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        $(ProjectDir);
+        $(ProjectDir)..\src;
+        $(ProjectDir)..\src\net;
+        $(ProjectDir)..\src\thread;
+        $(ProjectDir)..\src\httpp;
+        $(ProjectDir)..\src\log;
+        $(ProjectDir)..\src\avl;
+        $(ProjectDir)..\src\timing;
+        $(ProjectDir)..\;
+        $(VcpkgRoot)\installed\x64-windows\include;
+        $(VcpkgRoot)\installed\x64-windows\include\libxml2;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4018;4244;4267;4996;4013;4133;4047;4715</DisableSpecificWarnings>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+        $(VcpkgRoot)\installed\x64-windows\debug\lib;
+        $(VcpkgRoot)\installed\x64-windows\lib;
+        %(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+        ws2_32.lib;winmm.lib;advapi32.lib;
+        libxml2.lib;libxslt.lib;
+        libcurl.lib;
+        pthreadVSE3.lib;
+        ogg.lib;vorbis.lib;
+        theora.lib;theoradec.lib;
+        speex.lib;
+        iconv.lib;charset.lib;
+        libssl.lib;libcrypto.lib;
+        yaml.lib;zlib.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ===================================================================
+       Compiler + Linker settings — Release|x64
+       =================================================================== -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        $(ProjectDir);
+        $(ProjectDir)..\src;
+        $(ProjectDir)..\src\net;
+        $(ProjectDir)..\src\thread;
+        $(ProjectDir)..\src\httpp;
+        $(ProjectDir)..\src\log;
+        $(ProjectDir)..\src\avl;
+        $(ProjectDir)..\src\timing;
+        $(ProjectDir)..\;
+        $(VcpkgRoot)\installed\x64-windows\include;
+        $(VcpkgRoot)\installed\x64-windows\include\libxml2;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4018;4244;4267;4996;4013;4133;4047;4715</DisableSpecificWarnings>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+        $(VcpkgRoot)\installed\x64-windows\lib;
+        %(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+        ws2_32.lib;winmm.lib;advapi32.lib;
+        libxml2.lib;libxslt.lib;
+        libcurl.lib;
+        pthreadVSE3.lib;
+        ogg.lib;vorbis.lib;
+        theora.lib;theoradec.lib;
+        speex.lib;
+        iconv.lib;charset.lib;
+        libssl.lib;libcrypto.lib;
+        yaml.lib;zlib.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ===================================================================
+       Source Files — all src/*.c (core server)
+       New fork files added: icy2_meta.c, cfgfile_yaml.c, songdata_api.c,
+                             format_opus.c, format_ebml.c, params.c, auth_cmd.c
+       =================================================================== -->
+  <ItemGroup>
+    <!-- Entry point -->
+    <ClCompile Include="..\src\main.c" />
+
+    <!-- Core server -->
+    <ClCompile Include="..\src\admin.c" />
+    <ClCompile Include="..\src\auth.c" />
+    <ClCompile Include="..\src\auth_cmd.c" />
+    <ClCompile Include="..\src\auth_htpasswd.c" />
+    <ClCompile Include="..\src\auth_url.c" />
+    <ClCompile Include="..\src\cfgfile.c" />
+    <ClCompile Include="..\src\cfgfile_yaml.c" />
+    <ClCompile Include="..\src\client.c" />
+    <ClCompile Include="..\src\connection.c" />
+    <ClCompile Include="..\src\event.c" />
+    <ClCompile Include="..\src\fserve.c" />
+    <ClCompile Include="..\src\global.c" />
+    <ClCompile Include="..\src\icy2_meta.c" />
+    <ClCompile Include="..\src\logging.c" />
+    <ClCompile Include="..\src\md5.c" />
+    <ClCompile Include="..\src\params.c" />
+    <ClCompile Include="..\src\refbuf.c" />
+    <ClCompile Include="..\src\sighandler.c" />
+    <ClCompile Include="..\src\slave.c" />
+    <ClCompile Include="..\src\songdata_api.c" />
+    <ClCompile Include="..\src\source.c" />
+    <ClCompile Include="..\src\stats.c" />
+    <ClCompile Include="..\src\util.c" />
+    <ClCompile Include="..\src\xslt.c" />
+    <ClCompile Include="..\src\yp.c" />
+
+    <!-- Format handlers -->
+    <ClCompile Include="..\src\flv.c" />
+    <ClCompile Include="..\src\format.c" />
+    <ClCompile Include="..\src\format_ebml.c" />
+    <ClCompile Include="..\src\format_flac.c" />
+    <ClCompile Include="..\src\format_kate.c" />
+    <ClCompile Include="..\src\format_midi.c" />
+    <ClCompile Include="..\src\format_mp3.c" />
+    <ClCompile Include="..\src\format_ogg.c" />
+    <ClCompile Include="..\src\format_opus.c" />
+    <ClCompile Include="..\src\format_skeleton.c" />
+    <ClCompile Include="..\src\format_speex.c" />
+    <ClCompile Include="..\src\format_theora.c" />
+    <ClCompile Include="..\src\format_vorbis.c" />
+    <ClCompile Include="..\src\mpeg.c" />
+
+    <!-- fnmatch (POSIX; provided as fallback for Windows) -->
+    <ClCompile Include="..\src\fnmatch.c" />
+
+    <!-- Sub-libraries (compiled directly, not as separate lib projects) -->
+    <ClCompile Include="..\src\avl\avl.c" />
+    <ClCompile Include="..\src\httpp\httpp.c" />
+    <ClCompile Include="..\src\log\log.c" />
+    <ClCompile Include="..\src\net\resolver.c" />
+    <ClCompile Include="..\src\net\sock.c" />
+    <ClCompile Include="..\src\thread\thread.c" />
+    <ClCompile Include="..\src\timing\timing.c" />
+  </ItemGroup>
+
+  <!-- ===================================================================
+       Header Files
+       =================================================================== -->
+  <ItemGroup>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="..\src\admin.h" />
+    <ClInclude Include="..\src\auth.h" />
+    <ClInclude Include="..\src\auth_cmd.h" />
+    <ClInclude Include="..\src\auth_htpasswd.h" />
+    <ClInclude Include="..\src\auth_url.h" />
+    <ClInclude Include="..\src\cfgfile.h" />
+    <ClInclude Include="..\src\cfgfile_yaml.h" />
+    <ClInclude Include="..\src\client.h" />
+    <ClInclude Include="..\src\compat.h" />
+    <ClInclude Include="..\src\connection.h" />
+    <ClInclude Include="..\src\curl_ice.h" />
+    <ClInclude Include="..\src\event.h" />
+    <ClInclude Include="..\src\flv.h" />
+    <ClInclude Include="..\src\fnmatch.h" />
+    <ClInclude Include="..\src\format.h" />
+    <ClInclude Include="..\src\format_ebml.h" />
+    <ClInclude Include="..\src\format_flac.h" />
+    <ClInclude Include="..\src\format_midi.h" />
+    <ClInclude Include="..\src\format_mp3.h" />
+    <ClInclude Include="..\src\format_ogg.h" />
+    <ClInclude Include="..\src\format_opus.h" />
+    <ClInclude Include="..\src\format_skeleton.h" />
+    <ClInclude Include="..\src\format_speex.h" />
+    <ClInclude Include="..\src\format_theora.h" />
+    <ClInclude Include="..\src\format_vorbis.h" />
+    <ClInclude Include="..\src\fserve.h" />
+    <ClInclude Include="..\src\global.h" />
+    <ClInclude Include="..\src\icy2_meta.h" />
+    <ClInclude Include="..\src\logging.h" />
+    <ClInclude Include="..\src\md5.h" />
+    <ClInclude Include="..\src\mpeg.h" />
+    <ClInclude Include="..\src\params.h" />
+    <ClInclude Include="..\src\refbuf.h" />
+    <ClInclude Include="..\src\sighandler.h" />
+    <ClInclude Include="..\src\slave.h" />
+    <ClInclude Include="..\src\songdata_api.h" />
+    <ClInclude Include="..\src\source.h" />
+    <ClInclude Include="..\src\stats.h" />
+    <ClInclude Include="..\src\util.h" />
+    <ClInclude Include="..\src\xslt.h" />
+    <ClInclude Include="..\src\yp.h" />
+    <ClInclude Include="..\src\avl\avl.h" />
+    <ClInclude Include="..\src\httpp\httpp.h" />
+    <ClInclude Include="..\src\log\log.h" />
+    <ClInclude Include="..\src\net\resolver.h" />
+    <ClInclude Include="..\src\net\sock.h" />
+    <ClInclude Include="..\src\thread\thread.h" />
+    <ClInclude Include="..\src\timing\timing.h" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+
+</Project>

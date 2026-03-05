@@ -68,5 +68,11 @@ void *memmem(const void *haystack, size_t haystacklen, const void *needle, size_
 
 #define icefile_handle   int
 
+/* Socket file descriptor type - int on all supported platforms (POSIX and Windows).
+ * config.h may also define this; guard prevents redefinition. */
+#ifndef FD_t
+#define FD_t int
+#endif
+
 #endif /* __COMPAT_H__ */
 

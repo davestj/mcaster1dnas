@@ -224,7 +224,11 @@ static size_t handle_url_header (void *ptr, size_t size, size_t nmemb, void *str
         if (auth_user->state == 0)      // First header expected
         {
             int msgpos = 0, pos = bytes;
+#ifdef _MSC_VER
+            char line[8193]; /* max HTTP header line length */
+#else
             char line [bytes+1];
+#endif
             sscanf (header, "%[^\r\n]", line);    // make sure with have a nul char for parsing
 
             if (sscanf (line, "HTTP%*[^ ] %3d %n%*[^\r]%n", &retcode, &msgpos, &pos) == 1)
@@ -264,7 +268,11 @@ static size_t handle_url_header (void *ptr, size_t size, size_t nmemb, void *str
         remain = bytes - header_value_pos;
         if (remain > 8192)
             return 0;
+#ifdef _MSC_VER
+        char hvalue[8193]; /* max remaining header value length */
+#else
         char hvalue [remain];
+#endif
         sscanf (header_val, "%[^\r\n]", hvalue); // local copy with nul, no EOL
 
         if (strncasecmp (header, url->auth_header, url->auth_header_len) == 0)

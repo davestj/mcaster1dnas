@@ -137,6 +137,8 @@ static void process_header (const char *p, auth_client *auth_user)
     }
 }
 
+#ifndef _WIN32   /* auth_cmd uses POSIX fork/pipe/exec: not available on Windows */
+
 static void process_body (int fd, pid_t pid, auth_client *auth_user)
 {
     client_t *client = auth_user->client;
@@ -382,6 +384,15 @@ static auth_result auth_cmd_client (auth_client *auth_user)
     }
     return AUTH_FAILED;
 }
+
+#else  /* _WIN32: POSIX fork/pipe/exec not available */
+
+static auth_result auth_cmd_client (auth_client *auth_user)
+{
+    return AUTH_FAILED;
+}
+
+#endif  /* _WIN32 */
 
 static auth_result auth_cmd_adduser(auth_t *auth, const char *username, const char *password)
 {

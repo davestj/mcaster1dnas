@@ -127,8 +127,9 @@ am__libmcaster1_la_SOURCES_DIST = cfgfile.c main.c logging.c \
 	event.c admin.c md5.c format.c format_ogg.c format_mp3.c \
 	format_midi.c format_flac.c format_ebml.c format_opus.c auth.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
-	mpeg.c flv.c fnmatch.c yp.c format_vorbis.c format_speex.c \
-	format_theora.c auth_cmd.c cfgfile_yaml.c
+	mpeg.c flv.c songdata_api.c songdata_api.h fnmatch.c yp.c \
+	format_vorbis.c format_speex.c format_theora.c auth_cmd.c \
+	cfgfile_yaml.c
 @BUILD_FNMATCH_TRUE@am__objects_1 = libmcaster1_la-fnmatch.lo
 @BUILD_YP_TRUE@am__objects_2 = libmcaster1_la-yp.lo
 @BUILD_VORBIS_TRUE@am__objects_3 = libmcaster1_la-format_vorbis.lo
@@ -152,9 +153,10 @@ am__objects_8 = libmcaster1_la-cfgfile.lo libmcaster1_la-main.lo \
 	libmcaster1_la-auth.lo libmcaster1_la-auth_htpasswd.lo \
 	libmcaster1_la-auth_url.lo libmcaster1_la-format_kate.lo \
 	libmcaster1_la-format_skeleton.lo libmcaster1_la-mpeg.lo \
-	libmcaster1_la-flv.lo $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6) $(am__objects_7)
+	libmcaster1_la-flv.lo libmcaster1_la-songdata_api.lo \
+	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
+	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
+	$(am__objects_7)
 @WINDOWS_TRUE@am_libmcaster1_la_OBJECTS = $(am__objects_8)
 libmcaster1_la_OBJECTS = $(am_libmcaster1_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -172,8 +174,9 @@ am__mcaster1_SOURCES_DIST = cfgfile.c main.c logging.c sighandler.c \
 	md5.c format.c format_ogg.c format_mp3.c format_midi.c \
 	format_flac.c format_ebml.c format_opus.c auth.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
-	mpeg.c flv.c fnmatch.c yp.c format_vorbis.c format_speex.c \
-	format_theora.c auth_cmd.c cfgfile_yaml.c
+	mpeg.c flv.c songdata_api.c songdata_api.h fnmatch.c yp.c \
+	format_vorbis.c format_speex.c format_theora.c auth_cmd.c \
+	cfgfile_yaml.c
 @BUILD_FNMATCH_TRUE@am__objects_9 = fnmatch.$(OBJEXT)
 @BUILD_YP_TRUE@am__objects_10 = yp.$(OBJEXT)
 @BUILD_VORBIS_TRUE@am__objects_11 = format_vorbis.$(OBJEXT)
@@ -193,9 +196,9 @@ am_mcaster1_OBJECTS = cfgfile.$(OBJEXT) main.$(OBJEXT) \
 	format_ebml.$(OBJEXT) format_opus.$(OBJEXT) auth.$(OBJEXT) \
 	auth_htpasswd.$(OBJEXT) auth_url.$(OBJEXT) \
 	format_kate.$(OBJEXT) format_skeleton.$(OBJEXT) mpeg.$(OBJEXT) \
-	flv.$(OBJEXT) $(am__objects_9) $(am__objects_10) \
-	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
-	$(am__objects_14) $(am__objects_15)
+	flv.$(OBJEXT) songdata_api.$(OBJEXT) $(am__objects_9) \
+	$(am__objects_10) $(am__objects_11) $(am__objects_12) \
+	$(am__objects_13) $(am__objects_14) $(am__objects_15)
 mcaster1_OBJECTS = $(am_mcaster1_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -260,6 +263,7 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/libmcaster1_la-refbuf.Plo \
 	./$(DEPDIR)/libmcaster1_la-sighandler.Plo \
 	./$(DEPDIR)/libmcaster1_la-slave.Plo \
+	./$(DEPDIR)/libmcaster1_la-songdata_api.Plo \
 	./$(DEPDIR)/libmcaster1_la-source.Plo \
 	./$(DEPDIR)/libmcaster1_la-stats.Plo \
 	./$(DEPDIR)/libmcaster1_la-util.Plo \
@@ -268,8 +272,9 @@ am__depfiles_remade = ./$(DEPDIR)/admin.Po ./$(DEPDIR)/auth.Po \
 	./$(DEPDIR)/main.Po ./$(DEPDIR)/md5.Po ./$(DEPDIR)/mpeg.Po \
 	./$(DEPDIR)/params.Po ./$(DEPDIR)/refbuf.Po \
 	./$(DEPDIR)/sighandler.Po ./$(DEPDIR)/slave.Po \
-	./$(DEPDIR)/source.Po ./$(DEPDIR)/stats.Po ./$(DEPDIR)/util.Po \
-	./$(DEPDIR)/xslt.Po ./$(DEPDIR)/yp.Po
+	./$(DEPDIR)/songdata_api.Po ./$(DEPDIR)/source.Po \
+	./$(DEPDIR)/stats.Po ./$(DEPDIR)/util.Po ./$(DEPDIR)/xslt.Po \
+	./$(DEPDIR)/yp.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -544,9 +549,9 @@ mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c \
 	md5.c format.c format_ogg.c format_mp3.c format_midi.c \
 	format_flac.c format_ebml.c format_opus.c auth.c \
 	auth_htpasswd.c auth_url.c format_kate.c format_skeleton.c \
-	mpeg.c flv.c $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7)
+	mpeg.c flv.c songdata_api.c songdata_api.h $(am__append_1) \
+	$(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7)
 mcaster1_DEPENDENCIES = \
     net/libmcnet.la \
     thread/libmcthread.la \
@@ -733,6 +738,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-refbuf.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-sighandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-slave.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-songdata_api.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-source.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-stats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmcaster1_la-util.Plo@am__quote@ # am--include-marker
@@ -746,6 +752,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/refbuf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sighandler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slave.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/songdata_api.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/source.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stats.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@ # am--include-marker
@@ -1009,6 +1016,13 @@ libmcaster1_la-flv.lo: flv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='flv.c' object='libmcaster1_la-flv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-flv.lo `test -f 'flv.c' || echo '$(srcdir)/'`flv.c
+
+libmcaster1_la-songdata_api.lo: songdata_api.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-songdata_api.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-songdata_api.Tpo -c -o libmcaster1_la-songdata_api.lo `test -f 'songdata_api.c' || echo '$(srcdir)/'`songdata_api.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmcaster1_la-songdata_api.Tpo $(DEPDIR)/libmcaster1_la-songdata_api.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='songdata_api.c' object='libmcaster1_la-songdata_api.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -c -o libmcaster1_la-songdata_api.lo `test -f 'songdata_api.c' || echo '$(srcdir)/'`songdata_api.c
 
 libmcaster1_la-fnmatch.lo: fnmatch.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmcaster1_la_CFLAGS) $(CFLAGS) -MT libmcaster1_la-fnmatch.lo -MD -MP -MF $(DEPDIR)/libmcaster1_la-fnmatch.Tpo -c -o libmcaster1_la-fnmatch.lo `test -f 'fnmatch.c' || echo '$(srcdir)/'`fnmatch.c
@@ -1327,6 +1341,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-refbuf.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-sighandler.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-slave.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-songdata_api.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-source.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-stats.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-util.Plo
@@ -1340,6 +1355,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/refbuf.Po
 	-rm -f ./$(DEPDIR)/sighandler.Po
 	-rm -f ./$(DEPDIR)/slave.Po
+	-rm -f ./$(DEPDIR)/songdata_api.Po
 	-rm -f ./$(DEPDIR)/source.Po
 	-rm -f ./$(DEPDIR)/stats.Po
 	-rm -f ./$(DEPDIR)/util.Po
@@ -1452,6 +1468,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libmcaster1_la-refbuf.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-sighandler.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-slave.Plo
+	-rm -f ./$(DEPDIR)/libmcaster1_la-songdata_api.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-source.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-stats.Plo
 	-rm -f ./$(DEPDIR)/libmcaster1_la-util.Plo
@@ -1465,6 +1482,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/refbuf.Po
 	-rm -f ./$(DEPDIR)/sighandler.Po
 	-rm -f ./$(DEPDIR)/slave.Po
+	-rm -f ./$(DEPDIR)/songdata_api.Po
 	-rm -f ./$(DEPDIR)/source.Po
 	-rm -f ./$(DEPDIR)/stats.Po
 	-rm -f ./$(DEPDIR)/util.Po

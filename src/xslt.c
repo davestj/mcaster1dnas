@@ -447,8 +447,11 @@ static int xslt_apply_sheet (xsl_req *x, uint64_t now)
                 char *dispos = NULL;
                 int lookup_dispos = 0;
                 INFO1 ("loaded stylesheet %s", fn);
-                if (sheet->mediaType && strcmp ((char*)(sheet->mediaType), "text/html") != 0)
-                    lookup_dispos = 1;      // avoid lookup for html pages
+                if (sheet->mediaType &&
+                    strcmp ((char*)(sheet->mediaType), "text/html")       != 0 &&
+                    strcmp ((char*)(sheet->mediaType), "text/plain")      != 0 &&
+                    strcmp ((char*)(sheet->mediaType), "application/json") != 0)
+                    lookup_dispos = 1;      // avoid lookup for html/text/json pages
                 if (lookup_dispos)
                 {
                     char filename[100] = "file.";

@@ -1,10 +1,12 @@
 #if !defined(AFX_TABPAGESSL_H__619331B3_7DE7_4DB1_A039_2103E87E8E71__INCLUDED_)
 #define AFX_TABPAGESSL_H__619331B3_7DE7_4DB1_A039_2103E87E8E71__INCLUDED_
 
+#include "ResizableDialog.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CTabPageSSL declaration
 
-class CTabPageSSL : public CDialog
+class CTabPageSSL : public CResizableDialog
 {
 public:
 // Construction

@@ -1,60 +1,499 @@
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mcaster1 v2.x Documentation</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows GUI - Mcaster1DNAS Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+        :root {
+            --mcaster-blue: #0ea5e9;
+            --dnas-green: #22c55e;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-white: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-accent: #f1f5f9;
+            --border-light: #e2e8f0;
+            --shadow-soft: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --gradient-brand: linear-gradient(135deg, var(--mcaster-blue), var(--dnas-green));
+            --radius-lg: 0.75rem;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', 'Courier New', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); line-height: 1.6; color: var(--text-primary); background: var(--bg-light); }
+
+        .breadcrumb { background: var(--bg-white); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; }
+        .breadcrumb a { color: var(--mcaster-blue); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .hero { background: var(--gradient-brand); color: white; padding: 4rem 0 2rem 0; }
+        .hero-content { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .hero p { font-size: 1.25rem; opacity: 0.95; }
+        .hero-badges { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+        .badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 3rem 1rem; }
+        .content-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-medium); margin-bottom: 2rem; }
+        .content-card h2 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem 0; display: flex; align-items: center; gap: 0.75rem; }
+        .content-card h2:first-child { margin-top: 0; }
+        .content-card h2 i { color: var(--mcaster-blue); }
+        .content-card h3 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 2rem 0 0.75rem 0; }
+        .content-card p { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+        .content-card ul, .content-card ol { margin: 0.5rem 0 1rem 2rem; }
+        .content-card li { color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.35rem; }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+        .feature-box { background: var(--bg-light); border-left: 4px solid var(--mcaster-blue); padding: 1.5rem; border-radius: var(--radius-lg); }
+        .feature-box h4 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .feature-box h4 i { color: var(--mcaster-blue); }
+        .feature-box p { margin: 0; font-size: 0.95rem; color: var(--text-secondary); }
+
+        .data-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem 0; font-size: 0.95rem; }
+        .data-table th { background: var(--bg-accent); color: var(--text-primary); font-weight: 600; padding: 0.75rem 1rem; text-align: left; border-bottom: 2px solid var(--border-light); }
+        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-light); color: var(--text-secondary); vertical-align: top; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--bg-light); }
+        .data-table code { background: var(--bg-accent); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-family: var(--font-mono); font-size: 0.875rem; color: var(--text-primary); }
+
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: var(--radius-lg); font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.7; overflow-x: auto; margin: 1rem 0 1.5rem 0; }
+        .code-block .comment { color: #64748b; }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .value { color: #86efac; }
+        .code-block .string { color: #fde68a; }
+
+        .info-box { padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); margin: 1.5rem 0; }
+        .info-box.note { background: #eff6ff; border-left: 4px solid var(--mcaster-blue); }
+        .info-box.warning { background: #fffbeb; border-left: 4px solid #f59e0b; }
+        .info-box.success { background: #f0fdf4; border-left: 4px solid var(--dnas-green); }
+        .info-box p { margin: 0; font-size: 0.95rem; color: var(--text-primary); }
+        .info-box strong { color: var(--text-primary); }
+
+        .tab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .tab-card { background: var(--bg-accent); border-radius: var(--radius-lg); padding: 1.25rem; border-top: 3px solid var(--mcaster-blue); }
+        .tab-card h4 { font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tab-card h4 i { color: var(--mcaster-blue); }
+        .tab-card p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
+
+        .status-done { color: var(--dnas-green); font-weight: 600; }
+        .status-planned { color: #f59e0b; font-weight: 600; }
+        .status-beta { color: var(--mcaster-blue); font-weight: 600; }
+
+        .step-list { counter-reset: steps; list-style: none; margin: 1rem 0 1.5rem 0 !important; }
+        .step-list li { counter-increment: steps; display: flex; gap: 1rem; align-items: flex-start; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); }
+        .step-list li:last-child { border-bottom: none; }
+        .step-list li::before { content: counter(steps); background: var(--mcaster-blue); color: white; width: 1.75rem; height: 1.75rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; flex-shrink: 0; margin-top: 0.1rem; }
+        .step-list li span { color: var(--text-secondary); line-height: 1.7; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .content-card { padding: 2rem 1.25rem; }
+            .data-table { font-size: 0.85rem; }
+        }
+    </style>
 </head>
 <body>
-<div class="boxtest">
-<h1>Mcaster1 2 - Win32 Specific Documentation</h1>
-<hr id='titlebar' />
-<p>
-The win32 port of mcaster1dnas is simply a UI framework around the core mcaster1dnas server.  The win32 version of mcaster1dnas directly uses the main executable of mcaster1 (statically included) and simply provides a GUI interface to mcaster1dnas. 
-</p>
-<p>
-Most of the features of mcaster1dnas are available in the win32 port.
-</p>
-<h2>Server Status Tab</h2>
-<p>
-The server status tab contains information regarding statistics that are global to the server.  There are two types of statistics in mcaster1dnas: source level and global statistics.  Global statistics are cumulative stats from all sources offered by the server.  Source level statistics are stats which apply only to a single source attached to the server.
-</p>
-<p>
-Examples of global statistics are:
-</p>
-<pre>
-	The number of current sources connected
-	The number of sources that have attempted connections
-	Total number of attempted connections to the server
-</pre>
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html"><i class="fas fa-home"></i> Documentation</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Windows GUI</span>
+        </div>
+    </div>
 
-<p>
-The Server Status tab contains at a minimal the global stats for the server.  Additionally, you may add source specific stats to this tab.  The intent is to provide a single "dashboard view" of what's going on in the server.  To add source statistics to the Server Status tab, see the section on the Stats tab.
-</p>
-<h3>Adding stats to the window title</h3>
-<p>
-Any stat that is contained on the Server Status tab can be displayed as the mcaster1dnas window title.  This provides yet another mechanism by which you can view activities on the server.  To enable this feature, right click on any stat in the Server Status tab as seen below :
-</p>
-<img src="windowtitle.jpg" alt="Screenshot of Mcaster1 Windows GUI - Server Status Tab" />
-<br />
-<br />
-<br />
-<h3>Removing source level stats from the Server Status Tab</h3>
-<p>
-To remove a source level stat that you have inserted onto the Server Status Tab, simple right click that statistic and select "Delete from Global Stats".  The stat will be deleted from the Server Status tab, but will still remain on the source level Stats tab.
-</p>
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fab fa-windows"></i> Windows Native GUI</h1>
+            <p>mcaster1win.exe — Rebuilt for Visual Studio 2022, Windows 10/11 x64</p>
+            <div class="hero-badges">
+                <span class="badge"><i class="fas fa-tag"></i> v2.5.1-rc1 Beta</span>
+                <span class="badge"><i class="fas fa-code-branch"></i> Visual Studio 2022 (v17)</span>
+                <span class="badge"><i class="fas fa-expand-arrows-alt"></i> ResizableLib</span>
+                <span class="badge"><i class="fas fa-shield-alt"></i> HTTPS / TLS</span>
+            </div>
+        </div>
+    </div>
 
-<h2>Editing The Mcaster1 Config File</h2>
-<p>
-Editing the mcaster1dnas configuration file is a very simple process.  For a description of what each field means, see the main mcaster1 documenation.  Changes to the mcaster1dnas configuration can only be done while the server is stopped.  To edit the current server configuration file, select "Configuration/Edit Configuration" from the main menu.
-</p>
+    <div class="container">
 
-<h2>Stats Tab</h2>
-<p>
-The stats tab contains a view of all the connected mountpoints and the statistics that go along with them.  Each connected mountpoint is displayed in the left pane of the window, and all stats for the selected mountpoint are displayed in the right pane of the window.
-</p>
-<img src="stats1.jpg" alt="Screenshot of Mcaster1 Windows GUI - Stats Tab" />
+        <!-- Overview -->
+        <div class="content-card">
+            <h2><i class="fas fa-info-circle"></i> Overview</h2>
+            <p>
+                <strong>mcaster1win.exe</strong> is the native Windows GUI for Mcaster1DNAS — a resizable MFC application that
+                wraps the full Mcaster1DNAS server engine. The Windows GUI provides a rich dashboard for monitoring streams,
+                managing configuration, and controlling the server without the command line, while the underlying server
+                engine is identical to the Linux/macOS build.
+            </p>
+            <p>
+                Version 2.5.1-rc1 represents a complete rebuild from the legacy VC6 codebase to
+                <strong>Visual Studio 2022 (v17)</strong> targeting <strong>Windows 10/11 x64</strong>. The project now
+                uses <strong>vcpkg</strong> for all native dependencies and <strong>ResizableLib</strong> for proper
+                anchor-based dialog resizing.
+            </p>
 
-</div>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h4><i class="fas fa-expand-arrows-alt"></i> Fully Resizable Window</h4>
+                    <p>Drag any edge, maximize, or restore — all controls reflow correctly using anchor-based ResizableLib layout. Window position and size persist across sessions via the registry.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-terminal"></i> CLI Flags</h4>
+                    <p>Run from the command line or Task Scheduler with <code>-c</code> (config path), <code>-s</code> (auto-start), <code>-m</code> (minimise to tray), <code>-v</code> (version), <code>-h</code> (help).</p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-code-branch"></i> Auto-Versioning</h4>
+                    <p>A PreBuildEvent PowerShell script stamps the current git commit hash into the window title at build time — e.g., <code>v2.5.1-dev.c2bad3c</code>.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-file-code"></i> YAML &amp; XML Configs</h4>
+                    <p>Both <code>.yaml</code> and <code>.xml</code> config formats are auto-detected by file extension. All new deployments should use YAML. XML is supported for backward compatibility.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-shield-alt"></i> HTTPS / TLS</h4>
+                    <p>Dual-port operation: HTTP on <strong>9300</strong> and HTTPS/TLS on <strong>9443</strong>. OpenSSL is provided via vcpkg. Configure cert paths in the <code>ssl:</code> section of your YAML config.</p>
+                </div>
+                <div class="feature-box">
+                    <h4><i class="fas fa-box"></i> vcpkg Dependencies</h4>
+                    <p>All native libraries managed through vcpkg x64-windows: libxml2, libxslt, curl, openssl, libyaml, ogg, vorbis, theora, speex, pthreads. No manual DLL hunting required.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLI Flags -->
+        <div class="content-card">
+            <h2><i class="fas fa-terminal"></i> Command-Line Flags</h2>
+            <p>
+                <code>mcaster1win.exe</code> accepts command-line arguments for scripted and automated deployments.
+                All flags work from a command prompt, PowerShell, Windows Task Scheduler, or a startup shortcut.
+            </p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Flag</th>
+                        <th>Long Form</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>-c &lt;file&gt;</code></td>
+                        <td><code>--config &lt;file&gt;</code></td>
+                        <td>Path to YAML or XML config file. Auto-detected by extension. If omitted, searches for <code>mcaster1.yaml</code> then <code>mcaster1.xml</code> in the exe directory.</td>
+                        <td><code>-c C:\radio\mcaster1.yaml</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-s</code></td>
+                        <td><code>--start</code></td>
+                        <td>Auto-start the server immediately on launch — equivalent to clicking "Start Server" in the GUI. Combine with <code>-m</code> for a fully unattended start.</td>
+                        <td><code>-s</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-m</code></td>
+                        <td><code>--minimized</code></td>
+                        <td>Start with the window minimized to the system tray. Useful for background/service-like operation without desktop clutter.</td>
+                        <td><code>-m</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-v</code></td>
+                        <td><code>--version</code></td>
+                        <td>Print the version string (e.g., <code>Mcaster1DNAS v2.5.1-dev.c2bad3c</code>) to stdout and exit. Useful in scripts to confirm the build.</td>
+                        <td><code>-v</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-h</code></td>
+                        <td><code>--help</code></td>
+                        <td>Print flag descriptions and exit.</td>
+                        <td><code>-h</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Usage Examples</h3>
+            <div class="code-block"><span class="comment"># Start with a specific YAML config, auto-start, minimized to tray</span>
+mcaster1win.exe -c "C:\radio\mcaster1.yaml" -s -m
+
+<span class="comment"># Start with XML config for testing (bypasses libyaml entirely)</span>
+mcaster1win.exe -c "C:\radio\mcaster1.xml" -s
+
+<span class="comment"># Check version in a PowerShell script</span>
+$ver = &amp; "mcaster1win.exe" -v
+Write-Host "Running: $ver"
+
+<span class="comment"># Task Scheduler action — run at system startup, minimized</span>
+Program: C:\Program Files\Mcaster1DNAS\mcaster1win.exe
+Arguments: -c "C:\radio\mcaster1.yaml" -s -m</div>
+
+            <div class="info-box note">
+                <p><strong><i class="fas fa-info-circle"></i> Config file search order:</strong> If <code>-c</code> is not specified, the app looks for <code>mcaster1.yaml</code> first, then <code>mcaster1.xml</code>, in the same directory as the executable. Always use <code>-c</code> with an absolute path in production to avoid ambiguity.</p>
+            </div>
+        </div>
+
+        <!-- Tab Pages -->
+        <div class="content-card">
+            <h2><i class="fas fa-table-columns"></i> GUI Tab Pages</h2>
+            <p>The main window contains four tab pages, each of which resizes correctly when you drag the window edge or maximize.</p>
+
+            <div class="tab-grid">
+                <div class="tab-card">
+                    <h4><i class="fas fa-tachometer-alt"></i> Status Tab</h4>
+                    <p>Global server statistics dashboard — total connections, active sources, listener counts, uptime ("Running for"), and server health. The list auto-refreshes while the server is running. Any stat can be pinned to the window title bar by right-clicking it.</p>
+                </div>
+                <div class="tab-card">
+                    <h4><i class="fas fa-chart-bar"></i> Stats Tab</h4>
+                    <p>Per-mountpoint statistics. The left pane lists all connected source mountpoints; the right pane shows detailed stats for the selected source — listeners, bitrate, codec, ICY metadata, and more. Both panes resize independently using ResizableLib anchors.</p>
+                </div>
+                <div class="tab-card">
+                    <h4><i class="fas fa-cog"></i> Config Tab</h4>
+                    <p>Raw config file editor — view and edit the active <code>.yaml</code> or <code>.xml</code> configuration directly in the GUI. Changes take effect on the next server restart. The editor fills the full tab area at any window size.</p>
+                </div>
+                <div class="tab-card">
+                    <h4><i class="fas fa-file-alt"></i> Log Tab</h4>
+                    <p>Live server log viewer. Displays the Mcaster1DNAS log output in real time as the server runs. Useful for monitoring connections, YP directory updates, SSL handshakes, and any errors without opening a separate log file.</p>
+                </div>
+            </div>
+
+            <h3>ResizableLib Anchor Layout</h3>
+            <p>
+                Each tab page uses anchor-based layout from <strong>ResizableLib</strong> (Paolo Messina, Artistic License 2.0)
+                so controls automatically reposition and resize as you drag the window. The anchor assignments are:
+            </p>
+            <table class="data-table">
+                <thead>
+                    <tr><th>Tab</th><th>Control</th><th>Anchor (top-left)</th><th>Anchor (bottom-right)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Main Dialog</td><td><code>IDC_MAINTAB</code></td><td><code>TOP_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                    <tr><td>Status</td><td><code>IDC_GLOBALSTAT_LIST</code></td><td><code>TOP_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                    <tr><td>Status</td><td><code>IDC_STATIC_RUN</code></td><td><code>BOTTOM_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                    <tr><td>Status</td><td><code>IDC_RUNNINGFOR</code></td><td><code>BOTTOM_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                    <tr><td>Stats</td><td><code>IDC_SOURCELIST</code></td><td><code>TOP_LEFT</code></td><td><code>BOTTOM_LEFT</code></td></tr>
+                    <tr><td>Stats</td><td><code>IDC_STATSLIST</code></td><td><code>TOP_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                    <tr><td>Config</td><td><code>IDC_CONFIG</code></td><td><code>TOP_LEFT</code></td><td><code>BOTTOM_RIGHT</code></td></tr>
+                </tbody>
+            </table>
+            <p>Window size and position are automatically persisted to the registry under <code>HKCU\Software\Mcaster1DNAS\mcaster1win\positions</code> via <code>EnableSaveRestore()</code>.</p>
+        </div>
+
+        <!-- Config on Windows -->
+        <div class="content-card">
+            <h2><i class="fas fa-file-code"></i> Configuration on Windows</h2>
+            <p>
+                Mcaster1DNAS uses the same configuration files on Windows as on Linux and macOS. Both <code>.yaml</code>
+                and <code>.xml</code> formats are supported and auto-detected by file extension. YAML is recommended for
+                all new deployments.
+            </p>
+
+            <div class="info-box warning">
+                <p><strong><i class="fas fa-exclamation-triangle"></i> Important:</strong> Place your config file somewhere outside the <code>Program Files</code> directory tree (e.g., <code>C:\radio\</code>) to avoid UAC write-permission issues with log files and runtime state.</p>
+            </div>
+
+            <h3>Minimal YAML Config for Windows</h3>
+            <div class="code-block"><span class="comment"># mcaster1.yaml — Windows minimal config</span>
+<span class="key">server</span>:
+  <span class="key">location</span>: <span class="string">"My Radio Station"</span>
+  <span class="key">admin</span>: <span class="string">"admin@example.com"</span>
+  <span class="key">hostname</span>: <span class="string">"localhost"</span>
+  <span class="key">max-clients</span>: <span class="value">100</span>
+  <span class="key">max-sources</span>: <span class="value">4</span>
+
+<span class="key">listen-sockets</span>:
+  - <span class="key">port</span>: <span class="value">9300</span>   <span class="comment"># HTTP (encoders on local network)</span>
+  - <span class="key">port</span>: <span class="value">9443</span>   <span class="comment"># HTTPS/TLS (public streams + admin)</span>
+    <span class="key">ssl</span>: <span class="value">true</span>
+
+<span class="key">authentication</span>:
+  <span class="key">source-password</span>: <span class="string">"hackme"</span>
+  <span class="key">relay-password</span>: <span class="string">"hackme"</span>
+  <span class="key">admin-user</span>: <span class="string">"admin"</span>
+  <span class="key">admin-password</span>: <span class="string">"hackme"</span>
+
+<span class="key">paths</span>:
+  <span class="key">logdir</span>: <span class="string">"C:/radio/logs"</span>   <span class="comment"># use forward slashes or double backslashes</span>
+  <span class="key">webroot</span>: <span class="string">"C:/Program Files/Mcaster1DNAS/web"</span>
+  <span class="key">adminroot</span>: <span class="string">"C:/Program Files/Mcaster1DNAS/admin"</span>
+
+<span class="key">ssl</span>:
+  <span class="key">ssl-certificate</span>: <span class="string">"C:/radio/ssl/server.crt"</span>
+  <span class="key">ssl-private-key</span>: <span class="string">"C:/radio/ssl/server.key"</span>
+
+<span class="key">logging</span>:
+  <span class="key">accesslog</span>: <span class="string">"access.log"</span>
+  <span class="key">errorlog</span>: <span class="string">"error.log"</span>
+  <span class="key">loglevel</span>: <span class="value">3</span>
+
+<span class="key">song-history-limit</span>: <span class="value">25</span>   <span class="comment"># 0 = unlimited</span></div>
+
+            <div class="info-box note">
+                <p><strong><i class="fas fa-info-circle"></i> Path separators:</strong> In YAML string values, use forward slashes (<code>C:/radio/logs</code>) or escaped backslashes (<code>C:\\radio\\logs</code>). Single backslashes will cause YAML parse errors.</p>
+            </div>
+        </div>
+
+        <!-- Build Instructions -->
+        <div class="content-card">
+            <h2><i class="fas fa-hammer"></i> Building from Source</h2>
+            <p>The Windows GUI is built with <strong>Visual Studio 2022 (v17)</strong> and requires <strong>vcpkg</strong> for native dependencies.</p>
+
+            <h3>Prerequisites</h3>
+            <table class="data-table">
+                <thead><tr><th>Requirement</th><th>Version</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td>Visual Studio 2022</td><td>v17.x</td><td>With "Desktop development with C++" workload. Community edition is free.</td></tr>
+                    <tr><td>vcpkg</td><td>Latest</td><td>Integrated with VS2022. Install once, use for all projects.</td></tr>
+                    <tr><td>Git for Windows</td><td>2.x+</td><td>Required for the PreBuildEvent auto-versioning script.</td></tr>
+                    <tr><td>Windows SDK</td><td>10.0.19041+</td><td>Installed automatically with VS2022 Desktop workload.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Build Steps</h3>
+            <ol class="step-list">
+                <li><span>Clone the repository:<br><code>git clone https://github.com/davestj/mcaster1dnas.git</code></span></li>
+                <li><span>Install vcpkg and integrate it with Visual Studio:<br>
+                    <code>git clone https://github.com/microsoft/vcpkg C:\vcpkg</code><br>
+                    <code>C:\vcpkg\bootstrap-vcpkg.bat</code><br>
+                    <code>C:\vcpkg\vcpkg integrate install</code></span></li>
+                <li><span>Install all required packages for x64-windows:<br>
+                    <code>vcpkg install libxml2 libxslt curl openssl libyaml libogg libvorbis theora speex pthreads --triplet x64-windows</code></span></li>
+                <li><span>Install <strong>ResizableLib</strong>: copy the 10 ResizableLib source files into <code>windows\ResizableLib\</code><br>
+                    (Download from <a href="https://github.com/ppescher/resizablelib" target="_blank" style="color:var(--mcaster-blue)">github.com/ppescher/resizablelib</a> — Artistic License 2.0)</span></li>
+                <li><span>Open <code>windows\Mcaster1Win.sln</code> in Visual Studio 2022.</span></li>
+                <li><span>Set the Solution Configuration to <strong>Release | x64</strong> (or Debug | x64 for development).</span></li>
+                <li><span>Build the solution: <strong>Build &rarr; Build Solution</strong> (or press <code>Ctrl+Shift+B</code>).</span></li>
+                <li><span>The output binary appears at <code>windows\x64\Release\mcaster1win.exe</code>. Copy it along with all vcpkg DLLs from the vcpkg bin directory to your deployment folder.</span></li>
+            </ol>
+
+            <div class="info-box success">
+                <p><strong><i class="fas fa-check-circle"></i> PreBuildEvent:</strong> The project includes a PowerShell PreBuildEvent (<code>windows\git-version.ps1</code>) that automatically stamps the current git commit hash into <code>src\git_hash.h</code> before each build. This value appears in the window title as <code>v2.5.1-dev.xxxxxxx</code>.</p>
+            </div>
+        </div>
+
+        <!-- Diagnostics -->
+        <div class="content-card">
+            <h2><i class="fas fa-stethoscope"></i> Diagnostics &amp; Troubleshooting</h2>
+            <p>
+                When the server fails to start, check <code>mcaster1win_start.log</code> in the directory where
+                <code>mcaster1win.exe</code> is located. This log captures detailed checkpoints from the startup
+                sequence — the last printed line before a crash pinpoints the failure.
+            </p>
+
+            <table class="data-table">
+                <thead>
+                    <tr><th>Last Log Entry</th><th>Most Likely Cause</th><th>Fix</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>No log file created</code></td>
+                        <td>Crash before server thread starts — missing DLL</td>
+                        <td>Run <code>dumpbin /dependents mcaster1win.exe</code>; ensure all vcpkg DLLs are alongside the exe</td>
+                    </tr>
+                    <tr>
+                        <td><code>[cfg] calling config_parse_yaml_file</code></td>
+                        <td><code>yaml.dll</code> load failure or missing</td>
+                        <td>Check <code>yaml.dll</code> is in the exe directory; run <code>dumpbin /dependents yaml.dll</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>[yaml] yaml_parser_load</code> (no entry after)</td>
+                        <td>CRT <code>FILE*</code> mismatch between exe and yaml.dll</td>
+                        <td>Fixed in v2.5.1-rc1 — use in-memory <code>yaml_parser_set_input_string()</code> instead of <code>yaml_parser_set_input_file()</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>[yaml] fopen</code> (no <code>fopen ok</code>)</td>
+                        <td>Config file path not found</td>
+                        <td>Use <code>-c</code> flag with an absolute path; verify the file exists</td>
+                    </tr>
+                    <tr>
+                        <td><code>[cfg] detect_config_format done</code></td>
+                        <td>Wrong file extension or corrupt header</td>
+                        <td>Ensure file starts with valid YAML/XML; check BOM encoding</td>
+                    </tr>
+                    <tr>
+                        <td><code>[si] config_initial_parse_file</code> (no further)</td>
+                        <td>Parse error inside the config — bad YAML syntax</td>
+                        <td>Validate with <code>python -c "import yaml; yaml.safe_load(open('mcaster1.yaml'))"</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Healthy Startup Log (All 23 Checkpoints)</h3>
+            <div class="code-block"><span class="comment"># Full healthy startup sequence in mcaster1win_start.log</span>
+[si] server_process_init
+[si] config_initial_parse_file
+[cfg] detect_config_format
+[cfg] detect_config_format done
+[cfg] calling config_parse_yaml_file
+[yaml] entry
+[yaml] fopen
+[yaml] fopen ok
+[yaml] file read into memory
+[yaml] yaml_parser_initialize
+[yaml] yaml_parser_initialize ok
+[yaml] yaml_parser_load
+[yaml] yaml_parser_load ok
+[yaml] root node ok
+[yaml] root is mapping
+[yaml] config_init_configuration
+[yaml] config_init_configuration ok
+[yaml] yaml_parse_root
+[yaml] yaml_parse_root done
+[si] config_initial_parse_file done
+[si] server_process_init done
+[1] thread_initialize
+[2] sock_initialize
+[3] server_process starting</div>
+        </div>
+
+        <!-- Roadmap -->
+        <div class="content-card">
+            <h2><i class="fas fa-road"></i> Windows Roadmap</h2>
+
+            <table class="data-table">
+                <thead><tr><th>Feature</th><th>Status</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td>Visual Studio 2022 (v17) build</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>Full x64 MSVC build with vcpkg</td></tr>
+                    <tr><td>ResizableLib anchor layout</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>All 4 tab pages; window position persists</td></tr>
+                    <tr><td>CLI flags (-c / -s / -m / -v / -h)</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>Full command-line control</td></tr>
+                    <tr><td>YAML config support</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>CRT FILE* crash fixed in v2.5.1-rc1</td></tr>
+                    <tr><td>Auto-versioning (git hash in title)</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>PreBuildEvent PowerShell script</td></tr>
+                    <tr><td>Mcaster1DNAS branding + graphics</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>Full rebrand from legacy Icecast2 assets</td></tr>
+                    <tr><td>HTTPS / TLS dual-port (9300 + 9443)</td><td><span class="status-done"><i class="fas fa-check-circle"></i> Done</span></td><td>OpenSSL via vcpkg</td></tr>
+                    <tr><td>Config Dialog Editor</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>GUI form for editing all config options without raw YAML/XML editing</td></tr>
+                    <tr><td>Windows Installer (.msi / InnoSetup)</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>One-click install with DLL bundling and Start Menu shortcuts</td></tr>
+                    <tr><td>Windows Service wrapper</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>Run as a background NT service with SCM start/stop</td></tr>
+                    <tr><td>Dark mode theme</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>Follow Windows 10/11 dark mode system setting</td></tr>
+                    <tr><td>Podcast File Manager</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>On-demand audio file manager with episode metadata editing</td></tr>
+                    <tr><td>RSS Podcast Feed Generator</td><td><span class="status-planned"><i class="fas fa-clock"></i> Planned</span></td><td>Auto-generate RSS 2.0 + iTunes podcast feeds from episode library</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Credits -->
+        <div class="content-card">
+            <h2><i class="fas fa-heart"></i> Credits</h2>
+            <p>
+                Mcaster1DNAS for Windows is built on the shoulders of the original Icecast project and the following open-source libraries:
+            </p>
+            <ul>
+                <li><strong>Icecast / Icecast2</strong> — Original streaming server by Jack Moffitt, Brendan Cully, and the Xiph.Org Foundation. Licensed under GPLv2.</li>
+                <li><strong>ResizableLib</strong> — Anchor-based MFC dialog resizing by Paolo Messina. Artistic License 2.0. <a href="https://github.com/ppescher/resizablelib" target="_blank" style="color:var(--mcaster-blue)">github.com/ppescher/resizablelib</a></li>
+                <li><strong>libyaml</strong> — YAML 1.1 parser and emitter by Kirill Simonov. MIT License.</li>
+                <li><strong>OpenSSL</strong> — TLS/SSL library. Apache License 2.0.</li>
+                <li><strong>libxml2 / libxslt</strong> — XML processing by Daniel Veillard / MIT/GNOME. MIT License.</li>
+                <li><strong>Ogg / Vorbis / Theora / Speex / Opus</strong> — Audio codecs by the Xiph.Org Foundation. BSD License.</li>
+                <li><strong>FontAwesome 6.4.0</strong> — Icons by Fonticons, Inc. Free for open-source use.</li>
+            </ul>
+            <p>
+                Mcaster1DNAS Windows GUI maintained by <a href="mailto:davestj@gmail.com" style="color:var(--mcaster-blue)">davestj@gmail.com</a>.
+                Bugs and feature requests: <a href="https://github.com/davestj/mcaster1dnas/issues" target="_blank" style="color:var(--mcaster-blue)">GitHub Issues</a>.
+            </p>
+        </div>
+
+    </div>
 </body>
 </html>

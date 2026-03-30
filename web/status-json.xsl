@@ -28,18 +28,42 @@
 </xsl:template>
 
 <!-- Escape a string value for safe JSON output -->
+<!-- Handles: backslash, double-quote, tab, newline, carriage-return -->
 <xsl:template name="json-string">
   <xsl:param name="str"/>
+  <!-- Outermost: escape tab (&#9;) → \t -->
   <xsl:call-template name="str-replace">
     <xsl:with-param name="str">
+      <!-- escape newline (&#10;) → \n -->
       <xsl:call-template name="str-replace">
-        <xsl:with-param name="str" select="$str"/>
-        <xsl:with-param name="find" select="'\'"/>
-        <xsl:with-param name="replace" select="'\\'"/>
+        <xsl:with-param name="str">
+          <!-- escape carriage-return (&#13;) → \r -->
+          <xsl:call-template name="str-replace">
+            <xsl:with-param name="str">
+              <!-- escape double-quote -->
+              <xsl:call-template name="str-replace">
+                <xsl:with-param name="str">
+                  <!-- escape backslash first -->
+                  <xsl:call-template name="str-replace">
+                    <xsl:with-param name="str" select="$str"/>
+                    <xsl:with-param name="find" select="'\'"/>
+                    <xsl:with-param name="replace" select="'\\'"/>
+                  </xsl:call-template>
+                </xsl:with-param>
+                <xsl:with-param name="find" select="'&quot;'"/>
+                <xsl:with-param name="replace" select="'\&quot;'"/>
+              </xsl:call-template>
+            </xsl:with-param>
+            <xsl:with-param name="find" select="'&#13;'"/>
+            <xsl:with-param name="replace" select="'\r'"/>
+          </xsl:call-template>
+        </xsl:with-param>
+        <xsl:with-param name="find" select="'&#10;'"/>
+        <xsl:with-param name="replace" select="'\n'"/>
       </xsl:call-template>
     </xsl:with-param>
-    <xsl:with-param name="find" select="'&quot;'"/>
-    <xsl:with-param name="replace" select="'\&quot;'"/>
+    <xsl:with-param name="find" select="'&#9;'"/>
+    <xsl:with-param name="replace" select="'\t'"/>
   </xsl:call-template>
 </xsl:template>
 
@@ -113,7 +137,76 @@
         "queue_size": <xsl:choose><xsl:when test="queue_size"><xsl:value-of select="queue_size"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
         "total_bytes_read": <xsl:choose><xsl:when test="total_bytes_read"><xsl:value-of select="total_bytes_read"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
         "total_bytes_sent": <xsl:choose><xsl:when test="total_bytes_sent"><xsl:value-of select="total_bytes_sent"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
-        "total_mbytes_sent": <xsl:choose><xsl:when test="total_mbytes_sent"><xsl:value-of select="total_mbytes_sent"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>
+        "total_mbytes_sent": <xsl:choose><xsl:when test="total_mbytes_sent"><xsl:value-of select="total_mbytes_sent"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose><xsl:if test="string(mount_type) != ''">,
+        "mount_type": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="mount_type"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-version']) != ''">,
+        "icy2-version": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-version']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-station-id']) != ''">,
+        "icy2-station-id": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-station-id']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-station-slogan']) != ''">,
+        "icy2-station-slogan": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-station-slogan']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-station-logo']) != ''">,
+        "icy2-station-logo": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-station-logo']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-station-country']) != ''">,
+        "icy2-station-country": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-station-country']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-station-type']) != ''">,
+        "icy2-station-type": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-station-type']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-show-title']) != ''">,
+        "icy2-show-title": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-show-title']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-show-episode']) != ''">,
+        "icy2-show-episode": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-show-episode']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-show-season']) != ''">,
+        "icy2-show-season": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-show-season']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-show-start-time']) != ''">,
+        "icy2-show-start-time": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-show-start-time']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-show-end-time']) != ''">,
+        "icy2-show-end-time": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-show-end-time']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-playlist-name']) != ''">,
+        "icy2-playlist-name": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-playlist-name']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-autodj']) != ''">,
+        "icy2-autodj": <xsl:value-of select="*[local-name()='icy2-autodj']"/></xsl:if><xsl:if test="string(*[local-name()='icy2-stream-session-id']) != ''">,
+        "icy2-stream-session-id": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-stream-session-id']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-dj-handle']) != ''">,
+        "icy2-dj-handle": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-dj-handle']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-dj-bio']) != ''">,
+        "icy2-dj-bio": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-dj-bio']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-dj-showrating']) != ''">,
+        "icy2-dj-showrating": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-dj-showrating']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-dj-photo']) != ''">,
+        "icy2-dj-photo": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-dj-photo']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-artist']) != ''">,
+        "icy2-track-artist": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-artist']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-album']) != ''">,
+        "icy2-track-album": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-album']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-title']) != ''">,
+        "icy2-track-title": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-title']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-year']) != ''">,
+        "icy2-track-year": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-year']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-isrc']) != ''">,
+        "icy2-track-isrc": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-isrc']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-artwork']) != ''">,
+        "icy2-track-artwork": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-artwork']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-buy-url']) != ''">,
+        "icy2-track-buy-url": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-buy-url']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-label']) != ''">,
+        "icy2-track-label": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-label']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-track-bpm']) != ''">,
+        "icy2-track-bpm": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-track-bpm']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-podcast-host']) != ''">,
+        "icy2-podcast-host": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-podcast-host']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-podcast-rss']) != ''">,
+        "icy2-podcast-rss": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-podcast-rss']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-podcast-episode']) != ''">,
+        "icy2-podcast-episode": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-podcast-episode']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-duration']) != ''">,
+        "icy2-duration": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-duration']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-language']) != ''">,
+        "icy2-language": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-language']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-podcast-rating']) != ''">,
+        "icy2-podcast-rating": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-podcast-rating']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-audio-codec']) != ''">,
+        "icy2-audio-codec": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-audio-codec']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-audio-samplerate']) != ''">,
+        "icy2-audio-samplerate": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-audio-samplerate']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-audio-channels']) != ''">,
+        "icy2-audio-channels": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-audio-channels']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-audio-quality']) != ''">,
+        "icy2-audio-quality": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-audio-quality']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-audio-lossless']) != ''">,
+        "icy2-audio-lossless": <xsl:value-of select="*[local-name()='icy2-audio-lossless']"/></xsl:if><xsl:if test="string(*[local-name()='icy2-video-type']) != ''">,
+        "icy2-video-type": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-type']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-link']) != ''">,
+        "icy2-video-link": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-link']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-title']) != ''">,
+        "icy2-video-title": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-title']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-platform']) != ''">,
+        "icy2-video-platform": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-platform']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-resolution']) != ''">,
+        "icy2-video-resolution": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-resolution']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-thumbnail']) != ''">,
+        "icy2-video-thumbnail": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-thumbnail']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-video-duration']) != ''">,
+        "icy2-video-duration": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-video-duration']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-twitter']) != ''">,
+        "icy2-social-twitter": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-twitter']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-instagram']) != ''">,
+        "icy2-social-instagram": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-instagram']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-tiktok']) != ''">,
+        "icy2-social-tiktok": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-tiktok']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-facebook']) != ''">,
+        "icy2-social-facebook": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-facebook']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-youtube']) != ''">,
+        "icy2-social-youtube": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-youtube']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-bluesky']) != ''">,
+        "icy2-social-bluesky": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-bluesky']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-social-website']) != ''">,
+        "icy2-social-website": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-social-website']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-tip-url']) != ''">,
+        "icy2-tip-url": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-tip-url']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-chat-url']) != ''">,
+        "icy2-chat-url": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-chat-url']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-share-url']) != ''">,
+        "icy2-share-url": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-share-url']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-request-url']) != ''">,
+        "icy2-request-url": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-request-url']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-emoji']) != ''">,
+        "icy2-emoji": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-emoji']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-hashtags']) != ''">,
+        "icy2-hashtags": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-hashtags']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-notice-board']) != ''">,
+        "icy2-notice-board": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-notice-board']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-upcoming-show']) != ''">,
+        "icy2-upcoming-show": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-upcoming-show']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-emergency-alert']) != ''">,
+        "icy2-emergency-alert": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-emergency-alert']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-cdn-region']) != ''">,
+        "icy2-cdn-region": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-cdn-region']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-relay-origin']) != ''">,
+        "icy2-relay-origin": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-relay-origin']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-stream-quality-tier']) != ''">,
+        "icy2-stream-quality-tier": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-stream-quality-tier']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-content-rating']) != ''">,
+        "icy2-content-rating": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-content-rating']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-parental-advisory']) != ''">,
+        "icy2-parental-advisory": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-parental-advisory']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-dmca-compliant']) != ''">,
+        "icy2-dmca-compliant": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-dmca-compliant']"/></xsl:call-template>"</xsl:if><xsl:if test="string(*[local-name()='icy2-verification-status']) != ''">,
+        "icy2-verification-status": "<xsl:call-template name="json-string"><xsl:with-param name="str" select="*[local-name()='icy2-verification-status']"/></xsl:call-template>"</xsl:if>
       }<xsl:if test="position() != last()">,</xsl:if>
     </xsl:for-each>]</xsl:if>
   }

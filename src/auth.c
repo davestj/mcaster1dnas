@@ -418,7 +418,11 @@ int move_listener (client_t *client, struct _fbinfo *finfo)
     int rate = finfo->limit, loop = 20, ret = -1;
     struct _fbinfo where;
     unsigned int len = 4096;
+#ifdef _MSC_VER
+    char buffer[4096];
+#else
     char buffer [len];
+#endif
 
     memcpy (&where, finfo, sizeof (where));
     if (finfo->override)

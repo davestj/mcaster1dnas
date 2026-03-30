@@ -194,7 +194,7 @@
                                 <i class="fas fa-key"></i> Manage Auth
                             </a>
                         </xsl:if>
-                        <a href="javascript:void(0);" onclick="window.open('webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=650,height=800,resizable=yes,scrollbars=yes'); return false;" class="admin-action-btn" title="Open web player in new window - bookmark for quick access">
+                        <a href="javascript:void(0);" onclick="window.open('webplayer.xsl?mount={@mount}', 'mcaster1player', 'width=960,height=880,resizable=yes,scrollbars=yes'); return false;" class="admin-action-btn" title="Open web player in new window - bookmark for quick access">
                             <i class="fas fa-play-circle"></i> Player
                         </a>
                         <a href="killsource.xsl?mount={@mount}" class="admin-action-btn danger">

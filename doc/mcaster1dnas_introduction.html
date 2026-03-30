@@ -145,22 +145,24 @@
                 <li><i class="fas fa-cloud"></i> Cloud platforms (AWS, GCP, Azure, DigitalOcean)</li>
             </ul>
 
-            <p style="margin-top: 2rem;">
-                <strong>Note:</strong> Windows support has been discontinued in favor of modern Unix-based platforms.
-                For Windows users, we recommend using Docker Desktop or WSL2 (Windows Subsystem for Linux) to run
-                Mcaster1DNAS on Windows 10/11.
-            </p>
+            <li><i class="fab fa-windows"></i> <strong>Windows 10/11 — native GUI</strong> (<code>mcaster1win.exe</code>) built with Visual Studio 2022 (v17) — <a href="mcaster1dnas_win32.html" style="color:var(--mcaster-blue)">see Windows documentation</a></li>
 
             <h2><i class="fas fa-key"></i> Key Features</h2>
             <ul>
-                <li><strong>ICY-META v2.1+ Protocol:</strong> Enhanced metadata support with social media integration</li>
-                <li><strong>YAML Configuration:</strong> Modern, human-readable configuration (XML support for legacy compatibility)</li>
-                <li><strong>Multi-Format Support:</strong> MP3, AAC, Ogg Vorbis, Opus, Speex, and FLAC</li>
-                <li><strong>HTTPS Support:</strong> SSL/TLS encryption for secure streaming and encoder connections</li>
-                <li><strong>Advanced Authentication:</strong> Password, database, and custom authentication methods</li>
-                <li><strong>Stream Relaying:</strong> Load balancing and geographic distribution</li>
-                <li><strong>Real-time Statistics:</strong> Comprehensive monitoring and analytics</li>
-                <li><strong>YP Directory Logging:</strong> Detailed directory registration tracking</li>
+                <li><strong>ICY-META v2.1+ Protocol:</strong> Extended metadata — podcast, video, social media fields, and backward-compatible ICY 1.x fallback</li>
+                <li><strong>YAML &amp; XML Configuration:</strong> Auto-detected — use either format, both are fully supported</li>
+                <li><strong>Multi-Format Support:</strong> MP3, AAC, Ogg Vorbis, Opus, Speex, FLAC, and Theora</li>
+                <li><strong>HTTPS by Default:</strong> Dual ports — HTTP on 9300, HTTPS/TLS on 9443, SSL set up in minutes</li>
+                <li><strong>Song History API:</strong> In-memory track log at <code>/mcaster1songdata</code> — deduplicated ring buffer, configurable depth</li>
+                <li><strong>Track History UI:</strong> Public and admin pages with MusicBrainz, Last.fm, Discogs, and AllMusic lookup icons</li>
+                <li><strong>Built-in Web Player:</strong> Browser-based HTML5 player with VU meters, volume control, and keyboard shortcuts</li>
+                <li><strong>Full Codec Stats:</strong> Bitrate, sample rate, channels, and codec name publicly exposed in the stats XML</li>
+                <li><strong>Opus ICY Metadata:</strong> Now-playing artist/title tracking for Opus streams</li>
+                <li><strong>Advanced Authentication:</strong> htpasswd file-based and URL-callback listener authentication</li>
+                <li><strong>Stream Relaying:</strong> Master/slave relay with load balancing and geographic distribution</li>
+                <li><strong>Real-time Statistics:</strong> Rich XML stats API, modern XSLT web interface, live dashboard</li>
+                <li><strong>Native Windows GUI:</strong> Resizable MFC application with CLI flags, auto-versioning, and system tray support</li>
+                <li><strong>YP Directory Logging:</strong> Detailed directory registration tracking and health logs</li>
             </ul>
 
             <h2><i class="fas fa-life-ring"></i> Where to Get Help?</h2>

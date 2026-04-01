@@ -27,6 +27,8 @@ core
 # Exact match on "Makefile" — does NOT affect Makefile.am or Makefile.in
 Makefile
 
+git-commit-messages.txt
+RESUME.md
 # Autoconf/libtool-generated m4 macros (created by autoreconf)
 /m4/libtool.m4
 /m4/ltoptions.m4

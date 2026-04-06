@@ -6,6 +6,7 @@
 #include "Mcaster1WinDlg.h"
 #include "xslt.h"
 #include <git_hash.h>
+#include "SslGen.h"
 
 // _initialize_subsystems / _shutdown_subsystems are called only by main()
 // on the server thread. The GUI InitInstance must NOT call them to avoid
@@ -64,13 +65,56 @@ static void print_to_console(const char *msg)
 	}
 }
 
-// Parse Mcaster1Win command line flags.
-// Returns TRUE  -> continue and show the dialog.
-// Returns FALSE -> -v or -h was handled; exit immediately.
+// ---------------------------------------------------------------------------
+// Config file discovery helpers
+// ---------------------------------------------------------------------------
+
+// Return the directory containing the running exe (ends with backslash).
+static void get_exe_dir_win(char *buf, int bufsz)
+{
+	buf[0] = '\0';
+	GetModuleFileNameA(NULL, buf, bufsz);
+	char *last = strrchr(buf, '\\');
+	if (!last) last = strrchr(buf, '/');
+	if (last) *(last + 1) = '\0';
+}
+
+// Check whether a file exists (using Win32 attributes to avoid CRT issues).
+static bool file_exists(const char *path)
+{
+	DWORD attr = GetFileAttributesA(path);
+	return (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+// Show GetOpenFileName dialog so the user can browse to their config file.
+// Returns TRUE if the user selected a file, FALSE if they cancelled.
+static BOOL BrowseForConfig(char *out, int outSz)
+{
+	OPENFILENAMEA ofn = {};
+	ofn.lStructSize  = sizeof(ofn);
+	ofn.hwndOwner    = NULL;
+	ofn.lpstrFilter  = "Config Files\0*.yaml;*.yml;*.xml\0All Files\0*.*\0";
+	ofn.lpstrFile    = out;
+	ofn.nMaxFile     = (DWORD)outSz;
+	ofn.Flags        = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+	ofn.lpstrTitle   = "Locate mcaster1dnas.yaml (or XML config)";
+	out[0]           = '\0';
+	return GetOpenFileNameA(&ofn);
+}
+
+// ---------------------------------------------------------------------------
+// ParseMcasterCmdLine
+// Returns TRUE  -> continue and show the main dialog.
+// Returns FALSE -> handled (--ssl-gencert, -v, -h); exit immediately.
+// ---------------------------------------------------------------------------
 static BOOL ParseMcasterCmdLine(const char *cmdline,
                                  char *configFile, int configFileSize,
                                  BOOL &autoStart, BOOL &minimize)
 {
+	// SSL gen params (accumulated as we scan tokens)
+	SslGenParams sslp;
+	bool ssl_gencert = false;
+
 	if (!cmdline || !cmdline[0])
 		return TRUE;
 
@@ -121,7 +165,10 @@ static BOOL ParseMcasterCmdLine(const char *cmdline,
 			}
 			path[pi] = '\0';
 			if (pi > 0)
+			{
 				strncpy_s(configFile, configFileSize, path, _TRUNCATE);
+				sslp.configPath = path;
+			}
 		}
 		else if (strcmp(token, "-s") == 0)
 		{
@@ -130,6 +177,26 @@ static BOOL ParseMcasterCmdLine(const char *cmdline,
 		else if (strcmp(token, "-m") == 0)
 		{
 			minimize = TRUE;
+		}
+		else if (strcmp(token, "--ssl-gencert") == 0)
+		{
+			ssl_gencert = true;
+		}
+		else if (strncmp(token, "--ssl-gentype=", 14) == 0)
+		{
+			sslp.gentype = token + 14;
+		}
+		else if (strncmp(token, "--subj=", 7) == 0)
+		{
+			sslp.subj = token + 7;
+		}
+		else if (strncmp(token, "--ssl-gencert-savepath=", 23) == 0)
+		{
+			sslp.savepath = token + 23;
+		}
+		else if (strncmp(token, "--ssl-gencert-addtoconfig=", 26) == 0)
+		{
+			sslp.addToConfig = (strcmp(token + 26, "true") == 0);
 		}
 		else if (strcmp(token, "-v") == 0)
 		{
@@ -140,17 +207,24 @@ static BOOL ParseMcasterCmdLine(const char *cmdline,
 		}
 		else if (strcmp(token, "-h") == 0 || strcmp(token, "--help") == 0)
 		{
-			char msg[1024];
+			char msg[2048];
 			sprintf_s(msg, sizeof(msg),
 				"Mcaster1DNAS %s\n\n"
 				"Usage: mcaster1win.exe [options]\n\n"
-				"Options:\n"
-				"  -c <file>    Specify configuration file (YAML or XML auto-detected)\n"
+				"Server options:\n"
+				"  -c <file>    Specify configuration file (YAML or XML)\n"
 				"  -s           Start server immediately on startup\n"
 				"  -m           Minimize/hide to system tray on startup\n"
 				"  -v           Display version information and exit\n"
 				"  -h           Display this help and exit\n\n"
-				"Default config: .\\mcaster1.yaml\n",
+				"  If no -c file is given, looks for mcaster1dnas.yaml beside the exe,\n"
+				"  then in the current directory, then shows a file-open dialog.\n\n"
+				"SSL certificate generation (app exits after completing):\n"
+				"  --ssl-gencert                         Generate SSL certificates\n"
+				"  --ssl-gentype=selfsigned|csr           Output type\n"
+				"  --subj=\"/C=US/ST=TX/O=Org/CN=host\"   X.509 subject\n"
+				"  --ssl-gencert-savepath=<dir>          Output directory\n"
+				"  --ssl-gencert-addtoconfig=true        Update -c config with new paths\n",
 				GIT_VERSION);
 			print_to_console(msg);
 			return FALSE;
@@ -159,9 +233,39 @@ static BOOL ParseMcasterCmdLine(const char *cmdline,
 		{
 			// Bare argument = config file path (backward compatibility)
 			strncpy_s(configFile, configFileSize, token, _TRUNCATE);
+			sslp.configPath = token;
 		}
 		// Unknown flags are silently ignored
 	}
+
+	// Handle --ssl-gencert: run generation, show result, exit.
+	if (ssl_gencert)
+	{
+		if (sslp.savepath.empty())
+		{
+			MessageBoxA(NULL, "ssl-gen: --ssl-gencert-savepath=<dir> is required.",
+						"Mcaster1DNAS SSL Gen", MB_OK | MB_ICONERROR);
+			return FALSE;
+		}
+		int rc = CSslGen::Run(sslp);
+		char msg[1024];
+		if (rc == 0)
+		{
+			sprintf_s(msg, sizeof(msg),
+				"SSL generation succeeded.\n\nFiles saved to:\n  %s",
+				sslp.savepath.c_str());
+			MessageBoxA(NULL, msg, "Mcaster1DNAS SSL Gen", MB_OK | MB_ICONINFORMATION);
+		}
+		else
+		{
+			sprintf_s(msg, sizeof(msg),
+				"SSL generation failed:\n\n%s",
+				CSslGen::GetLastError().c_str());
+			MessageBoxA(NULL, msg, "Mcaster1DNAS SSL Gen", MB_OK | MB_ICONERROR);
+		}
+		return FALSE;   // exit app after SSL gen
+	}
+
 	return TRUE;
 }
 
@@ -172,15 +276,46 @@ BOOL CMcaster1WinApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	// Default config
+	// Default config — empty; discovery runs below.
 	m_bAutoStart = FALSE;
 	m_bMinimize  = FALSE;
-	strcpy(m_configFile, ".\\mcaster1.yaml");
+	m_configFile[0] = '\0';
 
-	// Parse command line; returns FALSE for -v / -h (print and exit)
+	// Parse command line; returns FALSE for -v / -h / --ssl-gencert (exit immediately).
 	if (!ParseMcasterCmdLine(m_lpCmdLine, m_configFile, sizeof(m_configFile),
 	                          m_bAutoStart, m_bMinimize))
 		return FALSE;
+
+	// Config file discovery (only if not set by -c flag).
+	if (m_configFile[0] == '\0')
+	{
+		char exedir[MAX_PATH] = "";
+		get_exe_dir_win(exedir, sizeof(exedir));
+
+		// 1. <exedir>\mcaster1dnas.yaml
+		char candidate[MAX_PATH];
+		sprintf_s(candidate, sizeof(candidate), "%smcaster1dnas.yaml", exedir);
+		if (file_exists(candidate))
+		{
+			strncpy_s(m_configFile, sizeof(m_configFile), candidate, _TRUNCATE);
+		}
+		else
+		{
+			// 2. .\mcaster1dnas.yaml
+			if (file_exists("mcaster1dnas.yaml"))
+			{
+				strncpy_s(m_configFile, sizeof(m_configFile), "mcaster1dnas.yaml", _TRUNCATE);
+			}
+			else
+			{
+				// 3. File-open dialog
+				char picked[MAX_PATH] = "";
+				if (!BrowseForConfig(picked, sizeof(picked)))
+					return FALSE;   // user cancelled
+				strncpy_s(m_configFile, sizeof(m_configFile), picked, _TRUNCATE);
+			}
+		}
+	}
 
 #ifdef _AFXDLL
 	Enable3dControls();			// Call this when using MFC in a shared DLL

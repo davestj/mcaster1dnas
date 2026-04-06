@@ -1,0 +1,210 @@
+---
+# Mcaster1DNAS Windows Development Configuration (portable)
+# Paths are relative to the directory from which the exe is run.
+# Run the exe from:  windows\x64\Debug\  or  windows\x64\Release\
+# Ports: 9330 (HTTP, plain only), 9443 (HTTPS/SSL only)
+
+location: "Earth"
+admin: "admin@mcaster1.com"
+hostname: "localhost"
+fileserve: true
+
+# Authentication
+authentication:
+  source-password: "changeme"
+  relay-password: "changeme"
+  admin-user: "admin"
+  admin-password: "changeme"
+
+# Resource Limits
+limits:
+  clients: 100
+  sources: 10
+  workers: 4
+  queue-size: 524288
+  burst-size: 65535
+  client-timeout: 30
+  header-timeout: 15
+  source-timeout: 10
+  # Songs kept in memory for /songdata Track History API (0=unlimited)
+  song-history-limit: 25
+
+# Listen Sockets
+# ssl: false  -> plain HTTP only (reject TLS handshakes)
+# ssl: true   -> SSL/TLS only   (reject plain HTTP)
+# ssl: absent -> auto-detect    (backward-compatible peek at TLS handshake)
+listen-sockets:
+  - port: 9330
+    bind-address: "127.0.0.1"
+    ssl: false
+
+  - port: 9443
+    bind-address: "127.0.0.1"
+    ssl: true
+
+# Paths — relative to the exe's working directory
+# From windows\x64\Debug\:
+#   "."          = windows\x64\Debug\
+#   "../../web"  = windows\web  (project root web/)
+#   "../../ssl"  = windows\ssl
+paths:
+  basedir:         "."
+  logdir:          "./logs"
+  webroot:         "../../web"
+  adminroot:       "../../admin"
+  pidfile:         "./logs/mcaster1.pid"
+  # Combined cert+key PEM — ssl-certificate under paths applies to all SSL listeners
+  ssl-certificate: "../../ssl/mcaster1dnas.pem"
+
+  # Aliases
+  aliases:
+    - source: "/"
+      destination: "/status.xsl"
+
+# Logging
+logging:
+  accesslog:
+    name: "access.log"
+    archive: true
+
+  errorlog:
+    name: "error.log"
+    level: "debug"
+    archive: true
+
+  playlistlog:
+    name: "playlist.log"
+    archive: true
+
+  logsize: 10000
+  logarchive: true
+
+# Security (chroot not supported on Windows)
+security:
+  chroot: false
+
+# CORS headers - required for Web Audio API (VU meters) on browsers
+http-headers:
+  - name: "Access-Control-Allow-Origin"
+    value: "*"
+  - name: "Access-Control-Allow-Methods"
+    value: "GET, OPTIONS"
+  - name: "Access-Control-Allow-Headers"
+    value: "Origin, X-Requested-With, Content-Type, Accept, Icy-MetaData"
+
+# YP Directory
+directories:
+  - yp-url: "http://dir.xiph.org/cgi-bin/yp-cgi"
+    yp-url-timeout: 10
+    touch-interval: 300
+    yp-logfile: "./logs/yp-health.log"
+
+# Mount point definitions with ICY 2.2 metadata
+mounts:
+  # --- Live Broadcast Mount ---
+  - mount-name: "/live"
+    mount-type: "live"
+    max-listeners: 100
+    fallback-when-full: 0
+    public: 1
+    stream-name: "Mcaster1 Live"
+    stream-description: "Live broadcast on Mcaster1"
+    stream-url: "https://mcaster1.com/live"
+    genre: "Music"
+    bitrate: "128"
+    # ICY 2.2 metadata
+    icy-meta-version: "2.2"
+    icy-meta-station-id: "MCLIVE001"
+    icy-meta-station-country: "US"
+    icy-meta-show-title: "Live Show"
+    icy-meta-autodj: "0"
+    icy-meta-dj-handle: "@djmcaster"
+    icy-meta-audio-codec: "MP3"
+    icy-meta-audio-samplerate: "44100"
+    icy-meta-audio-channels: "2"
+    icy-meta-content-rating: "G"
+    icy-meta-language: "en"
+    icy-meta-geo-region: "US"
+    icy-meta-requests-enabled: "0"
+    icy-meta-request-url: "https://mcaster1.com/request"
+    icy-meta-chat-url: "https://mcaster1.com/chat"
+    icy-meta-share-url: "https://mcaster1.com/listen"
+    icy-meta-social-twitter: "@mcaster1official"
+    icy-meta-social-ig: "@mcaster1"
+    icy-meta-tip-url: "https://mcaster1.com/tip"
+    icy-meta-nsfw: "0"
+    icy-meta-ai-generated: "0"
+
+  # --- Podcast Mount ---
+  - mount-name: "/podcast"
+    mount-type: "podcast"
+    max-listeners: 100
+    fallback-when-full: 0
+    public: 1
+    stream-name: "Mcaster1 Podcast"
+    stream-description: "On-demand podcast content from Mcaster1"
+    stream-url: "https://mcaster1.com/podcast"
+    genre: "Talk / Interview"
+    bitrate: "96"
+    # ICY 2.2 metadata
+    icy-meta-version: "2.2"
+    icy-meta-station-id: "MCPOD001"
+    icy-meta-station-country: "US"
+    icy-meta-show-title: "The Daily Digest"
+    icy-meta-podcast-host: "Host Name"
+    icy-meta-podcast-rss: "https://mcaster1.com/feeds/daily-digest.xml"
+    icy-meta-podcast-episode: "Episode 1"
+    icy-meta-podcast-rating: "Clean"
+    icy-meta-duration: "3600"
+    icy-meta-language: "en"
+    icy-meta-audio-codec: "AAC"
+    icy-meta-audio-samplerate: "44100"
+    icy-meta-audio-channels: "2"
+    icy-meta-content-rating: "G"
+    icy-meta-dmca-compliant: "1"
+    icy-meta-geo-region: "US"
+    icy-meta-share-url: "https://mcaster1.com/podcast/share"
+    icy-meta-requests-enabled: "0"
+
+  # --- Social Caster Mount ---
+  - mount-name: "/socialcaster"
+    mount-type: "socialmedia"
+    max-listeners: 200
+    fallback-when-full: 0
+    public: 1
+    stream-name: "Mcaster1 Social Cast"
+    stream-description: "Live social media stream from Mcaster1"
+    stream-url: "https://mcaster1.com/socialcaster"
+    genre: "Electronic / DJ"
+    bitrate: "192"
+    # ICY 2.2 metadata
+    icy-meta-version: "2.2"
+    icy-meta-station-id: "MCSOC001"
+    icy-meta-station-country: "US"
+    icy-meta-station-slogan: "Streaming Culture, Powered by Mcaster1"
+    icy-meta-station-logo: "https://mcaster1.com/assets/logo.png"
+    icy-meta-show-title: "Live Social Stream"
+    icy-meta-autodj: "0"
+    icy-meta-dj-handle: "@djmcaster"
+    icy-meta-social-twitter: "@mcaster1official"
+    icy-meta-social-ig: "@mcaster1"
+    icy-meta-social-tiktok: "@mcaster1"
+    icy-meta-social-youtube: "https://youtube.com/@mcaster1"
+    icy-meta-social-bluesky: "@mcaster1.bsky.social"
+    icy-meta-social-facebook: "https://facebook.com/mcaster1"
+    icy-meta-tip-url: "https://mcaster1.com/tip"
+    icy-meta-chat-url: "https://mcaster1.com/chat"
+    icy-meta-share-url: "https://mcaster1.com/listen"
+    icy-meta-request-url: "https://mcaster1.com/request"
+    icy-meta-requests-enabled: "0"
+    icy-meta-video-type: "live"
+    icy-meta-video-platform: "YouTube"
+    icy-meta-audio-codec: "AAC"
+    icy-meta-audio-samplerate: "48000"
+    icy-meta-audio-channels: "2"
+    icy-meta-nsfw: "0"
+    icy-meta-ai-generated: "0"
+    icy-meta-content-rating: "PG"
+    icy-meta-language: "en"
+    icy-meta-geo-region: "US"
+    icy-meta-dmca-compliant: "1"

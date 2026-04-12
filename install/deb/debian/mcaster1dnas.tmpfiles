@@ -1,0 +1,3 @@
+# Mcaster1DNAS runtime directory (systemd-tmpfiles)
+# Created on boot, cleared on reboot
+d /run/mcaster1dnas 0755 mcaster1 mcaster1 -

@@ -366,6 +366,8 @@ static int _apply_sheet (xsl_req *x)
     xmlDocPtr res;
     xsltStylesheetPtr sheet = x->cache->stylesheet;
     char    **params = NULL;
+    char    **to_free = NULL;
+    int      free_count = 0;
 
     if (sheet == NULL)
         return -1;
@@ -376,14 +378,22 @@ static int _apply_sheet (xsl_req *x)
         avl_node *node = avl_get_first (client->parser->queryvars);
 
         params = calloc (arg_count+1, sizeof (char *));
+        /* Track malloc'd value pointers separately for safe cleanup */
+        to_free = calloc (arg_count/2 + 1, sizeof (char *));
         for (j = 0; node && j < arg_count; node = avl_get_next (node))
         {
             http_var_t *param = (http_var_t *)node->key;
             char *tmp = util_url_escape (param->value);
+            size_t tmplen = strlen (tmp);
+            /* Cap query param length to prevent stack overflow (CWE-770) */
+            if (tmplen > 8192) tmplen = 8192;
             params[j++] = param->name;
-            // use alloca for now, should really url esc into a supplied buffer
-            params[j] = (char*)alloca (strlen (tmp) + 3);
-            sprintf (params[j++], "\'%s\'", tmp);
+            params[j] = (char*)malloc (tmplen + 3);
+            if (params[j]) {
+                snprintf (params[j], tmplen + 3, "\'%.*s\'", (int)tmplen, tmp);
+                if (to_free) to_free[free_count++] = params[j];
+            }
+            j++;
             free (tmp);
         }
         params[j] = NULL;
@@ -391,6 +401,13 @@ static int _apply_sheet (xsl_req *x)
     client->aux_data = 0;
 
     res = xsltApplyStylesheet (sheet, x->doc, (const char **)params);
+    /* Free the malloc'd value strings tracked during creation */
+    if (to_free) {
+        int k;
+        for (k = 0; k < free_count; k++)
+            free (to_free[k]);
+        free (to_free);
+    }
     free (params);
 
     if (res == NULL)

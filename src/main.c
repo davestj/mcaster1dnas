@@ -84,7 +84,7 @@
 #undef CATMODULE
 #define CATMODULE "main"
 
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
 #define SI_TRACE(msg) do { FILE *_t=fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[si] " msg "\n");fclose(_t);} } while(0)
 #else
 #define SI_TRACE(msg) do {} while(0)
@@ -616,37 +616,37 @@ int server_init (int argc, char *argv[])
 #ifndef WIN32_SERVICE
 int main (int argc, char *argv[])
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
     { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[1] initialize_subsystems\n");fclose(_t);} }
 #endif
     initialize_subsystems();
 
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
     { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[2] server_init\n");fclose(_t);} }
 #endif
     if (server_init (argc, argv) == 0)
     {
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
         { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[3] server_process starting\n");fclose(_t);} }
 #endif
         server_process();
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
         { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[4] server_process done\n");fclose(_t);} }
 #endif
     }
     else
     {
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
         { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[2b] server_init failed\n");fclose(_t);} }
 #endif
     }
 
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
     { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[5] shutdown_subsystems\n");fclose(_t);} }
 #endif
     shutdown_subsystems();
 
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
     { FILE *_t = fopen("mcaster1win_start.log","a"); if(_t){fprintf(_t,"[6] main done\n");fclose(_t);} }
 #endif
     if (pidfile)

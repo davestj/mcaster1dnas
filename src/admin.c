@@ -352,6 +352,13 @@ int admin_mount_request (client_t *client)
 
 int admin_handle_request (client_t *client, const char *uri)
 {
+    /* Block admin authentication over plain HTTP to prevent credential exposure (CWE-319).
+     * Admin pages must be accessed over HTTPS. */
+#ifdef HAVE_OPENSSL
+    if (client->connection.ssl == NULL)
+        return client_send_403 (client, "Admin access requires HTTPS");
+#endif
+
     const char *mount = httpp_get_query_param(client->parser, "mount");
 
     if (strcmp (uri, "/admin.cgi") == 0)

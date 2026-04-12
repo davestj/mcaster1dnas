@@ -39,7 +39,7 @@
 #include "git_hash.h"
 
 #define CATMODULE "cfgfile"
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
 #define CFG_TRACE(msg) do { FILE *_ct=fopen("mcaster1win_start.log","a"); if(_ct){fprintf(_ct,"[cfg] " msg "\n");fclose(_ct);} } while(0)
 #else
 #define CFG_TRACE(msg) do {} while(0)
@@ -918,7 +918,7 @@ static void _set_defaults(mc_config_t *configuration)
 {
     configuration->gitversion = GIT_VERSION;
     configuration->location = (char *)xmlCharStrdup (CONFIG_DEFAULT_LOCATION);
-    configuration->server_id = (char *)xmlCharStrdup (ICECAST_VERSION_STRING);
+    configuration->server_id = (char *)xmlCharStrdup ("Mcaster1DNAS");
     configuration->admin = (char *)xmlCharStrdup (CONFIG_DEFAULT_ADMIN);
     configuration->cipher_list = (char *)xmlCharStrdup (CONFIG_DEFAULT_CIPHER_LIST);
     configuration->client_limit = CONFIG_DEFAULT_CLIENT_LIMIT;

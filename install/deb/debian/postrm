@@ -1,0 +1,39 @@
+#!/bin/sh
+# Mcaster1DNAS — postrm script for Debian/Ubuntu .deb package
+set -e
+
+case "$1" in
+    purge)
+        # Remove config, logs, and system user on purge
+        rm -rf /etc/mcaster1dnas
+        rm -rf /var/log/mcaster1dnas
+        rm -rf /run/mcaster1dnas
+
+        # Remove system user
+        if getent passwd mcaster1 > /dev/null 2>&1; then
+            deluser --quiet --system mcaster1 2>/dev/null || true
+        fi
+        if getent group mcaster1 > /dev/null 2>&1; then
+            delgroup --quiet --system mcaster1 2>/dev/null || true
+        fi
+
+        # Reload systemd
+        if [ -d /run/systemd/system ]; then
+            systemctl daemon-reload
+        fi
+        ;;
+
+    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        # Reload systemd on remove (but keep config/logs)
+        if [ -d /run/systemd/system ]; then
+            systemctl daemon-reload
+        fi
+        ;;
+
+    *)
+        echo "postrm called with unknown argument '$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

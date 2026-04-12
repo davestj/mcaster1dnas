@@ -1,0 +1,56 @@
+# =============================================================================
+# Mcaster1DNAS — Streaming Media Server (systemd unit for .deb package)
+# Copyright 2026 MediaCast1 LLC — David St John <support@mcaster1.com>
+#
+# Installed to: /lib/systemd/system/mcaster1-dnas.service
+# Config:       /etc/mcaster1dnas/mcaster1dnas.yaml
+# Binary:       /usr/bin/mcaster1
+# Logs:         /var/log/mcaster1dnas/
+# User:         mcaster1 (created by postinst)
+# =============================================================================
+
+[Unit]
+Description=Mcaster1DNAS — Streaming Media Server
+Documentation=https://mcaster1.com/mcaster1_dnas.php
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=mcaster1
+Group=mcaster1
+
+WorkingDirectory=/usr/share/mcaster1dnas
+ExecStart=/usr/bin/mcaster1 -b -c /etc/mcaster1dnas/mcaster1dnas.yaml
+PIDFile=/run/mcaster1dnas/mcaster1.pid
+
+# SIGHUP reloads config without dropping active listeners
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Graceful stop
+TimeoutStopSec=30
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Resource limits — streaming server handles many concurrent connections
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/log/mcaster1dnas /run/mcaster1dnas
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcaster1-dnas
+
+[Install]
+WantedBy=multi-user.target

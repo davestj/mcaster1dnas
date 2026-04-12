@@ -244,7 +244,8 @@ int client_send_401 (client_t *client, const char *realm)
     if (mc_http_setup_flags (&http, client, 401, 0, NULL) < 0) return -1;
     client_set_queue (client,NULL);
     mc_http_printf (&http, "WWW-Authenticate", 0, "Basic realm=\"%s\"",
-        (realm ? realm : (http.in_realm ? http.in_realm : "Mcaster1DNAS")));
+        (realm ? realm : (http.in_realm ? http.in_realm : "Mcaster1DNAS Server")));
+    mc_http_printf (&http, "X-Frame-Options", 0, "SAMEORIGIN");
     return client_http_send (&http);
 }
 

@@ -1,0 +1,70 @@
+# =============================================================================
+# Mcaster1DNAS — Streaming Media Server (systemd unit)
+# MCaster1 LLC / David St John <davestj@mcaster1.com>
+#
+# DEV/DEMO MODE — runs from /var/www/mcaster1.com/mcaster1dnas/
+# Production will use /usr/local/mcaster1/mcaster1dnas/
+#
+# C++ streaming server: HTTP on port 9330, HTTPS on port 9443
+# Accepts Icecast2-compatible source connections, serves listeners,
+# ICY2 v2.2 metadata, web admin, YP directory registration.
+#
+# Install:
+#   sudo cp install/mcaster1-dnas.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable mcaster1-dnas
+#   sudo systemctl start mcaster1-dnas
+#
+# Reload config without restart (SIGHUP):
+#   sudo systemctl reload mcaster1-dnas
+# =============================================================================
+
+[Unit]
+Description=Mcaster1DNAS — Streaming Media Server (dev/demo)
+Documentation=https://dnas.mcaster1.com:9443/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# -b flag forks to background; systemd tracks via PID file
+Type=forking
+User=mediacast1
+Group=mediacast1
+
+# Binary and config — DEV paths
+# -b = daemonize (fork to background)
+WorkingDirectory=/var/www/mcaster1.com/mcaster1dnas/build
+ExecStart=/var/www/mcaster1.com/mcaster1dnas/build/bin/mcaster1 \
+    -b -c /var/www/mcaster1.com/mcaster1dnas/mcaster1-production.yaml
+PIDFile=/var/www/mcaster1.com/mcaster1dnas/build/mcaster1.pid
+
+# SIGHUP reloads config without dropping active listeners
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Graceful stop
+TimeoutStopSec=30
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Environment
+Environment=HOME=/var/www/mcaster1.com/mcaster1dnas
+
+# Resource limits — streaming server handles many concurrent listener connections
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening (relaxed for dev — tighten in production unit)
+NoNewPrivileges=yes
+PrivateTmp=no
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcaster1-dnas
+
+[Install]
+WantedBy=multi-user.target

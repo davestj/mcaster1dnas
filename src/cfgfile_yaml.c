@@ -33,7 +33,7 @@
 #include "global.h"
 
 #define CATMODULE "config-yaml"
-#ifdef WIN32
+#if defined(WIN32) && defined(_DEBUG)
 #define YAML_TRACE(msg) do { FILE *_yt=fopen("mcaster1win_start.log","a"); if(_yt){fprintf(_yt,"[yaml] " msg "\n");fclose(_yt);} } while(0)
 #else
 #define YAML_TRACE(msg) do {} while(0)

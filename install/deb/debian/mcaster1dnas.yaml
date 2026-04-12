@@ -1,0 +1,61 @@
+# =============================================================================
+# Mcaster1DNAS — Default Configuration (Debian/Ubuntu Package)
+#
+# IMPORTANT: Change all passwords marked CHANGE_ME before starting!
+#
+# Docs: https://mcaster1.com/mcaster1_dnas.php
+# GitHub: https://github.com/davestj/mcaster1dnas
+# =============================================================================
+
+# Server identity
+location: "Earth"
+admin: "admin@localhost"
+hostname: "localhost"
+server-id: "Mcaster1DNAS"
+
+# Listeners
+listen-socket:
+  - port: 9330
+    bind-address: "0.0.0.0"
+  - port: 9443
+    bind-address: "0.0.0.0"
+    ssl: true
+
+# Authentication — CHANGE THESE BEFORE STARTING!
+authentication:
+  source-password: "CHANGE_ME_source"
+  relay-password: "CHANGE_ME_relay"
+  admin-user: "admin"
+  admin-password: "CHANGE_ME_admin"
+
+# SSL/TLS
+ssl-certificate: "/etc/mcaster1dnas/ssl/mcaster1dnas.pem"
+# Generate a self-signed cert:
+#   mcaster1 --ssl-gencert --ssl-gencert-savepath=/etc/mcaster1dnas/ssl
+
+# Paths
+paths:
+  basedir: "/usr/share/mcaster1dnas"
+  logdir: "/var/log/mcaster1dnas"
+  webroot: "/usr/share/mcaster1dnas/web"
+  adminroot: "/usr/share/mcaster1dnas/admin"
+  pidfile: "/run/mcaster1dnas/mcaster1.pid"
+
+# Logging
+logging:
+  accesslog: "access.log"
+  errorlog: "error.log"
+  loglevel: "info"
+  logsize: 10000
+
+# Limits
+limits:
+  clients: 256
+  sources: 16
+  queue-size: 524288
+  burst-size: 65536
+  source-timeout: 30
+  song-history-limit: 25
+
+# Workers
+workers: 4

@@ -42,6 +42,7 @@ typedef struct _format_plugin_tag format_plugin_t;
 
 // possible flags for format_plugin
 #define FORMAT_FL_ALLOW_HTTPCHUNKED             1
+#define FORMAT_FL_VIDEO                         (1<<1)
 
 
 typedef struct format_check_t

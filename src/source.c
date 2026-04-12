@@ -726,6 +726,7 @@ static int _source_read (source_t *source)
     time_t current = client->worker->current_time.tv_sec;
     refbuf_t *refbuf = NULL;
     int skip = 1, loop = 1;
+    uint64_t prev_read_bytes = source->format ? source->format->read_bytes : 0;
     do
     {
         unsigned long queue_size_target = 0;
@@ -742,6 +743,13 @@ static int _source_read (source_t *source)
         }
         if (fds == 0)
         {
+            /* For video streams (EBML), the format plugin may have read bytes
+             * from the socket without producing a complete cluster yet.  Check
+             * whether read_bytes advanced since last call — if so, data IS
+             * arriving and we should not time out. */
+            if (source->format && source->format->read_bytes > prev_read_bytes)
+                source->last_read = current;
+
             if (source->last_read + (time_t)3 == current)
                 WARN1 ("Nothing received on %s for 3 seconds", source->mount);
             if (source->last_read + (time_t)source->timeout < current)
@@ -2386,6 +2394,15 @@ static void source_apply_mount (source_t *source, mc_config_t *config, mount_pro
     if (mountinfo && mountinfo->burst_size)
         source->default_burst_value = (unsigned int)mountinfo->burst_size;
 
+    /* Video streams need larger queue/burst to hold keyframes + dependent frames */
+    if (source->format && (source->format->flags & FORMAT_FL_VIDEO))
+    {
+        if (source->queue_len_value < 524288)
+            source->queue_len_value = 524288;       /* 512KB min queue for video */
+        if (source->default_burst_value < 131072)
+            source->default_burst_value = 131072;   /* 128KB min burst for video */
+    }
+
     if (mountinfo && mountinfo->min_queue_size)
         source->min_queue_len_value = mountinfo->min_queue_size;
 
@@ -2538,6 +2555,7 @@ static void source_run_script (char *command, char *mountpoint)
                         char *args [MAX_SCRIPT_ARGS+1], *tmp;
 
                         // default set unless overridden
+                        memset(args, 0, sizeof(args));
                         args[0] = comm;
                         args[1] = mountpoint;
                         args[2] = NULL;
@@ -2545,10 +2563,16 @@ static void source_run_script (char *command, char *mountpoint)
                         {
                             unsigned len = 4096;
                             char *str = malloc (len);
+                            if (str == NULL) break;
                             if (util_expand_pattern (mountpoint, tmp, str, &len) == 0)
                                 args[i] = str;
+                            else {
+                                free(str);
+                                args[i] = NULL;
+                            }
                             i++;
                         }
+                        args[i] = NULL;
                         close (0);
                         close (1);
                         close (2);

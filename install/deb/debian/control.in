@@ -1,0 +1,28 @@
+Package: mcaster1dnas
+Version: @VERSION@
+Section: sound
+Priority: optional
+Architecture: @ARCH@
+Installed-Size: @INSTALLED_SIZE@
+Depends: libc6 (>= 2.31), libssl3 (>= 3.0.0) | libssl1.1, libxml2 (>= 2.9), libxslt1.1 (>= 1.1.34), libcurl4 (>= 7.68) | libcurl4-openssl-dev, libogg0 (>= 1.3), libvorbis0a (>= 1.3), libtheora0, libspeex1, libyaml-0-2 (>= 0.2), adduser
+Recommends: ssl-cert, logrotate
+Suggests: icecast2-doc
+Maintainer: David St John <support@mcaster1.com>
+Homepage: https://mcaster1.com/mcaster1_dnas.php
+Description: Mcaster1DNAS - Digital Network Audio/Video Streaming Server
+ Mcaster1DNAS is an enterprise-grade streaming media server for professional
+ audio and video broadcasting. Fork of Icecast2/Icecast-KH with extensions:
+ .
+  - ICY 2.2 extended metadata protocol
+  - YAML configuration (libyaml) alongside legacy XML
+  - Per-listener SSL/TLS enforcement
+  - Song history / now-playing JSON REST API (/songdata)
+  - VP9/WebM video streaming support
+  - Modern responsive web admin interface
+  - Static mount point definitions with ICY 2.2 field support
+  - Security-hardened build (stack canaries, FORTIFY, RELRO, PIE)
+ .
+ Supports MP3, AAC, Ogg Vorbis, Opus, FLAC, VP9/WebM, Theora, and Speex.
+ .
+ Homepage: https://mcaster1.com/mcaster1_dnas.php
+ GitHub: https://github.com/davestj/mcaster1dnas

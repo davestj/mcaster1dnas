@@ -135,6 +135,10 @@ void *my_calloc (const char *file, int line, size_t num, size_t size)
     if (avl_get_by_key (global.alloc_tree, &match, (void**)&result) == 0)
     {
         allocheader *block = calloc (1, (num*size)+sizeof(allocheader));
+        if (!block) {
+            avl_tree_unlock (global.alloc_tree);
+            return NULL;
+        }
         result->count++;
         result->allocated += (num*size);
         block->info = result;
@@ -146,6 +150,11 @@ void *my_calloc (const char *file, int line, size_t num, size_t size)
     if (result)
     {
         allocheader *block = calloc (1, (num*size)+sizeof(allocheader));
+        if (!block) {
+            free(result);
+            avl_tree_unlock (global.alloc_tree);
+            return NULL;
+        }
         snprintf (result->name, sizeof (result->name), "%s:%d", file, line);
         result->count = 1;
         result->allocated = (num * size);
@@ -204,9 +213,10 @@ void *my_realloc (const char *file, int line, void *ptr, size_t size)
 }
 char *my_strdup(const char *file, int line, const char *s)
 {
-    int len = strlen (s) +1;
+    size_t len = strlen (s) + 1;
     char *str = my_calloc (file, line, 1, len);
-    strcpy (str, s);
+    if (str)
+        memcpy (str, s, len);
     return str;
 }
 #endif

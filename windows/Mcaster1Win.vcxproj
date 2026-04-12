@@ -194,6 +194,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="LogTab.cpp" />
     <ClCompile Include="SslGen.cpp" />
     <ClCompile Include="TabCtrlSSL.cpp" />
     <ClCompile Include="TabPageSSL.cpp" />
@@ -301,6 +302,7 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="TabCtrlSSL.h" />
     <ClInclude Include="TabPageSSL.h" />
+    <ClInclude Include="LogTab.h" />
     <ClInclude Include="SslGen.h" />
     <ClInclude Include="..\src\ssl_gen.h" />
     <ClInclude Include="TRAYNOT.h" />

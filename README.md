@@ -1,14 +1,25 @@
 # Mcaster1DNAS - Digital Network Audio Server
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Version](https://img.shields.io/badge/version-2.5.1--rc1-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
+[![Version](https://img.shields.io/badge/version-2.5.2--dev-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://github.com/davestj/mcaster1dnas)
 [![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
-[![Language](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
+[![Language: C](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
+[![Language: C++](https://img.shields.io/badge/language-C%2B%2B-00599C.svg)](https://github.com/davestj/mcaster1dnas)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20BSD%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/davestj/mcaster1dnas)
 [![ICY-META](https://img.shields.io/badge/ICY--META-v2.2-purple.svg)](ICY2_PROTOCOL_SPEC.md)
 [![YAML Config](https://img.shields.io/badge/config-YAML%20%7C%20XML-yellow.svg)](YAML_IMPLEMENTATION.md)
 [![SSL Gen](https://img.shields.io/badge/SSL-built--in%20cert%20gen-green.svg)](docs/SSL_CERT_GENERATION.md)
+
+### Windows GUI & IDE
+[![Windows GUI](https://img.shields.io/badge/Windows_GUI-MFC%2FWin32-5C2D91.svg)](docs/WINDOWS_GUI.md)
+[![Visual Studio](https://img.shields.io/badge/IDE-Visual_Studio_2022-5C2D91.svg)](https://visualstudio.microsoft.com/)
+[![Microsoft](https://img.shields.io/badge/Microsoft-MSVC_v143-5C2D91.svg)](https://visualstudio.microsoft.com/)
+
+### Development Platforms
+[![Windows 11 Pro](https://img.shields.io/badge/dev_OS-Windows_11_Pro-0078D4.svg)](https://www.microsoft.com/windows)
+[![Debian](https://img.shields.io/badge/dev_OS-Debian_12-A81D33.svg)](https://www.debian.org/)
+[![Ubuntu](https://img.shields.io/badge/dev_OS-Ubuntu_24-E95420.svg)](https://ubuntu.com/)
 
 ### Audio Format Support
 [![MP3](https://img.shields.io/badge/codec-MP3-red.svg)](https://en.wikipedia.org/wiki/MP3)
@@ -90,7 +101,7 @@ We maintain all original credits, licensing (GNU GPL v2), and acknowledgments wh
 - **🏆 Credits Page** - Comprehensive fork history and acknowledgments
 - **🎧 Integrated Browser Player** - One-click streaming from any page; VU meters, volume control, keyboard shortcuts ([docs](WEBPLAYER_FEATURE.md))
 
-### Song History & Track Lookup _(New in 2.5.1-rc1)_
+### Song History & Track Lookup _(New in 2.5.2-dev)_
 
 - **🎶 `/mcaster1songdata` XML API** - In-memory ring buffer of the last N played tracks (default: 25, configurable, 0 = unlimited) exposed as a machine-readable XML endpoint for third-party apps and dashboards
 - **📋 Track History Pages** - `/admin/songdata.xsl` (admin) and `/songdata.xsl` (public) show a rich table of recently played tracks with:
@@ -106,7 +117,7 @@ We maintain all original credits, licensing (GNU GPL v2), and acknowledgments wh
 - **🔁 Deduplication** - Consecutive identical titles on the same mount are silently ignored; `ended_at` is back-filled when the next track starts for accurate time-on-air calculation
 - **⚙️ Configurable limit** - Set `song-history-limit` in YAML or XML config; 0 means keep everything (memory-backed, no disk I/O)
 
-### Codec & Metadata Enhancements _(New in 2.5.1-rc1)_
+### Codec & Metadata Enhancements _(New in 2.5.2-dev)_
 
 - **🔊 Full Public Codec Stats** - `audio_codecid`, `mpeg_samplerate`, `mpeg_channels` promoted from `STATS_HIDDEN` → `STATS_COUNTERS` so public status pages and third-party clients can read them
 - **🎼 Opus Now Playing** - `format_opus.c` now parses `OpusHead` to expose `audio_channels` and `audio_samplerate` stats; `opus_set_tag()` added to capture ICY title/artist metadata from Opus streams (previously untracked — Opus streams had no song-change events)
@@ -304,7 +315,7 @@ See **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** for the complete protocol
 
 ## 📝 YAML Configuration Support
 
-Mcaster1DNAS v2.5.0+ supports **YAML configuration** alongside traditional XML, providing a modern, human-readable alternative.
+Mcaster1DNAS v2.5.2+ supports **YAML configuration** alongside traditional XML, providing a modern, human-readable alternative.
 
 ### ✨ YAML Features
 
@@ -438,7 +449,7 @@ mcaster1win.exe -c C:\mcaster1\mcaster1dnas.yaml -s -m
 #### Auto-Versioned Builds
 Every build stamps the git commit hash and branch into the window title at compile time:
 ```
-Mcaster1DNAS v2.5.1-dev.b73b861 — windows-dev
+Mcaster1DNAS v2.5.2-dev.b73b861 — windows-dev
 ```
 
 #### YAML Configuration on Windows
@@ -793,7 +804,7 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 
 ## 🌟 Features Roadmap
 
-### Current Version (2.5.1-beta.2-win)
+### Current Version (2.5.2-dev)
 ✅ Modern HTML5/CSS3 web interface with shared header/footer templates
 ✅ Interactive help tooltips
 ✅ Live clock and page load metrics

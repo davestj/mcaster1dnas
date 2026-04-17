@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Mcaster1DNAS — Digital Network Audio Server</title><style>    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .badge-green{background:#4caf5018;border-color:#4caf5044;color:#4caf50}
+    .badge-purple{background:#a855f718;border-color:#a855f744;color:#a855f7}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    h4{font-size:.95rem;color:#7878b8;margin:1.4rem 0 .5rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    .check{color:#4caf50;font-weight:700}.cross{color:#ef4444;font-weight:700}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .warn{background:#1a1200;border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#d4a835}
+    .lineage{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #a855f7;border-radius:6px;padding:1.1rem 1.4rem;margin:1rem 0 1.5rem;color:#c8b8f8;font-family:"Cascadia Code",Consolas,monospace;font-size:.9rem}
+    .roadmap-done{color:#4caf50}.roadmap-ip{color:#f59e0b}.roadmap-plan{color:#6688aa}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+</style></head><body>
+<nav><a href="index.html">Docs Home</a> <span style="color:#333355">&rsaquo;</span> <span style="color:#8888aa">README</span></nav>
+<div class="page-header"><div style="max-width:960px;margin:0 auto"><div class="meta">Mcaster1DNAS &mdash; Project Overview</div><h1>Mcaster1DNAS</h1><div class="sub">Digital Network Audio Server &mdash; enterprise-grade streaming built on Icecast-KH</div><span class="badge">v2.5.2-dev</span><span class="badge badge-green">GPL v2</span><span class="badge badge-purple">Windows GUI</span><span class="badge">Linux | BSD | macOS | Windows</span></div></div>
+<div class="content"><h2>Overview</h2><p><strong>Mcaster1DNAS</strong> (Digital Network Audio Server) is a powerful, enterprise-grade streaming media server for professional audio broadcasting. Built on Icecast-KH and Icecast2, it delivers high-quality audio streaming with low latency, a modern web interface, and excellent reliability.</p>
+<h3>Key Features</h3><ul><li><strong>Secure by Default</strong> &mdash; HTTPS/SSL enabled out of the box</li><li><strong>ICY-META v2.2 Protocol</strong> &mdash; Extended metadata: podcast, video, social, track, live programming (<a href="ICY2_PROTOCOL_SPEC.html">spec</a> | <a href="ICY2_PROTOCOL.html">guide</a>)</li><li><strong>Built-in SSL Cert Generator</strong> &mdash; Self-signed certs or CSRs from CLI/WinUI (<a href="SSL_CERT_GENERATION.html">guide</a>)</li><li><strong>Per-Listener SSL Enforcement</strong> &mdash; <code>ssl: true</code> or <code>ssl: false</code> per listen-socket</li><li><strong>Static Mount Types</strong> &mdash; podcast, socialcast, on-demand (<a href="STATIC_MOUNTS.html">guide</a>)</li><li><strong>YAML Configuration</strong> &mdash; Modern YAML alongside XML (<a href="YAML_IMPLEMENTATION.html">guide</a>)</li><li><strong>Multi-Format Audio</strong> &mdash; MP3, AAC, Ogg Vorbis, Opus, FLAC, Speex, Theora</li><li><strong>High Performance</strong> &mdash; Low latency, high concurrent listeners</li><li><strong>Real-Time Statistics</strong> &mdash; Live dashboard</li><li><strong>Song History API</strong> &mdash; In-memory ring buffer at <code>/mcaster1songdata</code> (<a href="SONG_HISTORY_API.html">guide</a>)</li><li><strong>Track History UI</strong> &mdash; MusicBrainz, Last.fm, Discogs, AllMusic lookup</li><li><strong>Browser Audio Player</strong> &mdash; HTML5 player with VU meters</li><li><strong>Windows Native GUI</strong> &mdash; <code>mcaster1win.exe</code>; VS 2022 (<a href="WINDOWS_GUI.html">guide</a>)</li></ul>
+<h2>Project Lineage</h2><div class="lineage">Icecast2 (Xiph.Org Foundation)
+    ↓
+Icecast-KH (Karl Heyes)
+    ↓
+Mcaster1DNAS (MediaCast1)</div><p>We maintain all original credits, licensing (GNU GPL v2), and acknowledgments.</p><ul><li><a href="https://icecast.org/">Icecast2</a> by Xiph.Org Foundation &mdash; the original streaming media server</li><li><a href="https://github.com/karlheyes/icecast-kh">Icecast-KH</a> by Karl Heyes &mdash; performance enhancements</li></ul>
+<h2>Song History &amp; Track Lookup</h2><ul><li><strong><code>/mcaster1songdata</code> XML API</strong> &mdash; Ring buffer of last N tracks (default 25, <code>song-history-limit</code>)</li><li><strong>Track History Pages</strong> &mdash; <code>/admin/songdata.xsl</code> and <code>/songdata.xsl</code></li><li><strong>Music Service Lookup</strong> &mdash; One-click MusicBrainz, Last.fm, Discogs, AllMusic</li><li><strong>Deduplication</strong> &mdash; Identical consecutive titles silently ignored; <code>ended_at</code> back-filled</li></ul><p>See <a href="SONG_HISTORY_API.html">Song History API</a>.</p>
+<h2>Quick Start</h2><h3>Prerequisites</h3><ul><li><strong>libxml2</strong></li><li><strong>libxslt</strong></li><li><strong>libcurl</strong></li><li><strong>OpenSSL</strong></li><li><strong>Ogg/Vorbis</strong></li></ul>
+<h3>Installation (Linux/Unix/macOS)</h3><pre><code>git clone https://github.com/davestj/mcaster1dnas.git
+cd mcaster1dnas
+./autogen.sh
+./configure 
+  --prefix=/usr/local/mcaster1dnas 
+  --with-openssl --with-ogg --with-vorbis
+make -j$(nproc)
+sudo make install</code></pre>
+<h3>Running the Server</h3><pre><code>/usr/local/mcaster1dnas/bin/mcaster1 -c /usr/local/mcaster1dnas/etc/mcaster1.xml</code></pre>
+<h3>Default Access URLs</h3><div class="table-wrap"><table><thead><tr><th>URL</th><th>Description</th></tr></thead><tbody><tr><td><code>http://your-server:9330/</code></td><td>HTTP status page</td></tr><tr><td><code>https://your-server:9443/</code></td><td>HTTPS status page</td></tr><tr><td><code>https://your-server:9443/admin/stats.xsl</code></td><td>Admin interface</td></tr></tbody></table></div>
+<h2>YAML Configuration</h2><pre><code>listen-sockets:
+  - port: 9330
+    bind-address: "0.0.0.0"
+    ssl: false
+  - port: 9443
+    bind-address: "0.0.0.0"
+    ssl: true
+
+authentication:
+  source-password: "hackme"
+  admin-user: "admin"
+  admin-password: "hackme"
+
+limits:
+  clients: 100
+  song-history-limit: 25</code></pre>
+<h2>SSL Certificate Setup</h2><pre><code># Linux / macOS
+./mcaster1 --ssl-gencert --ssl-gentype=selfsigned 
+    --subj="/C=US/ST=CA/O=My Station/CN=stream.example.com" 
+    --ssl-gencert-savepath=/etc/ssl 
+    --ssl-gencert-addtoconfig=true -c mcaster1dnas.yaml
+
+# Windows
+mcaster1.exe --ssl-gencert --ssl-gentype=selfsigned 
+    --subj="/C=US/ST=TX/O=My Station/CN=stream.example.com" 
+    --ssl-gencert-savepath=ssl\mycert 
+    --ssl-gencert-addtoconfig=true -c windows\mcaster1dnas.yaml</code></pre>
+<h2>Windows Native GUI</h2><p>Full native GUI (<code>mcaster1win.exe</code>), Visual Studio 2022 v17, Windows 10/11 x64.</p>
+<h3>CLI Flags</h3><div class="table-wrap"><table><thead><tr><th>Flag</th><th>Behaviour</th></tr></thead><tbody><tr><td><code>-c &lt;file&gt;</code></td><td>Specify config file (YAML or XML)</td></tr><tr><td><code>-s</code></td><td>Auto-start server on launch</td></tr><tr><td><code>-m</code></td><td>Start minimised to system tray</td></tr><tr><td><code>-v</code></td><td>Print version and exit</td></tr><tr><td><code>-h</code></td><td>Print help and exit</td></tr><tr><td><code>--ssl-gencert</code></td><td>Generate SSL certificate/CSR then exit</td></tr></tbody></table></div>
+<h3>Building on Windows</h3><p><strong>Prerequisites:</strong> VS 2022 C++ workload, vcpkg <code>x64-windows</code></p><pre><code>vcpkg install libxml2 libxslt curl openssl libyaml ogg vorbis theora speex pthreads
+# Open: windows\Mcaster1DNAS.sln
+# Build -&gt; Build Solution
+# Output: windows\x64\Debug\mcaster1win.exe</code></pre><p>See <a href="WINDOWS_GUI.html">Windows GUI Guide</a> and <a href="CHANGELOG-WIN.html">Windows Changelog</a>.</p>
+<h2>System Requirements</h2><div class="table-wrap"><table><thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody><tr><td>CPU</td><td>1 GHz single-core</td><td>2+ GHz multi-core</td></tr><tr><td>RAM</td><td>256 MB</td><td>1 GB+</td></tr><tr><td>Disk</td><td>50 MB</td><td>1 GB+ (logs)</td></tr><tr><td>Network</td><td>100 Mbps</td><td>1 Gbps</td></tr></tbody></table></div><p><strong>Platforms:</strong> Linux (Debian/Ubuntu/CentOS/RHEL/Fedora), BSD (FreeBSD/OpenBSD/NetBSD), macOS (10.13+), Windows 10/11 x64</p>
+<h2>Features Roadmap (v2.5.2-dev)</h2><ul><li class="roadmap-done">✅ ICY-META v2.2 extended metadata protocol &mdash; 50+ fields, static mount support</li><li class="roadmap-done">✅ YAML configuration support (alongside XML)</li><li class="roadmap-done">✅ Per-listener <code>ssl:</code> enforcement</li><li class="roadmap-done">✅ Built-in SSL cert generator (<code>--ssl-gencert</code> CLI flags)</li><li class="roadmap-done">✅ Song History API &mdash; in-memory ring buffer at <code>/mcaster1songdata</code></li><li class="roadmap-done">✅ Static mount types &mdash; podcast, socialcast, on-demand</li><li class="roadmap-done">✅ Windows native GUI (<code>mcaster1win.exe</code>) &mdash; VS 2022, ResizableLib</li><li class="roadmap-done">✅ Windows YAML config CRT crash fixed</li><li class="roadmap-done">✅ Windows uptime clock + system time status bar</li><li class="roadmap-done">✅ Windows real-time log viewer (color-coded, <code>_SH_DENYNO</code>)</li><li class="roadmap-done">✅ Windows HTTP admin auth fixed (WWW-Authenticate header)</li><li class="roadmap-done">✅ Complete Mcaster1DNAS visual rebrand</li></ul>
+<h3>Upcoming (Cross-Platform)</h3><ul><li class="roadmap-plan">□ Real-time statistics dashboard (WebSocket/SSE)</li><li class="roadmap-plan">□ Dark mode toggle</li><li class="roadmap-plan">□ Stream health monitoring with visual indicators</li><li class="roadmap-plan">□ Historical listener analytics with charts</li><li class="roadmap-plan">□ Automated stream scheduling system</li></ul>
+<h3>Upcoming (Windows GUI)</h3><ul><li class="roadmap-plan">□ Config Dialog Editor &mdash; visual YAML/XML editor built into the GUI</li><li class="roadmap-plan">□ Podcast &amp; On-Demand File Manager</li><li class="roadmap-plan">□ RSS Podcast Feed Generator (RSS 2.0 / Apple Podcasts)</li><li class="roadmap-plan">□ Windows Service integration from GUI</li><li class="roadmap-plan">□ Dark mode (Windows 10/11 via DwmSetWindowAttribute)</li></ul>
+<h2>License</h2><p>Licensed under the <strong>GNU General Public License v2.0</strong>, compatible with Icecast2 and Icecast-KH.</p>
+<h2>Acknowledgments</h2><ul><li><a href="https://xiph.org/">Xiph.Org Foundation</a> &mdash; Icecast2 and open-source streaming</li><li><a href="https://github.com/karlheyes/icecast-kh">Karl Heyes</a> &mdash; Icecast-KH improvements and maintenance</li><li>All Icecast contributors &mdash; decades of foundational streaming server development</li><li><a href="https://fontawesome.com/">FontAwesome</a> &mdash; icon library used in the web interface</li></ul>
+<h2>Links &amp; Contact</h2><ul><li><strong>Website:</strong> <a href="https://mcaster1.com">https://mcaster1.com</a></li><li><strong>GitHub:</strong> <a href="https://github.com/davestj/mcaster1dnas">https://github.com/davestj/mcaster1dnas</a></li><li><strong>Issues:</strong> <a href="https://github.com/davestj/mcaster1dnas/issues">https://github.com/davestj/mcaster1dnas/issues</a></li><li><strong>Maintainer:</strong> David St John &mdash; <a href="mailto:davestj@gmail.com">davestj@gmail.com</a></li></ul>
+<div class="see-also"><h3>Documentation</h3><ul><li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> &mdash; mcaster1win.exe full user guide</li><li><a href="CHANGELOG-WIN.html">Windows Changelog</a> &mdash; Windows-specific development history</li><li><a href="ICY2_PROTOCOL_SPEC.html">ICY-META v2.2 Spec</a> &mdash; full normative protocol specification</li><li><a href="ICY2_PROTOCOL.html">ICY2 Protocol Guide</a> &mdash; implementation guide and admin API</li><li><a href="YAML_IMPLEMENTATION.html">YAML Config Reference</a> &mdash; all YAML keys, examples, migration from XML</li><li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> &mdash; built-in cert gen, per-listener enforcement</li><li><a href="STATIC_MOUNTS.html">Static Mount Points</a> &mdash; podcast, socialcast, on-demand</li><li><a href="SONG_HISTORY_API.html">Song History API</a> &mdash; track history ring buffer and XML API</li></ul></div>
+</div><footer>Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash; <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a> &mdash; GNU GPL v2 &mdash; Made with ♥ by the MediaCast1 Team</footer></body></html>

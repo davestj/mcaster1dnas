@@ -4,7 +4,7 @@ Features, improvements, and tasks planned for future releases.
 
 ---
 
-## 🎯 Current Version: 2.5.1-rc1 (Pre-Release)
+## 🎯 Current Version: 2.5.2-dev
 
 ### 🧪 In Testing - v2.6.0 Features (Alpha/RC1)
 

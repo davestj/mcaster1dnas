@@ -6,6 +6,188 @@
 
 ---
 
+## [2.5.1-beta.2-win] — 2026-02-22 — Windows-Dev Branch
+
+### Critical Bug Fixes
+
+#### HTTP Admin Authentication — `WWW-Authenticate` Header Missing on Windows
+**Root cause:** A struct field order mismatch in the MSVC-specific code path in `src/params.c`.
+The `mc_param_t` struct is declared as `{next, flags, name_len, value_len, name, value, …}` but
+both `mc_params_printf()` and `mc_http_printf()` MSVC blocks used a positional initializer:
+```c
+mc_param_t hdr = { NULL, (char*)name, content, flags };
+//                 ^next  ^flags(!)   ^name_len(!) ...
+```
+This left `hdr.name = NULL` and `hdr.value = NULL`.  `mc_http_apply()` checked for both null
+and returned `-1` immediately — silently discarding **every response header set via
+`mc_http_printf()`** on Windows.  Affected headers included: `WWW-Authenticate`, `Content-Type`,
+`Content-Length`, `Location`, `Content-Range`, `User-Agent`, and all per-response headers.
+
+**Effect:** Admin 401 responses had no `WWW-Authenticate` header, so browsers displayed
+an error page instead of a credentials dialog.  Other endpoints lost `Content-Type` etc.
+
+**Fix (`src/params.c`):** Replaced wrong positional initializers with `memset` + explicit field
+assignments in both `mc_params_printf` and `mc_http_printf` MSVC blocks:
+```c
+mc_param_t hdr;
+memset (&hdr, 0, sizeof hdr);
+hdr.name  = (char*)name;
+hdr.value = content;
+hdr.flags = (uint32_t)flags;
+```
+Affects both `Mcaster1Win.vcxproj` and `Mcaster1Console.vcxproj` builds.
+
+---
+
+### New Features
+
+#### Per-Listener SSL Enforcement (`ssl: true/false`)
+- Added `int ssl` field to `listener_t` / `_listener_t` struct (`src/cfgfile.h`)
+- XML config: `<ssl>0</ssl>` or `<ssl>1</ssl>` inside `<listen-socket>` block
+- YAML config: `ssl: false` or `ssl: true` per entry in `listen-sockets:`
+- `global.ssl_on_sock[]` parallel array tracks per-socket SSL requirement
+- `connection_peek()` enforces policy strictly:
+  - Port with `ssl: true` → rejects plain HTTP, accepts TLS only
+  - Port with `ssl: false` → rejects TLS, accepts plain HTTP only
+  - Port with no `ssl:` key → auto-detects as before (backwards-compatible)
+- WARN log entries when policy is violated: `"TLS rejected on plain-HTTP port"` /
+  `"Plain HTTP rejected on SSL-only port"`
+
+**Example YAML:**
+```yaml
+listen-sockets:
+  - port: 9330
+    bind-address: "127.0.0.1"
+    ssl: false      # plain HTTP only
+  - port: 9443
+    bind-address: "127.0.0.1"
+    ssl: true       # TLS only
+```
+
+#### SSL Certificate Generation CLI (`src/ssl_gen.h` / `src/ssl_gen.c`)
+New cross-platform OpenSSL-based certificate/CSR generator guarded by `#ifdef HAVE_OPENSSL`.
+
+**New flags (all platforms):**
+
+| Flag | Description |
+|------|-------------|
+| `--ssl-gencert` | Trigger SSL generation mode (server does not start) |
+| `--ssl-gentype=selfsigned\|csr` | Output type: self-signed cert or CSR |
+| `--subj="/C=.../CN=..."` | X.509 subject string (standard openssl format) |
+| `--ssl-gencert-savepath=<dir>` | Output directory (created if absent) |
+| `--ssl-gencert-addtoconfig=true` | Patch `ssl-certificate`/`ssl-private-key` paths in the `-c` config file |
+
+**Self-signed output (`--ssl-gentype=selfsigned`):**
+- `<savepath>/selfsigned.key` — PEM private key
+- `<savepath>/selfsigned.crt` — PEM certificate
+- `<savepath>/selfsigned.pem` — combined cert+key (for server config)
+
+**CSR output (`--ssl-gentype=csr`):**
+- `<savepath>/server.key` — PEM private key
+- `<savepath>/server.csr` — PEM certificate signing request
+
+**Windows C++ wrapper (`windows/SslGen.h` / `windows/SslGen.cpp`):**
+- `CSslGen::Run(SslGenParams)` — calls `ssl_gen_run()` from C code
+- `win_ssl_gencert(argc, argv)` — C entry point for `Mcaster1Win.cpp`
+- When `--ssl-gencert` present in WinUI args: generates cert, shows `MessageBox` with result,
+  then exits without launching the server GUI
+
+**Example usage (console):**
+```
+mcaster1.exe --ssl-gencert --ssl-gentype=selfsigned \
+  --subj="/C=US/ST=TX/L=Dallas/O=MyStation/CN=localhost" \
+  --ssl-gencert-savepath=ssl/certs \
+  --ssl-gencert-addtoconfig=true -c windows/mcaster1dnas.yaml
+```
+
+See [docs/SSL_CERT_GENERATION.md](docs/SSL_CERT_GENERATION.md) for full guide.
+
+#### Config File Auto-Discovery
+When no `-c <file>` argument is given the server searches in this order:
+1. `<exe-directory>/mcaster1dnas.yaml`
+2. `./mcaster1dnas.yaml` (current working directory)
+3. If neither found → prompt user
+
+- **Console / Linux / macOS prompt:** reads a path from stdin
+- **WinUI dialog:** opens a `GetOpenFileName` file-picker dialog (`*.yaml;*.xml`)
+
+#### Windows GUI Log Viewer Tabs (4 new tabs)
+Added `LogTab.h` / `LogTab.cpp` implementing `CLogTab : CTabPageSSL`:
+
+| Tab | Log file |
+|-----|----------|
+| Access Log | `cfg->access_log.name` in `cfg->log_dir` |
+| Error Log | `cfg->error_log.name` in `cfg->log_dir` |
+| YP Health | `cfg->yp_logfile[0]` (first YP directory) |
+| Playlist Log | `cfg->playlist_log.name` in `cfg->log_dir` |
+
+- Black background / white monospace (Consolas 9pt) rich edit control
+- Error log colour-coding: `EROR` → red, `WARN` → yellow, `INFO` → cyan, `DBUG` → grey
+- Real-time tail via `WM_TIMER` (2-second poll)
+- Uses `_fsopen(path, "rb", _SH_DENYNO)` — reads files while the server has them open for writing
+- Path resolved from `config_get_config_unlocked()` after server starts
+- Log rotation detection: resets `m_fileOffset` when file shrinks
+- `Mcaster1Win.vcxproj` updated: `LogTab.cpp` + `LogTab.h` added
+
+#### Uptime Clock
+- New `IDC_UPTIME` (`CStatic`) added to `IDD_MCASTER1WIN_DIALOG` RC and `resource.h`
+- Positioned below the Server Status label/bitmap in the header strip
+- Updates every 500 ms (reuses timer 1) while server is running
+- Format: `"Up: HH:MM:SS"` / `"Stopped"` when halted
+- Anchored `TOP_RIGHT → TOP_RIGHT` via ResizableLib
+
+#### System Time Status Bar
+- New `IDC_SYSCLOCK` (`CStatic`) added to `IDD_MCASTER1WIN_DIALOG` RC and `resource.h`
+- Positioned at bottom of dialog below the tab control (full width)
+- Dedicated timer 3 fires every 1 second via `SetTimer(3, 1000)` in `OnInitDialog`
+- Timer 3 killed in `OnDestroy`
+- Format: `"System Time:  Sat Feb 22 2026   10:30:45 AM"`
+- Anchored `BOTTOM_LEFT → BOTTOM_RIGHT` via ResizableLib
+
+#### Portable Windows Dev Config (`windows/mcaster1dnas.yaml`)
+Updated to use relative paths (`"."` as basedir) and full ICY 2.2 mount metadata:
+- Paths resolve relative to exe working directory (no hard-coded user paths)
+- Per-listener `ssl: true/false` flags applied
+- Example mounts for live broadcast, podcast, and social media types
+- All ICY 2.2 metadata fields documented per mount
+
+---
+
+### Bug Fixes
+
+#### ResizableLib Anchoring
+- `IDC_STATICBLACK` (banner bitmap): renamed from generic `IDC_STATIC` to give it a unique
+  ID addressable by `AddAnchor()`; all header-strip controls now correctly pin on maximize
+- `IDC_STATIC_SLS` ("Click source to view statistics" label in Source Level Stats tab):
+  renamed from `IDC_STATIC` to `IDC_STATIC_SLS`; added `AddAnchor(IDC_STATIC_SLS, BOTTOM_LEFT, BOTTOM_LEFT)` in `CStatsTab::OnInitDialog` — label now stays at the bottom of the tab on resize
+- `IDC_UPTIME`, `IDC_SYSCLOCK` anchors: new controls registered with ResizableLib
+
+#### About → Help
+- `OnAboutHelp()` now calls `ShellExecuteA` to open `https://mcaster1.com/mcaster1dnas/` in
+  the default browser instead of launching a CHM file that no longer existed
+
+#### Tab Header Label Overlap
+- Removed oversized "Source Level Statistics" label from `IDD_STATSDIALOG` (was rendered
+  behind the tab strip; `CStatic` font still being applied at 10pt Bold causing visual noise)
+- Removed "Global Statistics" label from `IDD_SSTATUS` for same reason
+- List controls repositioned to `y=7` filling available height; hint text moved to `y=182`/`y=183`
+
+---
+
+### Build Verification
+
+| Test | Result |
+|------|--------|
+| MSBuild x64 Debug `Mcaster1Win` — 0 errors | PASS |
+| MSBuild x64 Debug `Mcaster1Console` — 0 errors | PASS |
+| HTTP admin auth (browser login dialog appears) | PASS (after `mc_http_printf` fix) |
+| Log tabs real-time tailing while server running | PASS |
+| Uptime clock ticking | PASS |
+| System time clock updating | PASS |
+| Resize / Maximize — all controls anchored | PASS |
+
+---
+
 ## [2.5.1-beta.1-win] — 2026-02-18/19 — Windows-Dev Branch
 
 ### Visual Studio 2022 (v17) Build Infrastructure

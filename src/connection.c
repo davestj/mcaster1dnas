@@ -952,15 +952,33 @@ int connection_peek (connection_t *con)
         int r = sock_peek (con->sock, (char*)arr, sizeof (arr));
         if (r > 5)
         {
-            if (arr[0] == 0x16 && arr[1] == 0x3 && arr[5] == 0x1)
+            int tls_detected = (arr[0] == 0x16 && arr[1] == 0x3 && arr[5] == 0x1);
+            if (tls_detected)
             {
+                if (con->ssl_required == 0)
+                {
+                    /* TLS handshake on a plain-HTTP-only listener — reject */
+                    WARN1 ("Rejecting TLS handshake on plain-HTTP listener from %s", con->ip);
+                    con->error = 1;
+                    return -1;
+                }
                 sock_set_cork (con->sock, 0);   // make sure this is off, leave curl to decide
                 sock_set_nodelay (con->sock);
                 if (connection_uses_ssl (con, 1) == 0)
                     DEBUG1 ("Detected SSL on connection from %s", con->ip);
             }
-            else if (sock_set_cork (con->sock, 1) < 0)
-                sock_set_nodelay (con->sock);
+            else
+            {
+                if (con->ssl_required == 1)
+                {
+                    /* Plain HTTP on an SSL-only listener — reject */
+                    WARN1 ("Rejecting plain-HTTP on SSL-only listener from %s", con->ip);
+                    con->error = 1;
+                    return -1;
+                }
+                if (sock_set_cork (con->sock, 1) < 0)
+                    sock_set_nodelay (con->sock);
+            }
             return 1;
         }
         if (r < 0)
@@ -1172,6 +1190,7 @@ static client_t *accept_client (void)
             else
                 client->ops = &http_request_ops;
             client->server_conn = server_conn;
+            client->connection.ssl_required = (signed char)server_conn->ssl;
             client->flags |= CLIENT_ACTIVE;
 
             return client;

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAML Configuration Reference — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .badge-green{background:#4caf5018;border-color:#4caf5044;color:#4caf50}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    h4{font-size:.95rem;color:#7878b8;margin:1.4rem 0 .5rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}li code{color:#7dd3fc}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    .check{color:#4caf50;font-weight:700}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .warn{background:#1a1200;border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#d4a835}
+    .status-pill{display:inline-block;background:#4caf5020;border:1px solid #4caf5044;color:#4caf50;padding:.15rem .7rem;border-radius:99px;font-size:.72rem;font-weight:700}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">&#x203A;</span>
+  <span style="color:#8888aa">YAML Configuration Reference</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Configuration Guide</div>
+    <h1>YAML Configuration Reference</h1>
+    <div class="sub">Modern YAML config alongside traditional XML &mdash; full feature parity, auto-detection, four included templates</div>
+    <span class="badge">v2.5.0+</span>
+    <span class="badge badge-green">&#x2705; Production Ready</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>Overview</h2>
+  <p>Mcaster1DNAS supports YAML configuration files in addition to XML, providing a modern,
+  human-readable alternative for server configuration. The server automatically detects whether
+  a config file is XML or YAML &mdash; no flag or extension change required.</p>
+
+  <h2>Features</h2>
+  <ul>
+    <li><strong>Automatic Format Detection</strong> &mdash; YAML document markers (<code>---</code>), XML tags (<code>&lt;?xml</code>, <code>&lt;mcaster1&gt;</code>), or key-value patterns (<code>key: value</code>)</li>
+    <li><strong>Full Feature Parity</strong> &mdash; 100% of XML config features available in YAML</li>
+    <li><strong>Comments</strong> &mdash; Native inline comment support with <code>#</code></li>
+    <li><strong>Four templates included</strong> &mdash; full, minimal, shoutcast-compat, and advanced</li>
+  </ul>
+
+  <h3>Feature Parity Checklist</h3>
+  <ul>
+    <li><span class="check">&#x2714;</span> Multi-port listeners (HTTP, HTTPS, IPv6, Shoutcast compatibility)</li>
+    <li><span class="check">&#x2714;</span> Multiple mount points with wildcard support</li>
+    <li><span class="check">&#x2714;</span> Authentication (htpasswd, URL-based, command-based)</li>
+    <li><span class="check">&#x2714;</span> Relays with multi-host failover</li>
+    <li><span class="check">&#x2714;</span> Fallback streams with bitrate limits</li>
+    <li><span class="check">&#x2714;</span> Bandwidth limiting and burst control</li>
+    <li><span class="check">&#x2714;</span> HTTP header customization</li>
+    <li><span class="check">&#x2714;</span> YP directory support</li>
+    <li><span class="check">&#x2714;</span> Logging configuration (access, error, playlist)</li>
+    <li><span class="check">&#x2714;</span> Security (chroot, changeowner)</li>
+    <li><span class="check">&#x2714;</span> Aliases and redirects</li>
+    <li><span class="check">&#x2714;</span> Master/slave replication</li>
+  </ul>
+
+  <h2>Build Instructions</h2>
+  <pre><code>./autogen.sh
+./configure --prefix=/var/www/mcaster1.com/mcaster1dnas/build --with-yaml --with-openssl
+make -j4
+make install</code></pre>
+  <p><strong>Verify YAML support:</strong></p>
+  <pre><code>./build/bin/mcaster1 -v
+# Should show: Mcaster1DNAS 2.5.0</code></pre>
+
+  <h2>Usage</h2>
+  <pre><code># Start with YAML config (auto-detected)
+./build/bin/mcaster1 -c /path/to/config.yaml
+
+# Start with XML config (also auto-detected)
+./build/bin/mcaster1 -c /path/to/config.xml</code></pre>
+
+  <h2>YAML Syntax Examples</h2>
+
+  <h3>Basic Server Settings</h3>
+  <pre><code>---
+location: &quot;Earth&quot;
+admin: &quot;admin@example.com&quot;
+hostname: &quot;radio.example.com&quot;
+fileserve: true</code></pre>
+
+  <h3>Authentication</h3>
+  <pre><code>authentication:
+  source-password: &quot;source_pass&quot;
+  admin-user: &quot;admin&quot;
+  admin-password: &quot;admin_pass&quot;
+  relay-user: &quot;relay&quot;
+  relay-password: &quot;relay_pass&quot;</code></pre>
+
+  <h3>Limits</h3>
+  <pre><code>limits:
+  clients: 100
+  sources: 10
+  workers: 2
+  queue-size: 524288
+  burst-size: 65536
+  client-timeout: 30
+  song-history-limit: 25   # tracks kept in memory for /songdata API (0 = unlimited)</code></pre>
+
+  <h3>Multi-Port Listeners</h3>
+  <pre><code>listen-sockets:
+  # HTTP plain
+  - port: 9330
+    bind-address: &quot;0.0.0.0&quot;
+    ssl: false
+
+  # HTTPS/TLS only
+  - port: 9443
+    bind-address: &quot;0.0.0.0&quot;
+    ssl: true
+
+  # Shoutcast compatibility
+  - port: 8001
+    shoutcast-compat: true
+
+  # IPv6
+  - port: 9330
+    bind-address: &quot;::&quot;</code></pre>
+
+  <h3>Paths</h3>
+  <pre><code>paths:
+  basedir:         &quot;/usr/local/mcaster1dnas&quot;
+  logdir:          &quot;/var/log/mcaster1dnas&quot;
+  webroot:         &quot;/usr/local/mcaster1dnas/web&quot;
+  adminroot:       &quot;/usr/local/mcaster1dnas/admin&quot;
+  pidfile:         &quot;/var/run/mcaster1dnas.pid&quot;
+  ssl-certificate: &quot;/etc/ssl/mcaster1dnas.pem&quot;
+  aliases:
+    - source: &quot;/&quot;
+      destination: &quot;/status.xsl&quot;</code></pre>
+
+  <h3>Mount Point with Authentication</h3>
+  <pre><code>mounts:
+  - mount-name: &quot;/premium.mp3&quot;
+    max-listeners: 100
+    authentication:
+      type: &quot;htpasswd&quot;
+      options:
+        - name: &quot;filename&quot;
+          value: &quot;/path/to/users.htpasswd&quot;
+    fallback:
+      mount: &quot;/backup.mp3&quot;
+      rate: 128000
+    public: true
+    stream-name: &quot;Premium Stream&quot;
+    genre: &quot;Various&quot;</code></pre>
+
+  <h3>ICY 2.2 Mount Metadata</h3>
+  <pre><code>mounts:
+  - mount-name: &quot;/live&quot;
+    mount-type: &quot;live&quot;
+    max-listeners: 100
+    public: 1
+    stream-name: &quot;My Live Radio&quot;
+    stream-description: &quot;Live electronic music&quot;
+    genre: &quot;Electronic&quot;
+    bitrate: &quot;128&quot;
+    icy-dj-handle: &quot;@djname&quot;
+    icy-show-title: &quot;The Evening Show&quot;
+    icy-requests-enabled: true
+    icy-requests-url: &quot;https://myradio.com/request&quot;
+    icy-chat-url: &quot;https://discord.gg/myradio&quot;
+    icy-donate-url: &quot;https://ko-fi.com/myradio&quot;</code></pre>
+
+  <h3>Relay with Failover</h3>
+  <pre><code>relays:
+  - local-mount: &quot;/relay.mp3&quot;
+    on-demand: true
+    masters:
+      - ip: &quot;primary.example.com&quot;
+        port: 8000
+        mount: &quot;/live.mp3&quot;
+        priority: 1
+      - ip: &quot;backup.example.com&quot;
+        port: 8000
+        mount: &quot;/live.mp3&quot;
+        ssl: true
+        priority: 2
+    username: &quot;relay&quot;
+    password: &quot;relaypass&quot;</code></pre>
+
+  <h3>Logging</h3>
+  <pre><code>logging:
+  accesslog:
+    name: &quot;access.log&quot;
+    archive: true
+  errorlog:
+    name: &quot;error.log&quot;
+    level: &quot;debug&quot;
+    archive: true
+  playlistlog:
+    name: &quot;playlist.log&quot;
+    archive: true
+  logsize: 10000
+  logarchive: true</code></pre>
+
+  <h3>HTTP Headers (CORS)</h3>
+  <pre><code>http-headers:
+  - name: &quot;Access-Control-Allow-Origin&quot;
+    value: &quot;*&quot;
+  - name: &quot;Access-Control-Allow-Methods&quot;
+    value: &quot;GET, OPTIONS&quot;</code></pre>
+
+  <h2>XML vs YAML Comparison</h2>
+<div class="table-wrap"><table>
+    <thead><tr><th>XML</th><th>YAML</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><pre style="margin:0;border:none;padding:.5rem"><code>&lt;listen-socket&gt;
+    &lt;port&gt;8000&lt;/port&gt;
+    &lt;bind-address&gt;0.0.0.0&lt;/bind-address&gt;
+    &lt;ssl&gt;0&lt;/ssl&gt;
+&lt;/listen-socket&gt;</code></pre></td>
+        <td><pre style="margin:0;border:none;padding:.5rem"><code>listen-sockets:
+  - port: 8000
+    bind-address: &quot;0.0.0.0&quot;
+    ssl: false</code></pre></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h2>Migration from XML</h2>
+  <ol>
+    <li>Use <code>mcaster1-production.yaml</code> as a template</li>
+    <li>Copy your XML values to corresponding YAML keys</li>
+    <li>Test with: <code>./build/bin/mcaster1 -c config.yaml</code></li>
+  </ol>
+
+  <h2>Validation &amp; Troubleshooting</h2>
+  <p>The server reports parsing errors on startup:</p>
+  <pre><code>ERROR: YAML parse error in config.yaml at line 42: mapping values are not allowed here</code></pre>
+  <p>Test config without starting:</p>
+  <pre><code>./build/bin/mcaster1 -c config.yaml 2&amp;&gt;1 | head -20
+# Look for &quot;server reading configuration from config.yaml&quot;</code></pre>
+
+  <h3>Common Issues</h3>
+<div class="table-wrap"><table>
+    <thead><tr><th>Error</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td>YAML configuration detected but YAML support not compiled in</td><td>Recompile with <code>--with-yaml</code> flag</td></tr>
+      <tr><td>libyaml development files not found</td><td>Install libyaml-dev: <code>apt-get install libyaml-dev</code></td></tr>
+      <tr><td>YAML parse error: mapping values not allowed</td><td>Check indentation &mdash; use spaces, not tabs</td></tr>
+      <tr><td>YAML parse error: unexpected character</td><td>Quote strings containing <code>:</code> <code>#</code> <code>@</code> or other special chars</td></tr>
+      <tr><td>Windows: access violation in libyaml</td><td>Fixed in v2.5.1-beta.1 &mdash; config is now read into memory before passing to yaml.dll</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Dependencies</h2>
+  <p><strong>Required for YAML support:</strong></p>
+  <ul>
+    <li>libyaml-dev &ge; 0.1.7 (Debian/Ubuntu: <code>apt-get install libyaml-dev</code>)</li>
+    <li>yaml-devel &ge; 0.1.7 (RHEL/CentOS: <code>yum install libyaml-devel</code>)</li>
+    <li>Windows: <code>vcpkg install libyaml</code> (x64-windows triplet)</li>
+  </ul>
+  <div class="note">Without YAML support (<code>--with-yaml</code> omitted), the server still works fully with XML configs.</div>
+
+  <h2>Performance</h2>
+  <p>YAML parsing is slightly slower than XML (negligible for config files &mdash; parsed once at startup).
+  Once loaded, runtime performance is identical to XML.</p>
+
+  <h2>Future Enhancements (v2.6.0)</h2>
+  <ul>
+    <li>JSON configuration support</li>
+    <li>Config validation tool (<code>mcaster1-validate-config</code>)</li>
+    <li>Config converter (<code>mcaster1-xml2yaml</code>, <code>mcaster1-yaml2xml</code>)</li>
+    <li>Environment variable substitution in YAML</li>
+    <li>Include directives for modular configs</li>
+  </ul>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> &mdash; config file auto-discovery on Windows</li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> &mdash; per-listener ssl: enforcement in YAML</li>
+      <li><a href="STATIC_MOUNTS.html">Static Mount Points</a> &mdash; YAML mount-type examples</li>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> &mdash; ICY 2.2 mount metadata in YAML config</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+  &mdash; YAML Implementation Status: <span style="color:#4caf50">Production Ready</span> &mdash; v2.5.0
+</footer>
+</body>
+</html>

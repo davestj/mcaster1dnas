@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static Mount Points — Mcaster1DNAS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+    nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+    nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+    nav .sep{color:#333355}
+    .page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+    .page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+    .page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+    .page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+    .badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+    .content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+    h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+    h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+    p{margin-bottom:1rem;color:#c8c8d8}
+    a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+    ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+    strong{color:#dde}
+    code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+    pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+    pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+    .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.87rem}
+    th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+    td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+    .check{color:#4caf50;font-weight:700}.cross{color:#ef4444;font-weight:700}
+    hr{border:none;border-top:1px solid #1a1a2e;margin:2rem 0}
+    .note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+    .see-also{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.2rem;margin:2.5rem 0 1rem}
+    .see-also h3{color:#00c9ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;margin-top:0;margin-bottom:.7rem;border-bottom:none}
+    .see-also ul{margin-left:1.2rem}.see-also li{margin-bottom:.35rem;font-size:.9rem}
+    footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">›</span>
+  <span style="color:#8888aa">Static Mount Points</span>
+</nav>
+
+<div class="page-header">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="meta">Mcaster1DNAS &mdash; Configuration Guide</div>
+    <h1>Static Mount Points</h1>
+    <div class="sub">Podcast, Socialcast, and On-Demand mount types — no live encoder required</div>
+    <span class="badge">v2.5.1+</span>
+    <span class="badge">4 Mount Types</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <h2>Overview</h2>
+  <p>Mcaster1DNAS supports four <code>mount-type</code> values for mount points. Understanding the difference is critical for correctly configuring your streaming setup:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Mount Type</th><th>Description</th><th>Source Required?</th></tr></thead>
+    <tbody>
+      <tr><td><code>live</code></td><td>Real-time encoder push (OBS, Mixxx, ffmpeg, etc.)</td><td><span class="check">Yes</span> — source must connect</td></tr>
+      <tr><td><code>podcast</code></td><td>Pre-recorded episodes served on demand</td><td><span class="cross">No</span> — server serves files</td></tr>
+      <tr><td><code>socialcast</code></td><td>Scheduled or playlist-driven automated stream</td><td><span class="cross">No</span> — server manages playback</td></tr>
+      <tr><td><code>ondemand</code></td><td>Single-file or playlist served on listener request</td><td><span class="cross">No</span> — server serves files</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Live Mounts</h2>
+  <p>The classic streaming mode. A source encoder connects to the server and pushes audio in real time. All connected listeners receive the same stream simultaneously.</p>
+  <pre><code>mounts:
+  - mount-name: "/live"
+    mount-type: "live"
+    max-listeners: 500
+    public: 1
+    stream-name: "My Live Radio"
+    stream-description: "Live electronic music"
+    genre: "Electronic"
+    bitrate: "128"
+    icy-dj-handle: "@djname"
+    icy-show-title: "The Evening Show"
+    icy-requests-enabled: true
+    icy-requests-url: "https://myradio.com/request"</code></pre>
+  <p><strong>Source encoder connection:</strong></p>
+  <pre><code>icecast://source:password@server:9330/live</code></pre>
+  <p><strong>Listener connection:</strong></p>
+  <pre><code>http://server:9330/live</code></pre>
+
+  <h2>Podcast Mounts</h2>
+  <p>A podcast mount serves pre-recorded episode files to listeners on demand. Each listener gets their own independent playback position (not synchronized). The server reads from a configured directory or file list.</p>
+  <pre><code>mounts:
+  - mount-name: "/podcast"
+    mount-type: "podcast"
+    max-listeners: 200
+    public: 1
+    stream-name: "The Weekly Podcast"
+    stream-description: "In-depth conversations about technology"
+    genre: "Talk / Tech"
+    bitrate: "96"
+    icy-podcast-host: "Alex Rivera"
+    icy-podcast-rss: "https://mypodcast.com/feed.rss"
+    icy-podcast-episode: 42
+    icy-podcast-season: 3
+    icy-language: "en-US"
+    icy-requests-enabled: false</code></pre>
+
+  <h3>Metadata Push for Podcast Episodes</h3>
+  <p>When a new episode starts playing (or when you want to update the "now playing" display), push metadata via the admin API:</p>
+  <pre><code>curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata?mount=/podcast&amp;mode=updinfo" \
+  --data-urlencode "song=Ep 42 - AI and the Future" \
+  --data-urlencode "icy-podcast-episode=42" \
+  --data-urlencode "icy-podcast-host=Alex Rivera"</code></pre>
+
+  <h2>Socialcast Mounts</h2>
+  <p>A socialcast is an automated, continuous stream driven by a playlist or scheduler — the server manages playback without a live encoder. Use this for:</p>
+  <ul>
+    <li>24/7 automated radio stations</li>
+    <li>Scheduled program blocks</li>
+    <li>DJ mix relay streams</li>
+    <li>Background music for websites or events</li>
+  </ul>
+  <pre><code>mounts:
+  - mount-name: "/socialcast"
+    mount-type: "socialcast"
+    max-listeners: 300
+    public: 1
+    stream-name: "Mcaster1 Lounge"
+    stream-description: "24/7 automated electronic music"
+    genre: "Electronic / Ambient"
+    bitrate: "128"
+    icy-dj-handle: "AutoDJ"
+    icy-show-title: "The Lounge"
+    icy-social-twitter: "@mcaster1radio"
+    icy-hashtags: "#electronic #ambient #24/7"</code></pre>
+
+  <h3>Metadata on Socialcast Streams</h3>
+  <p>The server auto-updates the <code>icy-title</code> / StreamTitle metadata when it advances to the next track in the playlist. You can also push manual overrides:</p>
+  <pre><code>curl -sk -u admin:changeme \
+  "https://localhost:9443/admin/metadata?mount=/socialcast&amp;mode=updinfo&amp;song=Artist+-+Track+Name"</code></pre>
+
+  <h2>On-Demand Mounts</h2>
+  <p>An on-demand mount delivers a specific audio file (or short playlist) to each listener independently — similar to a podcast but typically for single tracks or albums rather than episodic content.</p>
+  <pre><code>mounts:
+  - mount-name: "/ondemand"
+    mount-type: "ondemand"
+    max-listeners: 100
+    public: 1
+    stream-name: "On Demand — Full Albums"
+    stream-description: "Listen to full album streams"
+    genre: "Various"
+    bitrate: "256"
+    icy-requests-enabled: false</code></pre>
+  <p><strong>Use cases:</strong> album stream pages on a music website, preview streams for releases, podcast episode direct links with embedded player.</p>
+
+  <h2>Differences at a Glance</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Feature</th><th>live</th><th>podcast</th><th>socialcast</th><th>ondemand</th></tr></thead>
+    <tbody>
+      <tr><td>Encoder required</td><td><span class="check">Yes</span></td><td><span class="cross">No</span></td><td><span class="cross">No</span></td><td><span class="cross">No</span></td></tr>
+      <tr><td>All listeners synchronized</td><td><span class="check">Yes</span></td><td><span class="cross">No</span></td><td><span class="check">Yes</span></td><td><span class="cross">No</span></td></tr>
+      <tr><td>Per-listener position</td><td><span class="cross">No</span></td><td><span class="check">Yes</span></td><td><span class="cross">No</span></td><td><span class="check">Yes</span></td></tr>
+      <tr><td>Metadata auto-advances</td><td>Via encoder</td><td>Via API</td><td>Auto (playlist)</td><td>Via API</td></tr>
+      <tr><td>Song history tracked</td><td><span class="check">Yes</span></td><td><span class="check">Yes</span></td><td><span class="check">Yes</span></td><td><span class="check">Yes</span></td></tr>
+      <tr><td>RSS feed supported</td><td><span class="cross">No</span></td><td><span class="check">Yes</span></td><td><span class="cross">No</span></td><td><span class="cross">No</span></td></tr>
+      <tr><td>Ideal for</td><td>Live DJ/radio</td><td>Podcasts</td><td>Auto radio</td><td>Albums/tracks</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Song History on All Mount Types</h2>
+  <p>All mount types feed the song history ring buffer (<code>/mcaster1songdata</code>) when a track change is detected. Podcast episodes, socialcast track advances, and on-demand plays all appear in the public track history pages alongside live stream data.</p>
+
+  <h2>ICY2 Headers on Static Mounts</h2>
+  <p>For non-live mounts, set ICY2 metadata headers in the mount config. The server sends these to listeners as part of the HTTP response headers when they connect, and exposes them in the stats XML:</p>
+  <pre><code>mounts:
+  - mount-name: "/podcast"
+    mount-type: "podcast"
+    # ... core config ...
+
+    # ICY2 fields — sent to all listeners on this mount
+    icy-dj-handle: "Podcast Host Name"
+    icy-station-id: "mypodcast-weekly"
+    icy-show-title: "The Weekly Tech Podcast"
+    icy-podcast-host: "Alex Rivera"
+    icy-podcast-rss: "https://mypodcast.com/feed.rss"
+    icy-language: "en-US"
+    icy-content-rating: "clean"
+    icy-social-twitter: "@mypodcast"
+    icy-requests-enabled: false</code></pre>
+
+  <h2>Listener Engagement — Requests</h2>
+  <p>For live and socialcast mounts where listener requests are meaningful, enable the requests URL and chat URL:</p>
+  <pre><code>mounts:
+  - mount-name: "/live"
+    mount-type: "live"
+    icy-requests-enabled: true
+    icy-requests-url: "https://myradio.com/request"
+    icy-chat-url: "https://discord.gg/myradio"
+    icy-donate-url: "https://ko-fi.com/myradio"</code></pre>
+  <p>Listeners using ICY2-aware players will see clickable request / chat / donate buttons in their player UI.</p>
+
+  <div class="see-also">
+    <h3>See Also</h3>
+    <ul>
+      <li><a href="ICY2_PROTOCOL.html">ICY2 Protocol</a> — full ICY2 protocol reference</li>
+      <li><a href="SONG_HISTORY_API.html">Song History API</a> — song history ring buffer and XML API</li>
+      <li><a href="SSL_CERT_GENERATION.html">SSL Certificate Setup</a> — TLS setup for secure listeners</li>
+      <li><a href="WINDOWS_GUI.html">Windows GUI Guide</a> — mcaster1win.exe user guide</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Mcaster1DNAS v2.5.2-dev &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" style="color:#00c9ff44;text-decoration:none">mcaster1.com</a>
+</footer>
+</body>
+</html>

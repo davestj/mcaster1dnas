@@ -19,7 +19,7 @@ $versionFile = Join-Path $RepoRoot "VERSION"
 $outFile     = Join-Path $RepoRoot "git_hash.h"
 
 # Read base version from VERSION file
-$baseVer = "2.5.1"
+$baseVer = "2.5.2-dev"
 if (Test-Path $versionFile) {
     $baseVer = (Get-Content $versionFile -Raw).Trim()
 }

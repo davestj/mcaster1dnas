@@ -806,10 +806,130 @@ jobs:
           path: windows/x64/Release/*
           retention-days: 7
 
+  release-linux:
+    name: Source Archives & Linux Release
+    runs-on: ubuntu-latest
+    needs: [test-http, test-yaml-config]
+    if: github.event_name == 'push'
+    container:
+      image: debian:12
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install tools
+        run: |
+          apt-get update
+          apt-get install -y git curl
+
+      - name: Compute release version and auto-increment
+        id: rel_version
+        run: |
+          base=$(cat VERSION | tr -d '\r\n')
+          # Strip trailing qualifiers to get semver core
+          core=$(echo "$base" | sed 's/[-+].*//')
+          major=$(echo "$core" | cut -d. -f1)
+          minor=$(echo "$core" | cut -d. -f2)
+          patch=$(echo "$core" | cut -d. -f3 | tr -cd '0-9')
+          patch=$((patch + 1))
+          new_base="${major}.${minor}.${patch}-dev"
+          hash=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+          full_ver="${new_base}.${hash}"
+
+          echo "Previous VERSION : $base"
+          echo "New base version : $new_base"
+          echo "Full version     : $full_ver"
+
+          echo "$new_base" > VERSION
+          echo "✓ VERSION updated to $new_base"
+
+          echo "new_base=$new_base"   >> $GITHUB_OUTPUT
+          echo "full_ver=$full_ver"   >> $GITHUB_OUTPUT
+          echo "tag=v$full_ver"       >> $GITHUB_OUTPUT
+
+      - name: Create source archives
+        run: |
+          FULL_VER="${{ steps.rel_version.outputs.full_ver }}"
+          PREFIX="mcaster1dnas-${FULL_VER}"
+
+          git archive --format=tar.gz --prefix="${PREFIX}/" HEAD \
+            -o "release-${PREFIX}.tar.gz"
+          echo "✓ TAR.GZ: release-${PREFIX}.tar.gz ($(du -sh release-${PREFIX}.tar.gz | cut -f1))"
+
+          git archive --format=zip --prefix="${PREFIX}/" HEAD \
+            -o "release-${PREFIX}.zip"
+          echo "✓ ZIP: release-${PREFIX}.zip ($(du -sh release-${PREFIX}.zip | cut -f1))"
+
+      - name: Download Debian 12 binary artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mcaster1dnas-debian12-build
+          path: linux-build
+
+      - name: Commit updated VERSION file
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "ci: auto-increment VERSION to ${{ steps.rel_version.outputs.new_base }} [skip ci]"
+          git push origin development
+          echo "✓ VERSION committed and pushed"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.rel_version.outputs.tag }}
+          name: "Mcaster1DNAS ${{ steps.rel_version.outputs.full_ver }} — Linux/macOS"
+          body: |
+            ## Mcaster1DNAS ${{ steps.rel_version.outputs.full_ver }}
+
+            **Branch:** `development`
+            **Commit:** ${{ github.sha }}
+            **Build:** #${{ github.run_number }}
+
+            ### Downloads
+            | File | Description |
+            |------|-------------|
+            | `*.tar.gz` | Source code archive (TAR.GZ) |
+            | `*.zip` | Source code archive (ZIP) |
+
+            ### Building from source
+            ```bash
+            tar xzf mcaster1dnas-*.tar.gz
+            cd mcaster1dnas-*/
+            ./autogen.sh
+            ./configure --prefix=/usr/local/mcaster1dnas --with-yaml --with-openssl
+            make -j$(nproc)
+            sudo make install
+            ```
+
+            ### Requirements
+            - Linux (Debian 12+, Ubuntu 24+, CentOS/RHEL 9+) or macOS 13+
+            - libxml2, libxslt, libcurl, openssl, libyaml, libogg, libvorbis
+          draft: false
+          prerelease: true
+          files: |
+            release-mcaster1dnas-${{ steps.rel_version.outputs.full_ver }}.tar.gz
+            release-mcaster1dnas-${{ steps.rel_version.outputs.full_ver }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcaster1dnas-linux-release-${{ steps.rel_version.outputs.full_ver }}
+          path: |
+            release-*.tar.gz
+            release-*.zip
+          retention-days: 30
+
   summary:
     name: Build Summary
     runs-on: ubuntu-latest
-    needs: [lint, build-debian-12, test-http, test-yaml-config, security-check, build-windows]
+    needs: [lint, build-debian-12, test-http, test-yaml-config, security-check, build-windows, release-linux]
     if: always()
 
     steps:
@@ -817,13 +937,16 @@ jobs:
         run: |
           echo "=== Mcaster1DNAS CI/CD Build Summary ==="
           echo ""
-          echo "Branch: development"
-          echo "Commit: ${{ github.sha }}"
-          echo "Build Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "Branch      : development"
+          echo "Commit      : ${{ github.sha }}"
+          echo "Build Date  : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           echo "Build Number: ${{ github.run_number }}"
           echo ""
-          echo "Platform Builds:"
-          echo "  ✓ Debian 12 (Linux x64)"
-          echo "  ✓ Windows 11 (x64)"
-          echo ""
-          echo "All checks completed successfully! ✓"
+          echo "Jobs:"
+          echo "  lint           : ${{ needs.lint.result }}"
+          echo "  build-debian-12: ${{ needs.build-debian-12.result }}"
+          echo "  test-http      : ${{ needs.test-http.result }}"
+          echo "  test-yaml-cfg  : ${{ needs.test-yaml-config.result }}"
+          echo "  security-check : ${{ needs.security-check.result }}"
+          echo "  build-windows  : ${{ needs.build-windows.result }}"
+          echo "  release-linux  : ${{ needs.release-linux.result }}"

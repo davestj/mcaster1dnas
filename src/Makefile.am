@@ -9,7 +9,7 @@ noinst_HEADERS = admin.h cfgfile.h cfgfile_yaml.h logging.h sighandler.h connect
     fnmatch_loop.c fnmatch.h \
     format.h format_ogg.h format_mp3.h format_ebml.h \
     format_vorbis.h format_theora.h format_flac.h format_speex.h format_midi.h format_opus.h \
-    format_kate.h format_skeleton.h mpeg.h flv.h
+    format_kate.h format_skeleton.h mpeg.h flv.h ssl_gen.h
 mcaster1_SOURCES = cfgfile.c main.c logging.c sighandler.c connection.c global.c \
     util.c slave.c source.c stats.c refbuf.c client.c params.c icy2_meta.c \
     xslt.c fserve.c event.c admin.c md5.c \
@@ -45,6 +45,9 @@ mcaster1_SOURCES += auth_cmd.c
 endif
 if HAVE_YAML
 mcaster1_SOURCES += cfgfile_yaml.c
+endif
+if HAVE_OPENSSL
+mcaster1_SOURCES += ssl_gen.c
 endif
 
 if WINDOWS

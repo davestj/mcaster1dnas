@@ -20,7 +20,7 @@ Unicode True
 ; Product constants
 ; -----------------------------------------------------------------------------
 !define PRODUCT_NAME        "Mcaster1DNAS"
-!define PRODUCT_VERSION     "2.5.2-dev"
+!define PRODUCT_VERSION     "2.5.2-beta-1"
 !define PRODUCT_PUBLISHER   "MediaCast1"
 !define PRODUCT_URL         "https://mcaster1.com"
 !define PRODUCT_SUPPORT_URL "https://github.com/davestj/mcaster1dnas/issues"

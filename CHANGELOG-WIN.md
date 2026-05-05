@@ -6,6 +6,82 @@
 
 ---
 
+## [2.5.2-beta] — 2026-02-24 — Windows Beta Release
+
+### Summary
+First Windows beta release of Mcaster1DNAS 2.5.2. Ships as a self-contained NSIS installer
+(`mcaster1dnas_win64_v2.5.2-beta_setup.exe`) with a fully functional Windows Service,
+GUI application (sidecar mode), SSL support, and automated build pipeline.
+
+### New: NSIS Installer (`windows/installer/mcaster1dnas.nsi`)
+Full NSIS 3.x installer replacing the legacy Inno Setup scripts:
+
+| Section | Contents |
+|---------|----------|
+| Core Application | All EXEs, vcpkg DLLs, both YAML configs, `ssl/localhost.pem`, `logs/` dir |
+| Web Interface | `web/` + `admin/` directories |
+| Local Documentation | `docs/` + key Markdown files |
+| SSL Test Certs | `ssl/temp/` (optional) |
+| Windows Service | Registers `mcaster1Service.exe` as auto-start service |
+| Start Menu | `Start Menu > Mcaster1 > Mcaster1DNAS` hierarchy |
+| Desktop Shortcuts | GUI launcher, Start/Stop Service, Documentation |
+
+- Firewall rules created for all 4 ports: HTTP 9330, HTTPS 9443, GUI HTTP 9033, GUI HTTPS 9344
+- Service start/stop shortcuts use `PowerShell -Verb RunAs` for UAC elevation
+- Documentation shortcut opens `docs/index.html` in the default browser
+- LZMA compression; installer output ~5.3 MB
+
+### New: Build Pipeline (`windows/installer/build-installer.ps1`)
+Automated three-step build: MSBuild → DLL sync → NSIS compilation.
+
+Key fixes in this release:
+- **Em dash encoding crash** — `—` characters (UTF-8 byte 0x94 / Windows-1252 `"`) caused
+  PowerShell 5.1 to treat them as string terminators; all replaced with ASCII hyphens.
+  File saved UTF-8 without BOM.
+- **vcpkg DLL sync step (Step 2a)** — explicitly copies all `x64-windows\bin\*.dll` to
+  `windows\x64\Debug\` before the verification check, eliminating intermittent missing DLL
+  failures from MSBuild post-build events.
+- **PowerShell drive reference** — `"$Var:"` → `"${Var}:"` to prevent PS parsing `$Var:` as a
+  drive letter reference.
+- Build flags: `-SkipBuild`, `-SkipImages`, `-SkipNSIS` for incremental rebuilds.
+
+### Bug Fix: Windows Service Binary
+**Before:** NSIS `sc create` used `mcaster1.exe` (console app). Console app never calls
+`StartServiceCtrlDispatcher`; SCM timed out after 30 s.
+**After:** `sc create ... binPath= "\"$INSTDIR\mcaster1Service.exe\" \"$INSTDIR\""`.
+
+### Bug Fix: Windows Service Default Config
+**Before:** `ServiceMain` defaulted to `mcaster1.xml`.
+**After:** Default set to `mcaster1dnas-console.yaml`.
+
+### Bug Fix: GUI Working Directory
+**Before:** Relative paths in YAML config (`./logs`, `./web`, `./ssl`) resolved to wrong
+location when `mcaster1win.exe` was launched from Start Menu shortcuts or explorer.
+**After:** `SetCurrentDirectoryA(exedir)` added as the first statement in `InitInstance()`.
+
+### New: Documentation Landing Page (`docs/index.html`)
+Dark-theme HTML page with links to all docs and a port reference table. Installed to
+`$INSTDIR\docs\index.html`; opened by the Documentation desktop/Start Menu shortcut.
+
+### New: GitHub Actions Workflow (windows-dev)
+Added CI/CD workflow for the `windows-dev` branch targeting Windows x64 builds.
+
+### Verified Working (2026-02-24)
+
+| Test | Result |
+|------|--------|
+| NSIS installer builds (5.3 MB LZMA) | PASS |
+| `mcaster1Service.exe` as Windows Service, auto-start | PASS |
+| `http://127.0.0.1:9330/status.xsl` | HTTP 200 |
+| `https://127.0.0.1:9443/status.xsl` | HTTP 200 (TLS) |
+| `https://127.0.0.1:9443/admin/` | HTTP 401 (correct auth enforcement) |
+| GUI (`mcaster1win.exe`) starts on 9033/9344, coexists with service | PASS |
+| Log files writing to `$INSTDIR\logs\` | PASS |
+| Start Menu shortcuts (Launch, Start/Stop Service, Docs) | PASS |
+| UAC elevation on service shortcuts | PASS |
+
+---
+
 ## [2.5.1-beta.2-win] — 2026-02-22 — Windows-Dev Branch
 
 ### Critical Bug Fixes

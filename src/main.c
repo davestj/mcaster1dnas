@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -392,6 +393,311 @@ static int server_proc_init(void)
 }
 
 
+/* ─── print_startup_banner ────────────────────────────────────────────────────
+ * Emit a SHOUTcast-style startup log showing every configured parameter.
+ *
+ * Output rules:
+ *   - Always written to the error log via INFO macros (survives -b mode).
+ *   - Written to stdout only when NOT running in background (-b) mode.
+ *
+ * Call from server_process() BEFORE the "if (background)" block that closes
+ * stdin/stdout/stderr so the file descriptors are still valid.
+ * ─────────────────────────────────────────────────────────────────────────── */
+static void print_startup_banner(mc_config_t *config)
+{
+    char          buf[512];
+    listener_t   *sock;
+    mount_proxy  *mp;
+    unsigned int  n;
+    unsigned int  mount_count = 0;
+    int           cpu_count   = 1;
+    int           pid;
+    long          fd_limit    = -1;
+    char          cwd[PATH_MAX];
+    time_t        now;
+    struct tm    *tm_info;
+    char          ts[32];
+
+    /* ── platform OS label (compile-time selection) ─────────────────────── */
+    const char *os_str;
+#if defined(_WIN32) || defined(__MINGW32__)
+    os_str = "Windows";
+#elif defined(__APPLE__)
+    os_str = "macOS (Darwin)";
+#elif defined(__linux__)
+    os_str = "Linux";
+#else
+    os_str = "Unix";
+#endif
+
+    /* ── CPU architecture label (compile-time selection) ───────────────── */
+    const char *arch_str;
+#if defined(__aarch64__) || defined(_M_ARM64)
+    arch_str = "arm64";
+#elif defined(__x86_64__) || defined(_M_X64)
+    arch_str = "x86_64";
+#elif defined(__i386__) || defined(_M_IX86)
+    arch_str = "x86";
+#else
+    arch_str = "unknown";
+#endif
+
+    /* ── CPU core count ─────────────────────────────────────────────────── */
+#if defined(_WIN32)
+    {
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        cpu_count = (int)si.dwNumberOfProcessors;
+    }
+#elif defined(HAVE_UNISTD_H)
+    {
+        long nc = sysconf(_SC_NPROCESSORS_ONLN);
+        if (nc > 0)
+            cpu_count = (int)nc;
+    }
+#endif
+
+    /* ── process ID ─────────────────────────────────────────────────────── */
+#ifdef _WIN32
+    pid = (int)_getpid();
+#else
+    pid = (int)getpid();
+#endif
+
+    /* ── open-file-descriptor limit ─────────────────────────────────────── */
+#ifdef HAVE_GETRLIMIT
+    {
+        struct rlimit rl;
+        if (getrlimit(RLIMIT_NOFILE, &rl) == 0)
+        {
+#ifdef RLIM_INFINITY
+            fd_limit = (rl.rlim_cur == RLIM_INFINITY) ? -2 : (long)rl.rlim_cur;
+#else
+            fd_limit = (long)rl.rlim_cur;
+#endif
+        }
+    }
+#endif
+
+    /* ── current working directory ──────────────────────────────────────── */
+    cwd[0] = '\0';
+#ifdef _WIN32
+    GetCurrentDirectoryA((DWORD)sizeof(cwd), cwd);
+#elif defined(HAVE_UNISTD_H)
+    if (!getcwd(cwd, sizeof(cwd)))
+        cwd[0] = '\0';
+#endif
+
+    /* ── local start timestamp ──────────────────────────────────────────── */
+    now     = time(NULL);
+    tm_info = localtime(&now);
+    if (tm_info)
+        strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", tm_info);
+    else
+        snprintf(ts, sizeof(ts), "(unknown)");
+
+    /* ── static mount count ────────────────────────────────────────────────
+     * Plain mounts (/live, /podcast) go into the AVL tree (config->mounts_tree).
+     * Wildcard/template mounts (/live*) go into the linked list (config->mounts).
+     * Count both to get the full total. */
+    for (mp = config->mounts; mp; mp = mp->next)
+        mount_count++;
+    if (config->mounts_tree)
+        mount_count += config->mounts_tree->length;
+
+    /* ── output helpers ─────────────────────────────────────────────────── *
+     * BLINE: print a literal string to stdout (if foreground) + INFO log.  *
+     * BFMT:  printf-format into buf, then BLINE the result.                *
+     * Both are undefined at the end of this function.                      */
+#define BLINE(str) \
+    do { \
+        if (!background) fprintf(stdout, "%s\n", (str)); \
+        INFO1("[STARTUP] %s", (str)); \
+    } while (0)
+
+#define BFMT(...) \
+    do { \
+        snprintf(buf, sizeof(buf), __VA_ARGS__); \
+        BLINE(buf); \
+    } while (0)
+
+    /* ════════════════════════════════════════════════════════════════════ *
+     * Header                                                               *
+     * ════════════════════════════════════════════════════════════════════ */
+    BLINE("**********************************************************************");
+    BLINE("**   Mcaster1DNAS - Digital Network Audio Server (DNAS)            **");
+    BLINE("**   Copyright (C) 2025-2026 Saint John (David St John)            **");
+    BLINE("**   Based on Icecast-KH (Karl Heyes) / Icecast2 (Xiph.Org)       **");
+    BLINE("**********************************************************************");
+
+    /* ── [MAIN] ─────────────────────────────────────────────────────────── */
+    BFMT("[MAIN] Version      : %s (%s)",   ICECAST_VERSION_STRING, GIT_VERSION);
+    BFMT("[MAIN] Platform     : %s / %s",   os_str, arch_str);
+    BFMT("[MAIN] PID          : %d",        pid);
+    BFMT("[MAIN] Started at   : %s",        ts);
+    BFMT("[MAIN] Config file  : %s",
+         config->config_filename ? config->config_filename : "(none)");
+    if (cwd[0])
+        BFMT("[MAIN] Working dir  : %s",    cwd);
+    BFMT("[MAIN] Hostname     : %s",
+         config->hostname  ? config->hostname  : "localhost");
+    BFMT("[MAIN] Admin        : %s",
+         config->admin     ? config->admin     : "(not set)");
+    BFMT("[MAIN] Location     : %s",
+         config->location  ? config->location  : "(not set)");
+    BFMT("[MAIN] Server ID    : %s",
+         config->server_id ? config->server_id : ICECAST_VERSION_STRING);
+
+    /* ── [SYSTEM] ────────────────────────────────────────────────────────── */
+    BFMT("[SYSTEM] CPU cores      : %d -> starting %d network worker thread(s)",
+         cpu_count,
+         config->workers_count > 0 ? config->workers_count : cpu_count);
+    if (fd_limit == -2)
+        BLINE("[SYSTEM] Open FD limit  : unlimited (RLIM_INFINITY)");
+    else if (fd_limit >= 0)
+        BFMT("[SYSTEM] Open FD limit  : %ld file descriptors", fd_limit);
+    else
+        BLINE("[SYSTEM] Open FD limit  : unknown");
+
+    /* ── [LISTENER] — one line per configured socket ─────────────────────── */
+    n    = 0;
+    sock = config->listen_sock;
+    while (sock)
+    {
+        const char *ssl_label =
+            (sock->ssl ==  1) ? "SSL/TLS (required)"  :
+            (sock->ssl ==  0) ? "plain HTTP"           :
+                                "auto-detect SSL";
+        const char *bind_addr =
+            (sock->bind_address && sock->bind_address[0])
+                ? sock->bind_address : "0.0.0.0";
+        snprintf(buf, sizeof(buf),
+            "[LISTENER] Socket %-2u : %s:%d  [%s]%s",
+            ++n, bind_addr, sock->port, ssl_label,
+            sock->shoutcast_compat ? "  (ShoutCast compat)" : "");
+        BLINE(buf);
+        sock = sock->next;
+    }
+    BFMT("[LISTENER] Total sockets : %u", config->listen_sock_count);
+
+    /* ── [LIMITS] ─────────────────────────────────────────────────────────── */
+    BFMT("[LIMITS] Max clients    : %d",       config->client_limit);
+    BFMT("[LIMITS] Max sources    : %d",       config->source_limit);
+    if (config->max_listeners > 0)
+        BFMT("[LIMITS] Max listeners  : %d",   config->max_listeners);
+    else
+        BLINE("[LIMITS] Max listeners  : unlimited");
+    BFMT("[LIMITS] Worker threads : %d",       config->workers_count);
+    BFMT("[LIMITS] Queue size     : %u bytes", config->queue_size_limit);
+    BFMT("[LIMITS] Burst size     : %u bytes", config->burst_size);
+    if (config->max_bandwidth > 0)
+        BFMT("[LIMITS] Max bandwidth  : %lld bps", (long long)config->max_bandwidth);
+    else
+        BLINE("[LIMITS] Max bandwidth  : unlimited");
+
+    /* ── [TIMEOUT] ───────────────────────────────────────────────────────── */
+    BFMT("[TIMEOUT] Client        : %d s", config->client_timeout);
+    BFMT("[TIMEOUT] Header        : %d s", config->header_timeout);
+    BFMT("[TIMEOUT] Source        : %d s", config->source_timeout);
+
+    /* ── [PATHS] ─────────────────────────────────────────────────────────── */
+    BFMT("[PATHS] Basedir         : %s",
+         config->base_dir      ? config->base_dir      : "(cwd)");
+    BFMT("[PATHS] Logdir          : %s",
+         config->log_dir       ? config->log_dir       : "(not set)");
+    BFMT("[PATHS] Webroot         : %s",
+         config->webroot_dir   ? config->webroot_dir   : "(not set)");
+    BFMT("[PATHS] Adminroot       : %s",
+         config->adminroot_dir ? config->adminroot_dir : "(not set)");
+    if (config->pidfile)
+        BFMT("[PATHS] PID file        : %s", config->pidfile);
+
+    /* ── [LOGGING] ───────────────────────────────────────────────────────── */
+    BFMT("[LOGGING] Access log    : %s (archive: %s)",
+         config->access_log.name    ? config->access_log.name    : "(disabled)",
+         config->access_log.archive  ? "yes" : "no");
+    BFMT("[LOGGING] Error log     : %s (archive: %s)",
+         config->error_log.name     ? config->error_log.name     : "(disabled)",
+         config->error_log.archive   ? "yes" : "no");
+    BFMT("[LOGGING] Playlist log  : %s",
+         config->playlist_log.name  ? config->playlist_log.name  : "(disabled)");
+    {
+        long lsz = config->error_log.size;
+        if (lsz <= 0)
+            BLINE("[LOGGING] Log rotate at : disabled");
+        else if (lsz >= 1048576)
+            BFMT("[LOGGING] Log rotate at : %ld MB per log file", lsz / 1048576);
+        else if (lsz >= 1024)
+            BFMT("[LOGGING] Log rotate at : %ld KB per log file", lsz / 1024);
+        else
+            BFMT("[LOGGING] Log rotate at : %ld bytes per log file", lsz);
+    }
+    BFMT("[LOGGING] Song history  : %d entries max",
+         config->song_history_limit);
+
+    /* ── [SECURITY] ──────────────────────────────────────────────────────── */
+#ifdef HAVE_OPENSSL
+    if (config->cert_file)
+        BFMT("[SECURITY] SSL cert     : %s", config->cert_file);
+    else
+        BLINE("[SECURITY] SSL          : enabled (no cert path configured)");
+    if (config->ca_file)
+        BFMT("[SECURITY] CA file      : %s", config->ca_file);
+    if (config->cipher_list)
+    {
+        if (strlen(config->cipher_list) > 60)
+            BFMT("[SECURITY] Ciphers      : %.57s...", config->cipher_list);
+        else
+            BFMT("[SECURITY] Ciphers      : %s", config->cipher_list);
+    }
+#else
+    BLINE("[SECURITY] SSL          : not compiled in");
+#endif
+    if (config->banfile)
+        BFMT("[SECURITY] Ban file     : %s", config->banfile);
+    else
+        BLINE("[SECURITY] Ban file     : not configured");
+    if (config->allowfile)
+        BFMT("[SECURITY] Allow file   : %s", config->allowfile);
+    if (config->agentfile)
+        BFMT("[SECURITY] Agent file   : %s", config->agentfile);
+    else
+        BLINE("[SECURITY] Agent file   : not configured");
+    if (config->chroot && config->base_dir)
+        BFMT("[SECURITY] chroot       : %s", config->base_dir);
+    if (config->user)
+        BFMT("[SECURITY] Run as       : %s%s%s",
+             config->user,
+             config->group ? ":" : "",
+             config->group ? config->group : "");
+
+    /* ── [FEATURES] ──────────────────────────────────────────────────────── */
+    BFMT("[FEATURES] Static mounts  : %u configured", mount_count);
+    BFMT("[FEATURES] Relays         : %s",
+         config->relays ? "configured" : "none");
+    BFMT("[FEATURES] File serving   : %s",
+         config->fileserve ? "enabled" : "disabled");
+#ifdef HAVE_CURL
+    BLINE("[FEATURES] YP / cURL      : enabled");
+#else
+    BLINE("[FEATURES] YP / cURL      : disabled (no libcurl)");
+#endif
+    BFMT("[FEATURES] Mode           : %s",
+         background
+             ? "background daemon (stdout closed after init)"
+             : "foreground console (logging to stdout + log files)");
+
+    /* ── footer ─────────────────────────────────────────────────────────── */
+    BLINE("**********************************************************************");
+
+    if (!background)
+        fflush(stdout);
+
+#undef BFMT
+#undef BLINE
+}
+
+
 /* this is the heart of the beast */
 void server_process (void)
 {
@@ -405,6 +711,10 @@ void server_process (void)
     /* Pre-register static mount types (podcast/ondemand/socialmedia) in the
      * stats system so they appear in the XML/JSON API without a live source */
     source_static_mounts_init (config_get_config_unlocked());
+
+    /* Emit detailed startup banner — to stdout (foreground) and error log always.
+     * Must run BEFORE the background block that closes stdio file descriptors. */
+    print_startup_banner (config_get_config_unlocked());
 
     if (background)
     {

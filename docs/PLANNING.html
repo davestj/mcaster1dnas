@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mcaster1DNAS — Project Planning &amp; Phase Tracker</title>
+<style>
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    --color-brand-blue:   #0ea5e9;
+    --color-brand-cyan:   #06b6d4;
+    --color-dnas-green:   #22c55e;
+    --color-pro-blue:     #3b82f6;
+    --color-navy:         #1e40af;
+    --color-bg-dark1:     #0c1a2e;
+    --color-bg-dark2:     #0f3460;
+    --color-bg-light:     #f8fafc;
+    --color-bg-white:     #ffffff;
+    --color-bg-accent:    #f1f5f9;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border-light: #e2e8f0;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg-light);
+    color: var(--color-text-primary);
+    line-height: 1.65;
+    font-size: 0.95rem;
+  }
+
+  /* ─── Hero ───────────────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--color-bg-dark1) 0%, var(--color-bg-dark2) 100%);
+    color: #fff;
+    padding: 3.5rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--color-brand-blue);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
+  .hero h1 span { color: var(--color-brand-cyan); }
+  .hero p { margin-top: 0.75rem; color: #94a3b8; max-width: 600px; margin-inline: auto; }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 0.75rem; margin-top: 1.25rem;
+    font-size: 0.82rem; color: #64748b;
+  }
+  .hero-meta span { background: rgba(255,255,255,0.06); padding: 0.2rem 0.6rem; border-radius: 999px; }
+
+  /* ─── Layout ──────────────────────────────────────────────────────────────── */
+  .container { max-width: 1060px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .card {
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .card-icon {
+    width: 2rem; height: 2rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; font-weight: 700; flex-shrink: 0;
+  }
+  .icon-blue   { background: #dbeafe; color: #1d4ed8; }
+  .icon-green  { background: #dcfce7; color: #16a34a; }
+  .icon-teal   { background: #ccfbf1; color: #0f766e; }
+  .icon-purple { background: #ede9fe; color: #7c3aed; }
+  .icon-orange { background: #ffedd5; color: #c2410c; }
+  .icon-red    { background: #fee2e2; color: #dc2626; }
+  .icon-cyan   { background: #cffafe; color: #0e7490; }
+
+  .card h2 { font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); }
+  .card h3 { font-size: 0.92rem; font-weight: 600; color: var(--color-text-secondary);
+             margin: 1.25rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .card p  { color: var(--color-text-secondary); margin-bottom: 0.75rem; }
+  .card ul { padding-left: 1.4rem; color: var(--color-text-secondary); }
+  .card li { margin-bottom: 0.3rem; }
+
+  /* ─── Tables ──────────────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 0.75rem; }
+  th { background: var(--color-bg-accent); font-weight: 600;
+       text-align: left; padding: 0.55rem 0.75rem;
+       border-bottom: 2px solid var(--color-border-light); }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--color-border-light);
+       vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--color-bg-accent); }
+  code { font-family: var(--font-mono); font-size: 0.85em; background: #f1f5f9;
+         padding: 0.1em 0.35em; border-radius: 3px; }
+
+  /* ─── Badges ──────────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap;
+  }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-blue   { background: #dbeafe; color: #1e40af; }
+  .badge-teal   { background: #ccfbf1; color: #0f766e; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+  .badge-gray   { background: #f1f5f9; color: #475569; }
+
+  /* ─── Phase header pills ─────────────────────────────────────────────────── */
+  .phase-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;
+  }
+  .phase-title { font-size: 1.05rem; font-weight: 700; }
+  .status-pill {
+    font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.7rem;
+    border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .pill-done    { background: #dcfce7; color: #15803d; }
+  .pill-beta    { background: #ede9fe; color: #6d28d9; }
+  .pill-planned { background: #f1f5f9; color: #64748b; }
+
+  /* ─── Checkbox items ──────────────────────────────────────────────────────── */
+  .checklist { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.3rem 0; border-bottom: 1px solid #f1f5f9;
+    color: var(--color-text-secondary); font-size: 0.9rem;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-icon { flex-shrink: 0; font-size: 1rem; margin-top: 0.05rem; }
+  .check-done    { color: #16a34a; }
+  .check-partial { color: #d97706; }
+  .check-todo    { color: #94a3b8; }
+
+  /* ─── Footer ──────────────────────────────────────────────────────────────── */
+  footer {
+    background: var(--color-bg-dark1); color: #64748b;
+    text-align: center; padding: 1.5rem 1rem; font-size: 0.82rem;
+  }
+  footer a { color: var(--color-brand-cyan); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 2.5rem 1rem 2rem; }
+    .card { padding: 1.25rem; }
+    table { font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Hero ─────────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-badge">Project Planning Tracker</div>
+  <h1>Mcaster1DNAS &mdash; <span>Phase Progress</span></h1>
+  <p>Development roadmap, phase checklist, and feature status for all platforms.</p>
+  <div class="hero-meta">
+    <span>&#9670; Version 2.5.3-beta</span>
+    <span>&#9670; Updated: 2026-03-06</span>
+    <span>&#9670; Branch: macos-dev / development</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ─── Summary Dashboard ─────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">&#9670;</div>
+      <h2>Release Dashboard</h2>
+    </div>
+    <table>
+      <tr><th>Area</th><th>Status</th><th>Notes</th></tr>
+      <tr>
+        <td>Server Core (C)</td>
+        <td><span class="badge badge-green">&#10003; Stable</span></td>
+        <td>ICY2.2, YAML+XML config, SSL, static mounts, REST song history</td>
+      </tr>
+      <tr>
+        <td>macOS GUI (Qt6)</td>
+        <td><span class="badge badge-purple">Beta 2.5.3</span></td>
+        <td>Phase 1–4 complete + Phase 5 in progress: Config Manager, SSL tab, ICY2.2, animated status indicator, Config button crash fixed, log_close() bug fixed</td>
+      </tr>
+      <tr>
+        <td>Windows GUI (MFC)</td>
+        <td><span class="badge badge-green">&#10003; Stable</span></td>
+        <td>mcaster1win.exe — Stats, Config, Log, SSL tabs. Sidecar ports 9033/9344.</td>
+      </tr>
+      <tr>
+        <td>Windows Service</td>
+        <td><span class="badge badge-green">&#10003; Stable</span></td>
+        <td>mcaster1Service.exe — auto-start, SCM-compatible, NSIS installer</td>
+      </tr>
+      <tr>
+        <td>Linux / BSD</td>
+        <td><span class="badge badge-teal">Supported</span></td>
+        <td>Autotools build, headless server only</td>
+      </tr>
+      <tr>
+        <td>NSIS Installer (Win)</td>
+        <td><span class="badge badge-green">&#10003; v2.5.3-beta</span></td>
+        <td>5.3 MB LZMA, Start Menu, service install, firewall rules</td>
+      </tr>
+      <tr>
+        <td>xslt.c crash fix</td>
+        <td><span class="badge badge-green">&#10003; Fixed 2.5.3-beta</span></td>
+        <td>libxml2 &ge; 2.12 / Homebrew 2.15.1 — replaced custom IO buffer with xsltSaveResultToString</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ─── macOS Qt6 GUI Phases ──────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-purple">&#9670;</div>
+      <h2>macOS Qt6 GUI — Phase Checklist</h2>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-header">
+      <span class="phase-title">Phase 1 — Scaffold + Server Control</span>
+      <span class="status-pill pill-done">&#10003; Complete</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-icon check-done">&#10003;</span> CMakeLists.txt — Qt6 + autotools server C files in one binary</li>
+      <li><span class="check-icon check-done">&#10003;</span> main.cpp — QApplication entry point, Fusion style</li>
+      <li><span class="check-icon check-done">&#10003;</span> MainWindow.h/cpp — QMainWindow, 6-tab layout, 500 ms poll timer</li>
+      <li><span class="check-icon check-done">&#10003;</span> ServerThread.h/cpp — QThread calling server_init() + server_process()</li>
+      <li><span class="check-icon check-done">&#10003;</span> TrayIcon.h/cpp — QSystemTrayIcon with Start/Stop/Show/Quit menu</li>
+      <li><span class="check-icon check-done">&#10003;</span> Config discovery — walks 6 dirs up from .app/Contents/MacOS/ to find mcaster1dnas.yaml</li>
+      <li><span class="check-icon check-done">&#10003;</span> server_bridge.h — guards net/sock.h IOVEC include for C++ compilation</li>
+      <li><span class="check-icon check-done">&#10003;</span> build-macos-gui.sh + Makefile.am gui/gui-release/gui-clean targets</li>
+      <li><span class="check-icon check-done">&#10003;</span> Info.plist — CFBundleIdentifier, LSApplicationCategoryType</li>
+    </ul>
+    <br>
+
+    <!-- Phase 2 -->
+    <div class="phase-header">
+      <span class="phase-title">Phase 2 — Log Viewer + Stats</span>
+      <span class="status-pill pill-done">&#10003; Complete</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-icon check-done">&#10003;</span> LogTab.h/cpp — QPlainTextEdit + QTimer 2 s tail, color-coded by level (EROR/WARN/INFO/DBUG)</li>
+      <li><span class="check-icon check-done">&#10003;</span> 4 log tabs: Access, Error, Playlist + Console (ConsoleTab via pipe)</li>
+      <li><span class="check-icon check-done">&#10003;</span> StatsTab.h/cpp — QTableWidget updated by StatsPoller every 5 s</li>
+      <li><span class="check-icon check-done">&#10003;</span> StatsPoller.h/cpp — dedicated QThread calling stats_get_xml() in-process</li>
+      <li><span class="check-icon check-done">&#10003;</span> ConsoleTab.h/cpp — real-time server stdout/stderr via QProcess pipe</li>
+      <li><span class="check-icon check-done">&#10003;</span> Overview tab — status, uptime, source/listener counts, version label</li>
+      <li><span class="check-icon check-done">&#10003;</span> Toolbar uptime display updating every 500 ms</li>
+      <li><span class="check-icon check-done">&#10003;</span> Status bar — running/stopped, sources, clients, listeners</li>
+    </ul>
+    <br>
+
+    <!-- Phase 3 -->
+    <div class="phase-header">
+      <span class="phase-title">Phase 3 — Configuration Manager</span>
+      <span class="status-pill pill-done">&#10003; Complete</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-icon check-done">&#10003;</span> ConfigDialog.h/cpp — 6-tab QDialog (Global / Mounts / Relays / System / Security / SSL Cert)</li>
+      <li><span class="check-icon check-done">&#10003;</span> Global tab — hostname, location, admin, listen sockets (table), auth passwords</li>
+      <li><span class="check-icon check-done">&#10003;</span> Mounts tab — QListWidget + Add/Edit/Duplicate/Remove; mount editor dialog</li>
+      <li><span class="check-icon check-done">&#10003;</span> Relays tab — QListWidget + Add/Edit/Remove; relay editor dialog</li>
+      <li><span class="check-icon check-done">&#10003;</span> System tab — limits, timeouts, paths, logging config</li>
+      <li><span class="check-icon check-done">&#10003;</span> Security tab — chroot, run-as user/group, HTTP headers table, SSL paths</li>
+      <li><span class="check-icon check-done">&#10003;</span> Save / Save as YAML / Save as XML buttons with format auto-detection</li>
+      <li><span class="check-icon check-done">&#10003;</span> Config loaded from live server (config_get_config_unlocked) or file (config_parse_file)</li>
+      <li><span class="check-icon check-done">&#10003;</span> ConfigTab.h/cpp — raw YAML/XML editor with Save button</li>
+      <li><span class="check-icon check-done">&#10003;</span> &#9881; Config button in toolbar (before Start) launching ConfigDialog</li>
+    </ul>
+    <br>
+
+    <!-- Phase 4 -->
+    <div class="phase-header">
+      <span class="phase-title">Phase 4 — SSL Cert + ICY2.2 + Web Buttons</span>
+      <span class="status-pill pill-done">&#10003; Complete</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-icon check-done">&#10003;</span> SSL Cert tab — inspect current cert (subject/issuer/validity/SANs via OpenSSL X509 API)</li>
+      <li><span class="check-icon check-done">&#10003;</span> SSL Cert tab — generate: type selector (self-signed / CSR), CN/Org/OU/Country/State/City/SANs, key size, days, output path, patch-config checkbox</li>
+      <li><span class="check-icon check-done">&#10003;</span> SSL Cert generation calls ssl_gen_run(&amp;p) directly (C linkage from src/ssl_gen.h)</li>
+      <li><span class="check-icon check-done">&#10003;</span> Mount editor — ICY2.2 Metadata tab replaced with structured form (70+ fields, 8 groups)</li>
+      <li><span class="check-icon check-done">&#10003;</span> ICY2.2 groups: Station Identity, DJ/Show, Track, Podcast, Audio/Video, Social/Engagement, Compliance/Access, Listener/Broadcast Stats</li>
+      <li><span class="check-icon check-done">&#10003;</span> ICY2.2 fields pre-populated from parsed config (extraMeta kv_pair_t list)</li>
+      <li><span class="check-icon check-done">&#10003;</span> Unknown/custom ICY keys preserved in raw kv table for round-trip</li>
+      <li><span class="check-icon check-done">&#10003;</span> &#127760; Web UI toolbar button — opens browser to configured HTTP/HTTPS status URL</li>
+      <li><span class="check-icon check-done">&#10003;</span> &#128295; Admin toolbar button — opens browser to /admin/</li>
+      <li><span class="check-icon check-done">&#10003;</span> discoverServerUrl() — prefers HTTPS port; falls back to HTTP; maps 0.0.0.0 to 127.0.0.1</li>
+      <li><span class="check-icon check-done">&#10003;</span> Server menu — Open Web Frontend + Open Web Admin items</li>
+    </ul>
+    <br>
+
+    <!-- Phase 5 -->
+    <div class="phase-header">
+      <span class="phase-title">Phase 5 — Bug Fixes, Polish &amp; Distribution</span>
+      <span class="status-pill pill-beta">In Progress</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-icon check-done">&#10003;</span> <strong>Config button crash fixed</strong> — <code>config_parse_file()</code> calls <code>log_write()</code> which needs <code>_logger_rwl</code> alive. Pattern: <code>init_log_subsys()</code> &rarr; <code>config_parse_file()</code> &rarr; <code>log_shutdown()</code> in <code>ConfigDialog::loadFromFile()</code> and <code>discoverServerUrl()</code></li>
+      <li><span class="check-icon check-done">&#10003;</span> <strong>src/log/log.c log_close() bug fixed</strong> — without <code>log_callback</code>, <code>log_close()</code> called <code>_log_close_internal()</code> on all 20 pre-allocated loglist entries including unused ones (NULL mutex &rarr; crash at offset 0x10). Fix: skip <code>in_use==0</code> entries; call <code>_lock_q()</code> before <code>_log_close_internal()</code></li>
+      <li><span class="check-icon check-done">&#10003;</span> <strong>Overview tab header banner</strong> — replaced logo row with <code>header-banner-v2.png</code> (1926&times;142 px), pre-scaled to 71 px height at load, drawn to fill widget width</li>
+      <li><span class="check-icon check-done">&#10003;</span> <strong>Animated ON AIR / STOPPED status badge</strong> — custom <code>QPainter</code> widget overlaid on banner: green broadcast tower with cascading arc animation (running) / red stop-sign octagon (stopped). Badge: 50&times;61 px at 50 ms refresh (20 fps)</li>
+      <li><span class="check-icon check-done">&#10003;</span> Credits tab — <code>HtmlTab</code> (QWebEngineView) loading <code>docs/CREDITS.html</code></li>
+      <li><span class="check-icon check-done">&#10003;</span> Help tab — <code>HtmlTab</code> loading <code>docs/index.html</code></li>
+      <li><span class="check-icon check-partial">&#9679;</span> Config Manager round-trip bugs — named mounts (AVL tree) invisible to populate(); aliases not written back; HTTP headers pre-populated defaults corrupt save</li>
+      <li><span class="check-icon check-partial">&#9679;</span> CLI pre-flight flags — <code>-h</code>, <code>-v</code>, <code>--ssl-gencert</code> before <code>QApplication</code> init in <code>main.cpp</code></li>
+      <li><span class="check-icon check-todo">&#9675;</span> macdeployqt — bundle all Qt6 frameworks into .app for distribution</li>
+      <li><span class="check-icon check-todo">&#9675;</span> Developer ID codesigning (requires Apple Developer account)</li>
+      <li><span class="check-icon check-todo">&#9675;</span> Notarization (xcrun notarytool)</li>
+      <li><span class="check-icon check-todo">&#9675;</span> DMG packaging (create-dmg or hdiutil)</li>
+      <li><span class="check-icon check-todo">&#9675;</span> launchd plist for auto-start on login</li>
+      <li><span class="check-icon check-todo">&#9675;</span> Preferences window (QSettings-backed)</li>
+      <li><span class="check-icon check-todo">&#9675;</span> macOS menu bar polish — Help menu, About dialog with version info</li>
+    </ul>
+  </div>
+
+  <!-- ─── Windows MFC GUI ────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">&#9670;</div>
+      <h2>Windows MFC GUI — Feature Status</h2>
+    </div>
+    <table>
+      <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>Stats tab (live listener/source counts)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>500 ms timer, ICY metadata display, uptime</td></tr>
+      <tr><td>Config tab (YAML/XML editor)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>notepad.exe integration</td></tr>
+      <tr><td>Log tab (live tail)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>_fsopen + SH_DENYNO, 2 s timer, color-coded</td></tr>
+      <tr><td>SSL tab (cert gen)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>SslGen.cpp wrapper over src/ssl_gen.c</td></tr>
+      <tr><td>Working directory anchor</td><td><span class="badge badge-green">&#10003; Done</span></td><td>SetCurrentDirectoryA(exedir) in InitInstance()</td></tr>
+      <tr><td>Windows Service (mcaster1Service.exe)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>SCM-compatible, auto-start, correct config path</td></tr>
+      <tr><td>NSIS installer</td><td><span class="badge badge-green">&#10003; Done</span></td><td>5.3 MB LZMA, Start Menu, firewall, UAC elevation</td></tr>
+      <tr><td>HTTP auth headers (params.c fix)</td><td><span class="badge badge-green">&#10003; Done</span></td><td>MSVC struct init bug — memset + explicit assign</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── Server Core Features ──────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-green">&#9670;</div>
+      <h2>Server Core — Feature Checklist</h2>
+    </div>
+    <table>
+      <tr><th>Feature</th><th>Status</th><th>Source File(s)</th></tr>
+      <tr><td>ICY2.2 extended metadata protocol</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/cfgfile_yaml.c, src/stats.c</td></tr>
+      <tr><td>YAML configuration (libyaml)</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/cfgfile_yaml.c</td></tr>
+      <tr><td>XML configuration (libxml2)</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/cfgfile.c</td></tr>
+      <tr><td>Per-listener SSL enforcement</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/cfgfile.h, src/connection.c</td></tr>
+      <tr><td>Static mount definitions</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/cfgfile_yaml.c, src/source.c</td></tr>
+      <tr><td>Song history / now-playing JSON API</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/stats.c (/songdata endpoint)</td></tr>
+      <tr><td>SSL cert generation (OpenSSL 3)</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/ssl_gen.h, src/ssl_gen.c</td></tr>
+      <tr><td>Startup banner (stdout + log)</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/main.c print_startup_banner()</td></tr>
+      <tr><td>XSLT rendering (status/admin pages)</td><td><span class="badge badge-green">&#10003; Fixed 2.5.3</span></td><td>src/xslt.c — xsltSaveResultToString path</td></tr>
+      <tr><td>curl/YP integration</td><td><span class="badge badge-green">&#10003; Stable</span></td><td>src/slave.c</td></tr>
+      <tr><td>HTTP header params (MSVC compat)</td><td><span class="badge badge-green">&#10003; Fixed</span></td><td>src/params.c</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── Critical Bug Fixes Log ────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-red">&#9670;</div>
+      <h2>Critical Bug Fixes Log</h2>
+    </div>
+    <table>
+      <tr><th>Version</th><th>Platform</th><th>Bug</th><th>Fix</th></tr>
+      <tr>
+        <td><span class="badge badge-green">2.5.3-beta</span></td>
+        <td>macOS</td>
+        <td><code>src/xslt.c</code> — crash in <code>xmlBufAdd → _platform_memmove</code> on every XSLT request (libxml2 &ge; 2.12)</td>
+        <td>Replaced <code>xmlOutputBufferCreateIO</code> + <code>xsltSaveResultTo</code> with <code>xsltSaveResultToString</code> guarded by <code>HAVE_XSLTSAVERESULTTOSTRING</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>macOS</td>
+        <td><code>src/cfgfile.h:422</code> — <code>xmlErrorPtr</code> vs <code>const xmlError *</code> (libxml2 2.12+ API change)</td>
+        <td>Changed parameter type in <code>config_xml_parse_failure()</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>macOS</td>
+        <td><code>src/slave.c:802</code> — <code>size_t</code> return from <code>CURLOPT_XFERINFOFUNCTION</code> callback (expects <code>int</code>)</td>
+        <td>Changed <code>icecurl_server_running()</code> return type to <code>int</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>macOS</td>
+        <td><code>src/xslt.c</code> — double-free after <code>xsltSaveResultTo</code> on libxml2 &ge; 2.12 (htmlSaveFileTo now closes buffer internally)</td>
+        <td>Added <code>#if LIBXML_VERSION &lt; 21200</code> guard around <code>xmlOutputBufferClose(buf)</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>macOS</td>
+        <td>Qt6 GUI: <code>ConfigDialog::loadFromFile()</code> calls <code>config_clear()</code> → <code>global_lock()</code> → <code>abort()</code> when server not yet started</td>
+        <td>Removed <code>config_clear()</code> call; documented why (mutex uninitialized until <code>server_init()</code> runs)</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>Windows</td>
+        <td><code>src/params.c</code> — MSVC struct positional initializer bug dropped all HTTP response headers (incl. WWW-Authenticate)</td>
+        <td><code>memset(&amp;hdr, 0, sizeof hdr)</code> + explicit field assignments</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>Windows</td>
+        <td><code>mcaster1Service.cpp</code> — wrong default config (<code>mcaster1.xml</code> instead of <code>mcaster1dnas-console.yaml</code>)</td>
+        <td>Fixed default config string in <code>ServiceMain()</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>Windows</td>
+        <td>NSIS installer — used <code>mcaster1.exe</code> as service binary (never calls SCM dispatcher)</td>
+        <td>Changed to <code>mcaster1Service.exe</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">2.5.3-beta</span></td>
+        <td>macOS Qt6 GUI</td>
+        <td><strong>Config button crash #1</strong> — <code>ConfigDialog::loadFromFile()</code> and <code>discoverServerUrl()</code> call <code>config_parse_file()</code> which calls <code>log_write()</code>; the logging rwlock <code>_logger_rwl</code> is NULL before the server starts &rarr; <code>KERN_INVALID_ADDRESS at 0x0</code></td>
+        <td>Wrap <code>config_parse_file()</code> with <code>init_log_subsys()</code> + <code>log_shutdown()</code>. Add <code>logging.h</code> + <code>log/log.h</code> to each file's <code>extern "C"</code> block.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">2.5.3-beta</span></td>
+        <td>macOS / All</td>
+        <td><strong>Config button crash #2 — <code>src/log/log.c log_close()</code> latent bug</strong> — without <code>log_callback</code>, <code>log_close()</code> iterated all 20 pre-allocated loglist entries and called <code>_log_close_internal()</code> on unused ones (mutex=NULL). <code>_log_close_internal()</code> contract: &ldquo;enter with q lock&rdquo; — but <code>log_close()</code> never called <code>_lock_q()</code> on the non-callback path &rarr; <code>KERN_INVALID_ADDRESS at 0x10</code> (offset of <code>sys_mutex</code> in <code>mutex_t</code>)</td>
+        <td>In <code>log_close()</code>: (1) <code>if (loglist[log_id].in_use == 0) break;</code> — skip unused entries; (2) <code>_lock_q(log_id);</code> before <code>_log_close_internal()</code> to satisfy the function contract.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">2.5.3-beta</span></td>
+        <td>macOS Qt6 GUI</td>
+        <td><strong>Overview tab banner over-scaling</strong> — <code>header-banner-v2.png</code> (1926&times;142 px) rendered at full natural height dominated the Overview tab; status indicator badge sized independently caused mismatched proportions when either was changed without the other</td>
+        <td>Pre-scale banner at load: <code>m_px.scaledToHeight(m_px.height()/2)</code> &rarr; 71 px. Draw scaled to widget width: <code>p.drawPixmap(0,0,W,H,m_px)</code>. Badge proportionally matched: bW=50, bH=61, bY=(H-bH)/2.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ─── Version Roadmap ───────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-cyan">&#9670;</div>
+      <h2>Version Roadmap</h2>
+    </div>
+    <table>
+      <tr><th>Version</th><th>Target</th><th>Key Deliverables</th></tr>
+      <tr>
+        <td><span class="badge badge-gray">2.5.1</span></td>
+        <td>Released</td>
+        <td>ICY2.2 protocol, YAML config, static mounts, REST song history</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2.5.2-dev</span></td>
+        <td>Released</td>
+        <td>macOS build fixes, Windows service + installer, SSL cert gen, per-listener SSL, Windows GUI</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">2.5.3-beta</span></td>
+        <td>Current</td>
+        <td>macOS Qt6 GUI Phase 1–4 complete; Phase 5 in progress: Config button crash fixed (log rwlock + log_close bug), animated ON AIR/STOPPED banner overlay, Credits/Help tabs, xslt.c crash fix (libxml2 &ge; 2.12)</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-orange">2.5.4 / 2.6.0</span></td>
+        <td>Planned</td>
+        <td>Config Manager round-trip fixes (AVL mounts, aliases, HTTP headers), CLI pre-flight flags, macOS app bundle (macdeployqt + DMG), notarization, launchd plist</td>
+      </tr>
+    </table>
+  </div>
+
+</div><!-- /.container -->
+
+<footer>
+  <p>
+    <strong>Mcaster1DNAS</strong> &mdash; Digital Network Audio Server &mdash; v2.5.3-beta
+    &mdash; Branch: <code>macos-dev / development</code>
+  </p>
+  <p style="margin-top:0.5rem;">
+    Maintained by <a href="https://github.com/davestj">David St John</a> &mdash;
+    <a href="https://mcaster1.com/">mcaster1.com</a> &mdash;
+    Fork of <a href="https://github.com/karlheyes/icecast-kh">Icecast-KH</a>
+  </p>
+</footer>
+
+</body>
+</html>

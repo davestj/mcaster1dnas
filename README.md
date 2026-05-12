@@ -1,7 +1,7 @@
 # Mcaster1DNAS - Digital Network Audio Server
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Version](https://img.shields.io/badge/version-2.5.2--dev-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
+[![Version](https://img.shields.io/badge/version-2.5.3--beta-brightgreen.svg)](https://github.com/davestj/mcaster1dnas/releases)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://github.com/davestj/mcaster1dnas)
 [![Last Commit](https://img.shields.io/github/last-commit/davestj/mcaster1dnas)](https://github.com/davestj/mcaster1dnas/commits/main)
 [![Language: C](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/davestj/mcaster1dnas)
@@ -11,7 +11,8 @@
 [![YAML Config](https://img.shields.io/badge/config-YAML%20%7C%20XML-yellow.svg)](YAML_IMPLEMENTATION.md)
 [![SSL Gen](https://img.shields.io/badge/SSL-built--in%20cert%20gen-green.svg)](docs/SSL_CERT_GENERATION.md)
 
-### Windows GUI & IDE
+### GUI Applications
+[![macOS GUI](https://img.shields.io/badge/macOS_GUI-Qt6%2FApple_Silicon-000000.svg)](README-MACOS-BUILD.html)
 [![Windows GUI](https://img.shields.io/badge/Windows_GUI-MFC%2FWin32-5C2D91.svg)](docs/WINDOWS_GUI.md)
 [![Visual Studio](https://img.shields.io/badge/IDE-Visual_Studio_2022-5C2D91.svg)](https://visualstudio.microsoft.com/)
 [![Microsoft](https://img.shields.io/badge/Microsoft-MSVC_v143-5C2D91.svg)](https://visualstudio.microsoft.com/)
@@ -460,6 +461,118 @@ layout issue. Both YAML and XML configs start the server identically on Windows.
 
 See **[docs/WINDOWS_GUI.md](docs/WINDOWS_GUI.md)** for the complete Windows GUI user guide.
 
+---
+
+## 🍎 macOS — Native Qt6 GUI
+
+Mcaster1DNAS ships a full native macOS application (`Mcaster1DNAS.app`) built with
+**Qt6 on Apple Silicon (arm64)** using CMake + Homebrew. The GUI embeds the full
+server in-process — same model as the Windows MFC app — and is actively developed
+on the `macos-dev` branch.
+
+### What's Included
+
+| Feature | Status |
+|---------|--------|
+| Start/Stop server from toolbar | ✅ Done |
+| Animated ON AIR / STOPPED status indicator | ✅ Done |
+| Live log viewer — Access / Error / Playlist | ✅ Done |
+| Real-time stats tab (listeners, sources, clients) | ✅ Done |
+| Console tab — live stdout/stderr capture | ✅ Done |
+| Configuration Manager (6-tab GUI editor) | ✅ Done |
+| ICY2.2 mount field editor (70+ keys, 8 groups) | ✅ Done |
+| SSL Cert tab — inspect PEM + generate cert/CSR | ✅ Done |
+| Web UI + Admin browser launch buttons | ✅ Done |
+| System tray icon — Start / Stop / Show / Quit | ✅ Done |
+| Help & Credits tabs (embedded HTML) | ✅ Done |
+| YAML and XML config round-trip save | ✅ Done |
+
+### Configuration Manager
+
+The **Configuration Manager** (`Tools > Configuration Manager` or `⚙ Config` toolbar button) is a full GUI editor for YAML and XML config files with six tabs:
+
+- **Global** — hostname, admin email, listen sockets table, source/admin/relay passwords
+- **Mounts** — add/edit/duplicate/remove mount points; the mount editor has 5 sub-tabs including a complete ICY2.2 structured metadata field editor (70+ keys across 8 semantic groups: Core, Track, Show, Podcast, Video, Social, Technical, Engagement)
+- **Relays** — relay server list with SSL, on-demand, ICY meta relay and interval options
+- **System** — limits (clients/sources/workers), timeouts, logging config, file paths
+- **Security** — chroot, run-as user/group, HTTP response headers table, TLS cert/key/CA/cipher paths
+- **SSL Cert** — inspect the active PEM (subject, issuer, validity dates, SANs via OpenSSL X509 API) and generate a new self-signed certificate or CSR via `ssl_gen_run()`
+
+### macOS Prerequisites
+
+Install via Homebrew (required):
+
+```bash
+brew install autoconf automake libtool pkg-config qt \
+  libogg libvorbis theora speex \
+  openssl@3 libxml2 libxslt libyaml curl
+```
+
+> **Apple Silicon note:** `openssl@3`, `libxml2`, `libxslt`, and `curl` are keg-only.
+> Always build via `build-macos.sh` (or the cmake commands below) — it sets the correct
+> `PKG_CONFIG_PATH` and `--with-xslt-config` so the build links against Homebrew's
+> libxml2 2.15+ rather than the system 2.9, avoiding a runtime ABI crash.
+
+### Building the macOS GUI
+
+```bash
+# 1. Build the server binary (autotools — handles all Homebrew paths automatically)
+./build-macos.sh
+
+# 2. Configure the Qt6 GUI (one-time)
+cmake -B macos/build-qt -S macos \
+  -DCMAKE_PREFIX_PATH=$(brew --prefix qt) \
+  -DCMAKE_BUILD_TYPE=Release
+
+# 3. Build
+cmake --build macos/build-qt -j$(sysctl -n hw.logicalcpu)
+
+# 4. Codesign (required on Apple Silicon after every rebuild)
+codesign --force --sign - macos/build-qt/Mcaster1DNAS.app
+
+# 5. Launch
+open macos/build-qt/Mcaster1DNAS.app
+```
+
+Autotools shortcut targets are also available:
+
+```bash
+make gui          # Debug build
+make gui-release  # Release build
+make gui-clean    # Remove build-qt/
+```
+
+### Default URLs (macOS GUI)
+
+| Interface | URL |
+|-----------|-----|
+| HTTP Status | `http://127.0.0.1:9330/status.xsl` |
+| HTTPS Status | `https://127.0.0.1:9443/status.xsl` |
+| Admin | `https://127.0.0.1:9443/admin/` |
+
+The **Web UI** and **Admin** toolbar buttons auto-detect the running config and open the correct URL (preferring HTTPS) in your default browser.
+
+### macOS Roadmap
+
+| Feature | Status |
+|---------|--------|
+| Qt6 GUI builds + launches (Apple Silicon arm64) | **Done** |
+| In-process server start/stop | **Done** |
+| Animated ON AIR / STOPPED status badge | **Done** |
+| 6-tab Configuration Manager | **Done** |
+| ICY2.2 field editor (70+ keys) | **Done** |
+| SSL cert inspect + generate | **Done** |
+| System tray, Web UI / Admin buttons | **Done** |
+| Console tab (stdout/stderr capture) | **Done** |
+| Config Manager — named mount round-trip (AVL tree) | In Progress |
+| Config Manager — path alias round-trip | In Progress |
+| Config Manager — HTTP headers pre-population fix | In Progress |
+| CLI flags pre-flight (`-h`, `-v`, `--ssl-gencert`) | In Progress |
+| macOS .pkg / DMG installer | Planned |
+| macOS Launchd service integration | Planned |
+
+See **[README-MACOS-BUILD.html](README-MACOS-BUILD.html)** for the full macOS build guide.
+
 ### Building on Windows
 
 #### Prerequisites
@@ -544,6 +657,7 @@ Comprehensive documentation is available:
 - **[docs/STATIC_MOUNTS.md](docs/STATIC_MOUNTS.md)** - ⭐ Podcast, socialcast, on-demand mount types
 - **[docs/SONG_HISTORY_API.md](docs/SONG_HISTORY_API.md)** - ⭐ Song history ring buffer and XML API
 - **[docs/WINDOWS_GUI.md](docs/WINDOWS_GUI.md)** - ⭐ Windows GUI user guide (mcaster1win.exe)
+- **[README-MACOS-BUILD.html](README-MACOS-BUILD.html)** - ⭐ macOS build guide — Homebrew setup, Qt6 GUI, Apple Silicon tips
 
 ### Protocol & Config Reference
 - **[ICY2_PROTOCOL_SPEC.md](ICY2_PROTOCOL_SPEC.md)** - ICY-META v2.2 full normative specification
@@ -739,7 +853,7 @@ We welcome contributions! Please:
 
 - ✅ Linux (Debian, Ubuntu, CentOS, RHEL, Fedora)
 - ✅ BSD (FreeBSD, OpenBSD, NetBSD)
-- ✅ macOS (10.13+)
+- ✅ macOS — **native Qt6 GUI** (`Mcaster1DNAS.app`), Apple Silicon arm64 + Intel x86-64, Homebrew build
 - ✅ Windows 10/11 — **native GUI via Visual Studio 2022 (v17)** (`mcaster1win.exe`)
 
 ---
@@ -804,7 +918,7 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 
 ## 🌟 Features Roadmap
 
-### Current Version (2.5.2-dev)
+### Current Version (2.5.3-beta)
 ✅ Modern HTML5/CSS3 web interface with shared header/footer templates
 ✅ Interactive help tooltips
 ✅ Live clock and page load metrics
@@ -828,6 +942,13 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 ✅ Windows real-time log viewer — color-coded, shared-mode file reading (_SH_DENYNO)
 ✅ Windows HTTP admin auth fixed — WWW-Authenticate header now correctly sent (MSVC struct bug fix)
 ✅ Complete Mcaster1DNAS visual rebrand — new bitmaps, icons, installer branding
+✅ macOS native Qt6 GUI (`Mcaster1DNAS.app`) — Apple Silicon arm64, in-process server
+✅ macOS Configuration Manager — 6-tab GUI editor for YAML/XML configs
+✅ macOS ICY2.2 field editor — 70+ structured metadata keys across 8 groups
+✅ macOS SSL Cert tab — PEM inspection (subject/issuer/SANs) + cert/CSR generation
+✅ macOS animated status indicator — ON AIR (green broadcast tower) / STOPPED (red octagon)
+✅ macOS Console tab — live stdout/stderr capture via pipe + QSocketNotifier
+✅ macOS system tray + Web UI / Admin toolbar buttons with auto URL detection
 
 ### Upcoming Features (Cross-Platform)
 - [ ] Real-time statistics dashboard (WebSocket/SSE)
@@ -839,6 +960,14 @@ Mcaster1DNAS stands on the shoulders of giants. We thank:
 - [ ] Automated stream scheduling system
 - [ ] Interactive API documentation
 - [ ] Plugin architecture for extensibility
+
+### Upcoming Features (macOS GUI)
+- [ ] **Config Manager — named mount round-trip** — load mounts from AVL tree (plain `mountname` entries go to `config->mounts_tree`, not the linked list the UI currently reads)
+- [ ] **Config Manager — path alias round-trip** — `aliases:` block parsed but not written back on save
+- [ ] **Config Manager — HTTP headers fix** — remove pre-populated CORS defaults that corrupt configs with no `http-headers` section
+- [ ] **CLI pre-flight flags** — `-h`, `-v`, `--ssl-gencert` before `QApplication` init
+- [ ] **macOS .pkg / DMG installer** — distributable app bundle
+- [ ] **macOS Launchd service** — auto-start at login via launchd plist
 
 ### Upcoming Features (Windows GUI)
 - [ ] **Config Dialog Editor** — visual YAML/XML editor built into the GUI

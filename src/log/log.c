@@ -744,6 +744,12 @@ void log_close(int log_id)
             _unlock_q (log_id);
             break;
         }
+        // Direct close (no log worker thread).
+        // _log_close_internal() contract: "enter with q lock, exit with it unlock and destroyed".
+        // Skip unused entries (un-initialized mutex would crash _unlock_q inside _log_close_internal).
+        if (loglist [log_id].in_use == 0)
+            break;
+        _lock_q (log_id);
         _log_close_internal (log_id);
     } while (0);
     _unlock_logger();

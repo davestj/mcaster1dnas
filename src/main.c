@@ -923,7 +923,7 @@ int server_init (int argc, char *argv[])
 }
 
 
-#ifndef WIN32_SERVICE
+#if !defined(WIN32_SERVICE) && !defined(MCASTER_BUILD_GUI)
 int main (int argc, char *argv[])
 {
 #ifdef WIN32
@@ -966,5 +966,5 @@ int main (int argc, char *argv[])
     }
     return 0;
 }
-#endif /* WIN32_SERVICE */
+#endif /* WIN32_SERVICE || MCASTER_BUILD_GUI */
 

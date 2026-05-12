@@ -29,7 +29,7 @@
 #   ./build-macos.sh --no-ssl             # build without OpenSSL
 #
 # Author : David St John <davestj@gmail.com>
-# Project: Mcaster1DNAS v2.5.2-dev
+# Project: Mcaster1DNAS v2.5.3-beta
 # Branch : macos-dev
 # Date   : 2026-02-28
 #
@@ -92,7 +92,7 @@ esac
 
 echo "=========================================="
 echo "  Mcaster1DNAS Cross-Platform Build"
-echo "  Version : 2.5.2-dev"
+echo "  Version : 2.5.3-beta"
 echo "  OS      : ${OS_LABEL}"
 echo "  Arch    : ${ARCH}"
 echo "  Prefix  : ${BUILD_PREFIX}"

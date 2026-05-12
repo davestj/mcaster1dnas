@@ -81,7 +81,10 @@ typedef struct
     int32_t index;
     int32_t flags;
     client_t *client;
-    xmlDocPtr doc;
+    xmlDocPtr doc;       /* result doc after _apply_sheet; input doc before */
+    xmlDocPtr input_doc; /* original input doc — freed AFTER result doc to
+                          * prevent xmlFreeID() from chasing a dangling ->doc
+                          * back-pointer into the already-freed input doc */
     char *filename;
     stylesheet_cache_t *cache;
 } xsl_req;
@@ -149,6 +152,7 @@ int xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len, xmlDocPtr r
 #endif
 
 
+#ifndef HAVE_XSLTSAVERESULTTOSTRING
 static int xslt_write_callback (void *ctxt, const char *data, int len)
 {
     struct bufs *x = ctxt;
@@ -178,13 +182,11 @@ static int xslt_write_callback (void *ctxt, const char *data, int len)
     }
     return len;
 }
+#endif /* !HAVE_XSLTSAVERESULTTOSTRING */
 
 
 int xslt_SaveResultToBuf (refbuf_t **bptr, int *len, xmlDocPtr result, xsltStylesheetPtr style)
 {
-    xmlOutputBufferPtr buf;
-    struct bufs x;
-
     if (result->children == NULL)
     {
         *bptr = NULL;
@@ -192,25 +194,58 @@ int xslt_SaveResultToBuf (refbuf_t **bptr, int *len, xmlDocPtr result, xsltStyle
         return 0;
     }
 
-    memset (&x, 0, sizeof (x));
-    x.tail = &x.head;
-    buf = xmlOutputBufferCreateIO (xslt_write_callback, NULL, &x, NULL);
+#ifdef HAVE_XSLTSAVERESULTTOSTRING
+    /* Use xsltSaveResultToString (the library's own high-level API) instead of
+     * xsltSaveResultTo + xmlOutputBufferCreateIO.  On libxml2 >= 2.12, the
+     * internal xmlBuf allocation strategy changed: a custom IO output buffer
+     * created with xmlOutputBufferCreateIO(encoder=NULL) has an incompatible
+     * buf->buffer state when htmlDocContentDumpFormatOutput calls xmlBufAdd,
+     * causing a crash in _platform_memmove.  xsltSaveResultToString manages
+     * its own buffer lifecycle and is stable across libxml2 versions. */
+    {
+        xmlChar *xmlbuf = NULL;
+        int xmllen = 0;
 
-    if (buf == NULL)
-        return  -1;
-    xsltSaveResultTo (buf, result, style);
-    *bptr = x.head;
-    *len = x.len;
-#if LIBXML_VERSION < 21200
-    /* libxml2 < 2.12: xsltSaveResultTo does not close the output buffer,
-     * so we must do it here to avoid a resource leak. */
-    xmlOutputBufferClose(buf);
+        if (xsltSaveResultToString (&xmlbuf, &xmllen, result, style) != 0 || xmlbuf == NULL)
+            return -1;
+
+        if (xmllen > 0)
+        {
+            refbuf_t *r = refbuf_new (xmllen);
+            memcpy (r->data, xmlbuf, xmllen);
+            *bptr = r;
+            *len = xmllen;
+        }
+        else
+        {
+            *bptr = NULL;
+            *len = 0;
+        }
+        xmlFree (xmlbuf);
+        return 0;
+    }
+#else
+    /* Fallback for old libxslt that lacks xsltSaveResultToString:
+     * drive output through a custom IO callback into a refbuf chain.
+     * This path is only reached on libxml2 < 2.12 where the buffer
+     * lifecycle behaviour is compatible with xmlOutputBufferCreateIO. */
+    {
+        xmlOutputBufferPtr buf;
+        struct bufs x;
+
+        memset (&x, 0, sizeof (x));
+        x.tail = &x.head;
+        buf = xmlOutputBufferCreateIO (xslt_write_callback, NULL, &x, NULL);
+
+        if (buf == NULL)
+            return -1;
+        xsltSaveResultTo (buf, result, style);
+        *bptr = x.head;
+        *len = x.len;
+        xmlOutputBufferClose (buf);
+        return 0;
+    }
 #endif
-    /* libxml2 >= 2.12: xmlSaveFileTo / htmlSaveFileTo (called internally by
-     * xsltSaveResultTo) now close and free the output buffer themselves.
-     * Calling xmlOutputBufferClose again would be a double-free, triggering
-     * the macOS allocator abort "POINTER_BEING_FREED_WAS_NOT_ALLOCATED". */
-    return 0;
 }
 
 
@@ -260,7 +295,12 @@ void xslt_shutdown(void) {
 //
 static void xsl_req_clear (xsl_req *x)
 {
+    /* If xslt_prepare_response succeeded it already freed both docs and set
+     * them to NULL.  If it failed (or was never called), free whichever are
+     * still live — result first, then input, to keep the ids back-pointer
+     * ordering safe (see _apply_sheet / xslt_prepare_response comments). */
     xmlFreeDoc (x->doc);
+    xmlFreeDoc (x->input_doc);
     if (x->cache)
     {
         thread_mutex_lock (&cache_lock);
@@ -406,7 +446,11 @@ static int _apply_sheet (xsl_req *x)
         thread_rwlock_unlock (&sheet_lock);
         return -1;
     }
-    xmlFreeDoc (x->doc);
+    /* Keep input alive.  Result doc's ids hash entries may have a ->doc
+     * back-pointer to the input doc.  xmlFreeID() accesses ->doc->dict,
+     * so the input must outlive the result.  Free it after xmlFreeDoc(result)
+     * in xslt_prepare_response / xsl_req_clear. */
+    x->input_doc = x->doc;
     x->doc = res;
 
     return 0;
@@ -528,6 +572,15 @@ static int xslt_prepare_response (xsl_req *x)
             thread_mutex_lock (&cache_lock);
             break;
         }
+        /* Free result doc first, THEN input doc.
+         * Result doc's ids hash entries hold ->doc back-pointers into the
+         * input doc.  xmlFreeID() dereferences ->doc->dict, so freeing
+         * input_doc before result_doc would leave dangling pointers →
+         * SIGSEGV in xmlHashFree/xmlFreeID.  Reversing the order is safe. */
+        xmlFreeDoc (x->doc);       /* result: ids entries may ref input_doc */
+        xmlFreeDoc (x->input_doc); /* input:  now safe, result is gone      */
+        x->doc = NULL;
+        x->input_doc = NULL;
         x->cache = NULL;
         rc = 0;
         mc_http_setup_flags (&http, x->client, 200, 0, NULL);

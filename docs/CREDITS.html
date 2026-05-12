@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credits — Mcaster1DNAS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f14;color:#e0e0e8;min-height:100vh;font-size:15px;line-height:1.7}
+nav{background:#13131e;border-bottom:1px solid #1e1e38;padding:.65rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.84rem;flex-wrap:wrap}
+nav a{color:#00c9ff;text-decoration:none}nav a:hover{text-decoration:underline}
+nav .sep{color:#333355}
+.page-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid #00c9ff;padding:2.5rem 2rem}
+.page-header .meta{font-size:.75rem;color:#5555aa;margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+.page-header h1{font-size:1.9rem;color:#fff;margin-bottom:.4rem}
+.page-header .sub{color:#7878a8;font-size:.92rem;margin-bottom:.75rem}
+.badge{display:inline-block;background:#00c9ff18;border:1px solid #00c9ff44;color:#00c9ff;padding:.18rem .7rem;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-right:.4rem;margin-top:.25rem}
+.content{max-width:960px;margin:0 auto;padding:2.5rem 2rem}
+h2{font-size:1.3rem;color:#c0c0e8;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid #1e1e38}
+h3{font-size:1.05rem;color:#9090c8;margin:1.75rem 0 .7rem}
+p{margin-bottom:1rem;color:#c8c8d8}
+a{color:#00c9ff;text-decoration:none}a:hover{text-decoration:underline}
+ul,ol{margin:0 0 1rem 1.5rem}li{color:#c0c0d8;margin-bottom:.3rem}
+strong{color:#dde}
+code{background:#0a0a18;color:#7dd3fc;padding:.12rem .42rem;border-radius:4px;font-size:.85em;font-family:"Cascadia Code","Fira Code",Consolas,monospace}
+pre{background:#0a0a18;border:1px solid #1a1a38;border-left:3px solid #00c9ff;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem}
+pre code{background:none;padding:0;color:#b8d4f8;font-size:.86rem;line-height:1.6}
+.ascii{background:#0a0a18;border:1px solid #1a1a38;border-radius:6px;padding:1.1rem 1.4rem;overflow-x:auto;margin:1rem 0 1.5rem;font-family:"Cascadia Code","Fira Code",Consolas,monospace;font-size:.83rem;line-height:1.55;color:#8888cc}
+.table-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th{text-align:left;padding:.5rem .85rem;background:#13131e;color:#8888aa;font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #1e1e38}
+td{padding:.48rem .85rem;border-bottom:1px solid #16162a;color:#c0c0d8;vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:#13131e}
+.note{background:#0e1a2e;border:1px solid #00c9ff33;border-left:3px solid #00c9ff;border-radius:6px;padding:.85rem 1.2rem;margin:1rem 0 1.5rem;font-size:.9rem;color:#a0c8e8}
+.credit-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:1.4rem 1.6rem;margin-bottom:1rem}
+.credit-card h3{color:#00c9ff;font-size:1rem;margin:0 0 .4rem}
+.credit-card .role{font-size:.78rem;color:#5555aa;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.credit-card p{color:#9898b8;font-size:.9rem;margin:0}
+.credit-card a{color:#00c9ff99}
+footer{text-align:center;padding:2rem;color:#44445a;font-size:.8rem;border-top:1px solid #1a1a2e;margin-top:3rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Docs Home</a>
+  <span class="sep">/</span>
+  <span>Credits</span>
+</nav>
+
+<div class="page-header">
+  <div class="meta">Mcaster1DNAS &mdash; Documentation</div>
+  <h1>Credits &amp; Acknowledgements</h1>
+  <div class="sub">Open source shoulders this project stands on</div>
+  <span class="badge">v2.5.3-beta</span>
+  <span class="badge">macOS ARM64</span>
+  <span class="badge">Qt6</span>
+</div>
+
+<div class="content">
+
+  <!-- ================================================================ -->
+  <h2>Project Lead</h2>
+
+  <div class="credit-card">
+    <h3>Dave St. John</h3>
+    <div class="role">Founder &amp; Lead Developer</div>
+    <p>Original author and architect of Mcaster1DNAS. Designed and implemented the ICY&nbsp;2.2
+    extended metadata protocol, YAML configuration system, macOS Qt6 GUI, Windows MFC GUI,
+    song history JSON REST API, static mount definitions, per-listener SSL enforcement, and
+    the NSIS Windows installer pipeline. GitHub:
+    <a href="https://github.com/davestj" target="_blank" rel="noopener">davestj</a></p>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>Built on Icecast</h2>
+
+  <div class="note">
+    Mcaster1DNAS is a fork of <strong>Icecast 2.x</strong>, the open-source streaming media
+    server by the Xiph.Org Foundation. We are deeply grateful for 20+ years of open-source
+    streaming infrastructure that made this project possible.
+  </div>
+
+  <div class="credit-card">
+    <h3>Jack Moffitt</h3>
+    <div class="role">Icecast Original Author</div>
+    <p>Created Icecast, the foundational open-source streaming server upon which Mcaster1DNAS
+    is built. Contact: <a href="mailto:jmoffitt@icecast.org">jmoffitt@icecast.org</a></p>
+  </div>
+
+  <div class="credit-card">
+    <h3>Philipp Schafft</h3>
+    <div class="role">Icecast Current Maintainer</div>
+    <p>Current lead maintainer of the upstream Icecast project, responsible for ongoing
+    development, security patches, and the modern Icecast codebase we forked from.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>Brendan Cully</h3>
+    <div class="role">Icecast Core Team</div>
+    <p>Long-time core contributor to the Icecast project, helping shape the connection
+    handling, relay architecture, and source client protocol foundations.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>Karl Heyes</h3>
+    <div class="role">Icecast Core Team</div>
+    <p>Core Icecast developer who contributed major improvements to the threading model,
+    source management, and YP directory integration.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>Ed "oddsock" Zaleski</h3>
+    <div class="role">Icecast Core Team</div>
+    <p>Core Icecast contributor and longtime member of the streaming community, instrumental
+    in the Windows port and early SHOUTcast protocol compatibility work.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>Xiph.Org Foundation</h3>
+    <div class="role">Upstream Icecast Steward &mdash; <a href="https://xiph.org" target="_blank" rel="noopener">xiph.org</a></div>
+    <p>The non-profit foundation that stewards Icecast along with the open codec suite this
+    project depends on: <strong>libvorbis</strong>, <strong>libtheora</strong>,
+    <strong>libogg</strong>, and <strong>libspeex</strong>. Their commitment to open,
+    patent-free audio and video standards is the bedrock of internet radio.</p>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>Open Source Libraries</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Library</th>
+          <th>License</th>
+          <th>Used For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>libxml2</strong></td>
+          <td>MIT</td>
+          <td>XML config parsing, XSLT document model (<code>xmlDocPtr</code>, <code>xmlFreeDoc</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>libxslt</strong></td>
+          <td>MIT</td>
+          <td>XSLT stylesheet transformation for web admin and status pages</td>
+        </tr>
+        <tr>
+          <td><strong>libyaml</strong></td>
+          <td>MIT</td>
+          <td>YAML configuration file parsing (<code>cfgfile_yaml.c</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>OpenSSL 3</strong></td>
+          <td>Apache 2.0</td>
+          <td>TLS/SSL listeners, certificate generation (<code>ssl_gen.c</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>libcurl</strong></td>
+          <td>curl License</td>
+          <td>YP directory submission, relay health checks</td>
+        </tr>
+        <tr>
+          <td><strong>libogg</strong></td>
+          <td>BSD</td>
+          <td>Ogg container format support for vorbis/theora streams</td>
+        </tr>
+        <tr>
+          <td><strong>libvorbis</strong></td>
+          <td>BSD</td>
+          <td>Vorbis audio codec support</td>
+        </tr>
+        <tr>
+          <td><strong>libtheora</strong></td>
+          <td>BSD</td>
+          <td>Theora video codec support</td>
+        </tr>
+        <tr>
+          <td><strong>libspeex</strong></td>
+          <td>BSD</td>
+          <td>Speex audio codec support</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>macOS GUI</h2>
+
+  <div class="credit-card">
+    <h3>Qt6 Framework</h3>
+    <div class="role">LGPL 3.0 &mdash; <a href="https://qt.io" target="_blank" rel="noopener">qt.io</a></div>
+    <p>The macOS GUI was built using the Qt6 toolkit (Qt 6.x from Homebrew). Components
+    used include <strong>Qt6 Widgets</strong>, <strong>Qt6 WebEngineWidgets</strong>,
+    <strong>Qt6 Network</strong>, and <strong>Qt6 Xml</strong>. Qt is used under the
+    LGPL&nbsp;3.0 license.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>CMake</h3>
+    <div class="role">BSD License &mdash; <a href="https://cmake.org" target="_blank" rel="noopener">cmake.org</a></div>
+    <p>Cross-platform build system used for the Qt6 GUI component. The <code>macos/CMakeLists.txt</code>
+    project compiles all <code>src/*.c</code> server files alongside the Qt6 C++ GUI files
+    into a single in-process binary.</p>
+  </div>
+
+  <div class="note">
+    The macOS GUI was built using the Qt6 toolkit (Qt 6.x from Homebrew). Qt is used under
+    the LGPL&nbsp;3.0 license. Source code for the GUI components is available in the
+    <code>macos/</code> directory of the repository.
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>Windows GUI &amp; Installer</h2>
+
+  <div class="credit-card">
+    <h3>Microsoft Foundation Classes (MFC)</h3>
+    <div class="role">Windows GUI Framework</div>
+    <p>The Windows GUI application (<code>mcaster1win.exe</code>) is built using Microsoft
+    Foundation Classes via Visual Studio 2022 Professional. MFC provides the dialog-based
+    windowing framework, tab controls, and system integration for the Windows desktop
+    experience.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>ResizableLib</h3>
+    <div class="role">Resizable MFC Dialogs &mdash; Paolo Messina</div>
+    <p>Open-source library by Paolo Messina providing resizable dialog support for MFC
+    applications. Used to allow the main Mcaster1DNAS Windows dialog to be freely resized
+    while anchoring controls correctly.</p>
+  </div>
+
+  <div class="credit-card">
+    <h3>NSIS &mdash; Nullsoft Scriptable Install System</h3>
+    <div class="role">Windows Installer &mdash; <a href="https://nsis.sourceforge.io" target="_blank" rel="noopener">nsis.sourceforge.io</a></div>
+    <p>Open-source Windows installer framework used to build the Mcaster1DNAS Windows
+    setup executable. The installer script (<code>windows/installer/mcaster1dnas.nsi</code>)
+    handles all installation sections, firewall rules, service registration, and Start Menu
+    / desktop shortcut creation.</p>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2>License</h2>
+
+  <div class="note">
+    Mcaster1DNAS is released under the <strong>GNU General Public License v2 (GPL-2.0)</strong>,
+    the same license as Icecast 2. All dependencies are compatible with GPL-2.0 or are used
+    under compatible licenses (MIT, BSD, Apache&nbsp;2.0, LGPL&nbsp;3.0, curl License).
+    Qt6 GUI components are linked dynamically and used under LGPL&nbsp;3.0 in compliance
+    with Qt's open-source licensing terms.
+  </div>
+
+</div><!-- /.content -->
+
+<footer>
+  Mcaster1DNAS v2.5.3-beta &mdash; &copy; 2001&ndash;2026 MediaCast1 &mdash;
+  <a href="https://mcaster1.com" target="_blank" rel="noopener">mcaster1.com</a>
+</footer>
+
+</body>
+</html>

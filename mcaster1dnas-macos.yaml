@@ -1,0 +1,120 @@
+---
+# Mcaster1DNAS macOS Development Configuration
+# Derived from mcaster1dnas-console.yaml for macOS / Homebrew builds.
+#
+# Usage:
+#   ./build/bin/mcaster1 -c mcaster1dnas-macos.yaml
+#
+# Notes:
+#   - Ports 9330 (HTTP) and 9443 (HTTPS/TLS) bound to localhost only (127.0.0.1).
+#     Change bind-address to 0.0.0.0 if you need LAN access.
+#   - ssl-certificate points to ssl/localhost.pem (CN=localhost, SAN=DNS:localhost,IP:127.0.0.1).
+#     Regenerate with: openssl req -x509 -newkey rsa:2048 -nodes -days 825 \
+#       -subj "/C=US/ST=TX/L=Dallas/O=Mcaster1DNAS/OU=Local/CN=localhost" \
+#       -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" \
+#       -keyout ssl/localhost.key -out ssl/localhost.crt
+#     cat ssl/localhost.key ssl/localhost.crt > ssl/localhost.pem
+#   - Do NOT use the -b (daemon/fork) flag on macOS; use nohup ... & instead.
+#     Fork-after-threads is unsafe on Darwin (libxml2/libxslt thread state).
+#   - All paths are relative to the directory where you launch the binary.
+#     Run from the repo root: ./build/bin/mcaster1 -c mcaster1dnas-macos.yaml
+#
+# Branch : macos-dev
+# Version: 2.5.3-beta
+# Date   : 2026-02-28
+
+location: "Earth"
+admin: "admin@localhost"
+hostname: "localhost"
+fileserve: true
+
+authentication:
+  source-password: "CHANGE_ME_source"
+  relay-password:  "CHANGE_ME_relay"
+  admin-user:      "admin"
+  admin-password:  "CHANGE_ME_admin"
+
+limits:
+  clients:            50
+  sources:            5
+  workers:            4
+  queue-size:         524288
+  burst-size:         65535
+  client-timeout:     30
+  header-timeout:     15
+  source-timeout:     10
+  song-history-limit: 25
+
+listen-sockets:
+  # Plain HTTP — localhost only for macOS dev
+  - port:         9330
+    bind-address: "127.0.0.1"
+    ssl:          false
+
+  # HTTPS/TLS — localhost only; requires ssl/localhost.pem
+  - port:         9443
+    bind-address: "127.0.0.1"
+    ssl:          true
+
+paths:
+  basedir:         "."
+  logdir:          "./logs"
+  webroot:         "./web"
+  adminroot:       "./admin"
+  pidfile:         "./logs/mcaster1.pid"
+  # Combined PEM: private key block followed by certificate block.
+  # CN=localhost, SAN: DNS:localhost, IP:127.0.0.1
+  ssl-certificate: "./ssl/localhost.pem"
+  aliases:
+    - source:      "/"
+      destination: "/status.xsl"
+
+logging:
+  accesslog:
+    name:    "access.log"
+    archive: true
+  errorlog:
+    name:    "error.log"
+    level:   "debug"        # verbose for local dev; use "info" in production
+    archive: true
+  playlistlog:
+    name:    "playlist.log"
+    archive: true
+  logsize:    10000
+  logarchive: true
+
+security:
+  chroot: false             # chroot requires root; disable for local dev
+
+http-headers:
+  - name:  "Access-Control-Allow-Origin"
+    value: "*"
+  - name:  "Access-Control-Allow-Methods"
+    value: "GET, OPTIONS"
+  - name:  "Access-Control-Allow-Headers"
+    value: "Origin, X-Requested-With, Content-Type, Accept, Icy-MetaData"
+
+mounts:
+  - mount-name:        "/live"
+    mount-type:        "live"
+    max-listeners:     100
+    public:            1
+    stream-name:       "Mcaster1 Live"
+    stream-description: "Live broadcast"
+    genre:             "Music"
+    bitrate:           "128"
+    icy-dj-handle:     "DJ"
+    icy-show-title:    "Live Show"
+    icy-requests-enabled: false
+
+  - mount-name:        "/podcast"
+    mount-type:        "podcast"
+    max-listeners:     100
+    public:            1
+    stream-name:       "Mcaster1 Podcast"
+    stream-description: "Podcast content"
+    genre:             "Talk"
+    bitrate:           "96"
+    icy-podcast-host:  "Host"
+    icy-show-title:    "The Podcast"
+    icy-requests-enabled: false

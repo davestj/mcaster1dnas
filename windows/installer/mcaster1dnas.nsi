@@ -20,7 +20,7 @@ Unicode True
 ; Product constants
 ; -----------------------------------------------------------------------------
 !define PRODUCT_NAME        "Mcaster1DNAS"
-!define PRODUCT_VERSION     "2.5.2-dev"
+!define PRODUCT_VERSION     "2.5.3-beta"
 !define PRODUCT_PUBLISHER   "MediaCast1"
 !define PRODUCT_URL         "https://mcaster1.com"
 !define PRODUCT_SUPPORT_URL "https://github.com/davestj/mcaster1dnas/issues"
@@ -98,10 +98,10 @@ ShowUnInstDetails   show
 ; -----------------------------------------------------------------------------
 ; Version info embedded in setup.exe
 ; -----------------------------------------------------------------------------
-VIProductVersion                "2.5.2.0"
+VIProductVersion                "2.5.3.0"
 VIAddVersionKey "ProductName"   "${PRODUCT_NAME}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
-VIAddVersionKey "FileVersion"   "2.5.2.0"
+VIAddVersionKey "FileVersion"   "2.5.3.0"
 VIAddVersionKey "FileDescription" "${PRODUCT_NAME} ${PRODUCT_VERSION} Installer"
 VIAddVersionKey "LegalCopyright" "Copyright (C) 2001-2026 MediaCast1"
 VIAddVersionKey "CompanyName"   "${PRODUCT_PUBLISHER}"

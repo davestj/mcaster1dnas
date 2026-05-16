@@ -25,6 +25,10 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef _WIN32
+#include <fcntl.h>
+#include <unistd.h>
+#endif
 
 #include "auth.h"
 #include "auth_htpasswd.h"
@@ -320,7 +324,9 @@ static auth_result htpasswd_deleteuser(auth_t *auth, const char *username)
     char *sep;
     char *tmpfile = NULL;
     int tmpfile_len = 0;
+#ifdef _WIN32
     struct stat file_info;
+#endif
 
     state = auth->state;
     thread_rwlock_wlock (&state->file_rwlock);
@@ -335,16 +341,32 @@ static auth_result htpasswd_deleteuser(auth_t *auth, const char *username)
     tmpfile_len = strlen(state->filename) + 6;
     tmpfile = calloc(1, tmpfile_len);
     snprintf (tmpfile, tmpfile_len, "%s.tmp", state->filename);
-    if (stat (tmpfile, &file_info) == 0)
+    /* Use O_CREAT|O_EXCL to atomically create-or-fail, preventing TOCTOU race (CWE-367) */
     {
-        WARN1 ("temp file \"%s\" exists, rejecting operation", tmpfile);
-        free (tmpfile);
-        fclose (passwdfile);
-        thread_rwlock_unlock (&state->file_rwlock);
-        return AUTH_FAILED;
+#ifndef _WIN32
+        int tmpfd = open(tmpfile, O_WRONLY | O_CREAT | O_EXCL, 0600);
+        if (tmpfd < 0)
+        {
+            WARN1 ("temp file \"%s\" exists or cannot be created, rejecting operation", tmpfile);
+            free (tmpfile);
+            fclose (passwdfile);
+            thread_rwlock_unlock (&state->file_rwlock);
+            return AUTH_FAILED;
+        }
+        tmp_passwdfile = fdopen(tmpfd, "wb");
+        if (!tmp_passwdfile) close(tmpfd);
+#else
+        if (stat (tmpfile, &file_info) == 0)
+        {
+            WARN1 ("temp file \"%s\" exists, rejecting operation", tmpfile);
+            free (tmpfile);
+            fclose (passwdfile);
+            thread_rwlock_unlock (&state->file_rwlock);
+            return AUTH_FAILED;
+        }
+        tmp_passwdfile = fopen(tmpfile, "wb");
+#endif
     }
-
-    tmp_passwdfile = fopen(tmpfile, "wb");
 
     if(tmp_passwdfile == NULL) {
         WARN2("Failed to open temporary authentication database \"%s\": %s", 

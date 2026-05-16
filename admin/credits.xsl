@@ -147,6 +147,39 @@
                 </div>
             </div>
 
+            <!-- Downloads & Updates -->
+            <div class="credits-section">
+                <h3><i class="fas fa-download"></i> Downloads &amp; Updates</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <a href="https://mcaster1.com/mcaster1_dnas.php" target="_blank" rel="noopener"
+                       style="display: block; background: linear-gradient(135deg, #0891b2, #14b8a6); color: #fff; padding: 1.5rem; border-radius: var(--radius-md); text-decoration: none; text-align: center; transition: transform 0.15s, box-shadow 0.15s;">
+                        <i class="fas fa-box-open" style="font-size: 2rem; display: block; margin-bottom: 0.75rem;"></i>
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.4rem;">Product Page</strong>
+                        <span style="opacity: 0.9; font-size: 0.875rem;">Download packages, release notes, and installation guides</span>
+                    </a>
+                    <a href="https://github.com/davestj/mcaster1dnas" target="_blank" rel="noopener"
+                       style="display: block; background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: var(--radius-md); text-decoration: none; text-align: center; transition: transform 0.15s, box-shadow 0.15s;">
+                        <i class="fab fa-github" style="font-size: 2rem; display: block; margin-bottom: 0.75rem;"></i>
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.4rem;">GitHub Repository</strong>
+                        <span style="opacity: 0.9; font-size: 0.875rem;">Source code, issues, pull requests, and CI/CD</span>
+                    </a>
+                    <a href="https://github.com/davestj/mcaster1dnas/releases" target="_blank" rel="noopener"
+                       style="display: block; background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: #fff; padding: 1.5rem; border-radius: var(--radius-md); text-decoration: none; text-align: center; transition: transform 0.15s, box-shadow 0.15s;">
+                        <i class="fas fa-tags" style="font-size: 2rem; display: block; margin-bottom: 0.75rem;"></i>
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.4rem;">Releases</strong>
+                        <span style="opacity: 0.9; font-size: 0.875rem;">Binary packages for Debian, Ubuntu, and Windows</span>
+                    </a>
+                </div>
+                <div style="margin-top: 1.25rem; background: var(--bg-light); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem 1.25rem;">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                        <i class="fas fa-info-circle" style="color: var(--mcaster-blue); margin-right: 0.4rem;"></i>
+                        <strong>Current Version:</strong>
+                        <span style="font-family: var(--font-mono); color: var(--mcaster-blue);"><xsl:value-of select="server_id"/></span>
+                        &#8212; Check the product page for the latest updates and security patches.
+                    </p>
+                </div>
+            </div>
+
             <!-- Contact -->
             <div class="credits-section">
                 <h3><i class="fas fa-envelope"></i> Get Involved</h3>
@@ -155,14 +188,20 @@
                         Want to contribute or learn more about Mcaster1DNAS?
                     </p>
                     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="https://mcaster1.com/mcaster1_dnas.php" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Downloads &amp; Updates
+                        </a>
                         <a href="https://mcaster1.com" target="_blank" class="btn btn-primary">
-                            <i class="fas fa-globe"></i> Visit Mcaster1.com
+                            <i class="fas fa-globe"></i> Mcaster1.com
                         </a>
                         <a href="https://github.com/davestj/mcaster1dnas" target="_blank" class="btn btn-secondary">
-                            <i class="fab fa-github"></i> View on GitHub
+                            <i class="fab fa-github"></i> GitHub
                         </a>
-                        <a href="mailto:davestj@gmail.com" class="btn btn-secondary">
-                            <i class="fas fa-envelope"></i> Contact Us
+                        <a href="https://github.com/davestj/mcaster1dnas/issues" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-bug"></i> Report Issue
+                        </a>
+                        <a href="mailto:support@mcaster1.com" class="btn btn-secondary">
+                            <i class="fas fa-envelope"></i> Support
                         </a>
                     </div>
                 </div>

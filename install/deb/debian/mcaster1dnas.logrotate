@@ -1,0 +1,13 @@
+/var/log/mcaster1dnas/*.log {
+    weekly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 mcaster1 mcaster1
+    sharedscripts
+    postrotate
+        systemctl reload mcaster1-dnas 2>/dev/null || true
+    endscript
+}

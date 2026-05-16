@@ -52,6 +52,10 @@
 
 #include "compat.h"
 
+#ifdef HAVE_OPENSSL
+#include <openssl/crypto.h>
+#endif
+
 #include "thread/thread.h"
 #include "avl/avl.h"
 #include "net/sock.h"
@@ -596,6 +600,10 @@ int connection_bufs_append (struct connection_bufs *v, void *buf, unsigned int l
     {
        int len = v->max + 16;
        IOVEC *arr = realloc (v->block, (len*sizeof(IOVEC)));
+       if (arr == NULL) {
+           ERROR0 ("realloc failed for connection bufs");
+           return -1;
+       }
        v->max = len;
        v->block = arr;
     }
@@ -1667,9 +1675,20 @@ static int _check_pass_http(http_parser_t *parser,
     username = userpass;
     password = tmp+1;
 
-    if(strcmp(username, correctuser) || strcmp(password, correctpass)) {
-        free(userpass);
-        return 0;
+    {
+        /* Use constant-time comparison to prevent timing side-channel attacks
+         * (CWE-208). CRYPTO_memcmp always compares all bytes regardless of
+         * mismatch position, unlike strcmp which short-circuits. */
+        size_t ulen1 = strlen(username), ulen2 = strlen(correctuser);
+        size_t plen1 = strlen(password), plen2 = strlen(correctpass);
+        int fail = (ulen1 != ulen2) | (plen1 != plen2);
+        /* Compare full length of correct values to avoid leaking length */
+        fail |= CRYPTO_memcmp(username, correctuser, ulen2 < ulen1 ? ulen2 : ulen1);
+        fail |= CRYPTO_memcmp(password, correctpass, plen2 < plen1 ? plen2 : plen1);
+        if (fail) {
+            free(userpass);
+            return 0;
+        }
     }
     free(userpass);
 
@@ -1684,10 +1703,14 @@ static int _check_pass_icy(http_parser_t *parser, const char *correctpass)
     if(!password)
         return 0;
 
-    if (strcmp(password, correctpass))
-        return 0;
-    else
+    {
+        size_t plen1 = strlen(password), plen2 = strlen(correctpass);
+        if (plen1 != plen2)
+            return 0;
+        if (CRYPTO_memcmp(password, correctpass, plen2) != 0)
+            return 0;
         return 1;
+    }
 }
 
 static int _check_pass_ice(http_parser_t *parser, const char *correctpass)
@@ -1698,10 +1721,14 @@ static int _check_pass_ice(http_parser_t *parser, const char *correctpass)
     if(!password)
         password = "";
 
-    if (strcmp(password, correctpass))
-        return 0;
-    else
+    {
+        size_t plen1 = strlen(password), plen2 = strlen(correctpass);
+        if (plen1 != plen2)
+            return 0;
+        if (CRYPTO_memcmp(password, correctpass, plen2) != 0)
+            return 0;
         return 1;
+    }
 }
 
 int connection_check_admin_pass(http_parser_t *parser)

@@ -57,7 +57,8 @@ static int _date_hdr (mc_http_t * http, mc_param_t *curr)
 
 static int _server_hdr (mc_http_t *http, mc_param_t *curr)
 {
-    curr->value = strdup (http->in_server_id);
+    /* Strip version from Server header to reduce information disclosure (CWE-200) */
+    curr->value = strdup ("Mcaster1DNAS");
     return 0;
 }
 
@@ -586,6 +587,10 @@ mc_config_http_header_t default_headers[] =
                                         .callback = _send_cors_hdr } },
     { .hdr = { .status = "*",           .name = "Date",                 .callback = _date_hdr } },
     { .hdr = { .status = "*",           .name = "Content-Type",         .value = "text/html" } },
+    { .hdr = { .status = "[23]*",       .name = "Strict-Transport-Security",
+                                        .value = "max-age=31536000; includeSubDomains" } },
+    { .hdr = { .status = "[23]*",       .name = "Referrer-Policy",
+                                        .value = "strict-origin-when-cross-origin" } },
     { .hdr = { .name = NULL }}
 };
 

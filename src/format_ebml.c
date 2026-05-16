@@ -37,8 +37,8 @@
 #include "global.h"
 
 #define EBML_DEBUG 0
-#define EBML_HEADER_MAX_SIZE 131072
-#define EBML_SLICE_SIZE 4096
+#define EBML_HEADER_MAX_SIZE 1048576
+#define EBML_SLICE_SIZE 16384
 
 
 typedef struct ebml_client_data_st ebml_client_data_t;
@@ -64,6 +64,11 @@ struct ebml_st {
     int header_position;
     int header_read_position;
     unsigned char *header;
+
+    /* Cross-boundary cluster ID detection: last 3 bytes of previous buffer */
+    unsigned char tail[3];
+    int tail_len;
+    int header_logged;
 
 };
 
@@ -97,6 +102,10 @@ int format_ebml_get_plugin (format_plugin_t *plugin)
     plugin->apply_settings = NULL;
     plugin->apply_client = ebml_apply_client;
     plugin->_state = ebml_source_state;
+
+    /* Mark as video-capable so source.c can apply larger queue/burst defaults */
+    if (plugin->contenttype && (strncmp(plugin->contenttype, "video/", 6) == 0))
+        plugin->flags |= FORMAT_FL_VIDEO;
 
     return 0;
 }
@@ -194,6 +203,13 @@ static refbuf_t *ebml_get_buffer (source_t *source)
             if (ebml_source_state->header == NULL)
             {
                 ebml_source_state->header = refbuf;
+                if (refbuf->len >= 4)
+                {
+                    INFO1("EBML source header captured: %d bytes", refbuf->len);
+                    INFO4("EBML source header bytes: %02x %02x %02x %02x",
+                          (unsigned char)refbuf->data[0], (unsigned char)refbuf->data[1],
+                          (unsigned char)refbuf->data[2], (unsigned char)refbuf->data[3]);
+                }
                 continue;
             }
 
@@ -238,7 +254,15 @@ static int ebml_create_client_data (format_plugin_t *format, mc_http_t *http, cl
     if ((ebml_client_data) && (ebml_source_state->header))
     {
         ebml_client_data->header = ebml_source_state->header;
-        refbuf_addref (ebml_client_data->header);   // broken, assumes too much currently
+        refbuf_addref (ebml_client_data->header);
+        INFO2("EBML client gets header: %d bytes, first_byte=0x%02x",
+              ebml_client_data->header->len,
+              (unsigned char)ebml_client_data->header->data[0]);
+    }
+    else
+    {
+        WARN1("EBML client has NO header: source_header=%p",
+              (void *)ebml_source_state->header);
     }
     client->format_data = ebml_client_data;
     client->free_client_data = ebml_free_client_data;
@@ -308,10 +332,19 @@ static ebml_t *ebml_create()
 {
 
     ebml_t *ebml = calloc(1, sizeof(ebml_t));
+    if (ebml == NULL) return NULL;
 
     ebml->header = calloc(1, EBML_HEADER_MAX_SIZE);
-    ebml->buffer = calloc(1, EBML_SLICE_SIZE * 4);
+    ebml->buffer = calloc(1, EBML_SLICE_SIZE * 8);
     ebml->input_buffer = calloc(1, EBML_SLICE_SIZE);
+
+    if (ebml->header == NULL || ebml->buffer == NULL || ebml->input_buffer == NULL) {
+        free(ebml->header);
+        free(ebml->buffer);
+        free(ebml->input_buffer);
+        free(ebml);
+        return NULL;
+    }
 
     ebml->cluster_id = "\x1F\x43\xB6\x75";
 
@@ -387,7 +420,11 @@ static int ebml_read(ebml_t *ebml, char *buffer, int len)
             else
                 to_read = read_space;
 
-            memcpy(buffer, ebml->header, to_read);
+            memcpy(buffer, ebml->header + ebml->header_read_position, to_read);
+            if (ebml->header_read_position == 0 && to_read >= 4)
+                INFO4("EBML raw header read: %02x %02x %02x %02x",
+                      (unsigned char)ebml->header[0], (unsigned char)ebml->header[1],
+                      (unsigned char)ebml->header[2], (unsigned char)ebml->header[3]);
             ebml->header_read_position += to_read;
 
             if (ebml->header_read_position == ebml->header_size)
@@ -439,14 +476,22 @@ static int ebml_wrote(ebml_t *ebml, int len)
     {
         if ((ebml->header_position + len) > EBML_HEADER_MAX_SIZE)
         {
-            ERROR0("EBML Header too large, failing");
+            ERROR2("EBML Header too large (%d + %d bytes), failing",
+                   ebml->header_position, len);
             return -1;
         }
 
-        if (EBML_DEBUG)
+        /* Log first bytes of stream for diagnostics */
+        if (ebml->header_position == 0 && !ebml->header_logged)
         {
-            printf("EBML: Adding to header, ofset is %d size is %d adding %d\n", 
-                   ebml->header_size, ebml->header_position, len);
+            ebml->header_logged = 1;
+            if (len >= 4)
+            {
+                INFO1("EBML first input: %d bytes", len);
+                INFO4("EBML first bytes: %02x %02x %02x %02x",
+                      ebml->input_buffer[0], ebml->input_buffer[1],
+                      ebml->input_buffer[2], ebml->input_buffer[3]);
+            }
         }
 
         memcpy(ebml->header + ebml->header_position, ebml->input_buffer, len);
@@ -457,21 +502,56 @@ static int ebml_wrote(ebml_t *ebml, int len)
         memcpy(ebml->buffer + ebml->position, ebml->input_buffer, len);
     }
 
-    for (b = 0; b < len - 4; b++)
+    /* Check for Cluster ID straddling previous and current buffer boundary */
+    if (ebml->tail_len > 0 && len >= 4)
+    {
+        unsigned char cross[7]; /* max 3 tail + 4 new = 7 */
+        int cross_len = ebml->tail_len + (4 - ebml->tail_len);
+        if (cross_len > ebml->tail_len + len)
+            cross_len = ebml->tail_len + len;
+        memcpy(cross, ebml->tail, ebml->tail_len);
+        memcpy(cross + ebml->tail_len, ebml->input_buffer,
+               cross_len - ebml->tail_len);
+        int i;
+        for (i = 0; i <= cross_len - 4; i++)
+        {
+            if (!memcmp(cross + i, ebml->cluster_id, 4))
+            {
+                /* Cluster ID found spanning buffer boundary */
+                int offset_in_new = 4 - (ebml->tail_len - i);
+                if (ebml->header_size == 0)
+                {
+                    ebml->header_size = ebml->header_position - len + offset_in_new - 4;
+                    INFO1("EBML header parsed (cross-boundary), size %d bytes",
+                          ebml->header_size);
+                    memcpy(ebml->buffer, ebml->input_buffer + offset_in_new - 4,
+                           len - offset_in_new + 4);
+                    ebml->position = len - offset_in_new + 4;
+                    ebml->cluster_start = -1;
+                    ebml->tail_len = 0;
+                    return len;
+                }
+                else
+                {
+                    ebml->cluster_start = ebml->position + offset_in_new - 4;
+                }
+                break;
+            }
+        }
+    }
+
+    for (b = 0; b <= len - 4; b++)
     {
         if (!memcmp(ebml->input_buffer + b, ebml->cluster_id, 4))
         {
-            if (EBML_DEBUG)
-            {
-                 printf("EBML: found cluster\n");
-            }
-
             if (ebml->header_size == 0)
             {
                 ebml->header_size = ebml->header_position - len + b;
+                INFO1("EBML header parsed, size %d bytes", ebml->header_size);
                 memcpy(ebml->buffer, ebml->input_buffer + b, len - b);
                 ebml->position = len - b;
                 ebml->cluster_start = -1;
+                ebml->tail_len = 0;
                 return len;
             }
             else
@@ -479,6 +559,19 @@ static int ebml_wrote(ebml_t *ebml, int len)
                 ebml->cluster_start = ebml->position + b;
             }
         }
+    }
+
+    /* Save last 3 bytes for cross-boundary detection on next call */
+    if (len >= 3)
+    {
+        memcpy(ebml->tail, ebml->input_buffer + len - 3, 3);
+        ebml->tail_len = 3;
+    }
+    else
+    {
+        memcpy(ebml->tail + ebml->tail_len, ebml->input_buffer, len);
+        ebml->tail_len += len;
+        if (ebml->tail_len > 3) ebml->tail_len = 3;
     }
 
     ebml->position += len;

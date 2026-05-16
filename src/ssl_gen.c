@@ -38,9 +38,15 @@
 
 #include <openssl/evp.h>
 #include <openssl/pem.h>
+#include <openssl/rand.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
+#include <openssl/bn.h>
+
+#ifndef _WIN32
+#include <fcntl.h>
+#endif
 
 #include "ssl_gen.h"
 
@@ -176,10 +182,22 @@ static EVP_PKEY *generate_rsa_key(int bits)
     return pkey;
 }
 
+/* Open a file for writing with restricted permissions (0600) for sensitive data */
+static FILE *fopen_secure(const char *path)
+{
+#ifndef _WIN32
+    int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    if (fd < 0) return NULL;
+    return fdopen(fd, "wb");
+#else
+    return fopen(path, "wb");
+#endif
+}
+
 /* Write PEM private key to file */
 static int write_pem_key(EVP_PKEY *pkey, const char *path)
 {
-    FILE *f = fopen(path, "wb");
+    FILE *f = fopen_secure(path);
     if (!f)
     {
         snprintf(s_last_error, sizeof(s_last_error),
@@ -196,7 +214,7 @@ static int write_pem_key(EVP_PKEY *pkey, const char *path)
 static int write_combined_pem(const char *cert_path, const char *key_path,
                                const char *combined_path)
 {
-    FILE *out = fopen(combined_path, "wb");
+    FILE *out = fopen_secure(combined_path);
     if (!out)
     {
         snprintf(s_last_error, sizeof(s_last_error),
@@ -242,16 +260,18 @@ static int patch_yaml_config(const char *config_path,
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    char *content = (char *)malloc((size_t)fsize + 4096);
+    char *content = (char *)malloc((size_t)fsize + 1);
     if (!content) { fclose(f); set_error("out of memory"); return -1; }
     size_t nread = fread(content, 1, (size_t)fsize, f);
     fclose(f);
     content[nread] = '\0';
 
-    /* Work line by line into a new buffer */
-    char *out = (char *)malloc((size_t)fsize + 4096);
+    /* Calculate safe output buffer: original + generous space for new paths */
+    size_t extra = strlen(cert_path) + strlen(key_path) + 4096;
+    size_t out_alloc = nread + extra;
+    char *out = (char *)malloc(out_alloc);
     if (!out) { free(content); set_error("out of memory"); return -1; }
-    out[0] = '\0';
+    size_t out_pos = 0;
 
     int found_cert = 0, found_key = 0;
     char *line = content;
@@ -267,31 +287,32 @@ static int patch_yaml_config(const char *config_path,
         char *t = line;
         while (*t == ' ' || *t == '\t') t++;
 
+        char newline[512];
         if (strncmp(t, "ssl-certificate:", 16) == 0)
         {
-            char newline[512];
-            /* preserve leading whitespace */
             int indent = (int)(t - line);
             snprintf(newline, sizeof(newline), "%*ssl-certificate: \"%s\"",
                      indent, "", cert_path);
-            strcat(out, newline);
+            size_t nl = strlen(newline);
+            if (out_pos + nl + 2 < out_alloc) { memcpy(out + out_pos, newline, nl); out_pos += nl; }
             found_cert = 1;
         }
         else if (strncmp(t, "ssl-private-key:", 16) == 0)
         {
-            char newline[512];
             int indent = (int)(t - line);
             snprintf(newline, sizeof(newline), "%*ssl-private-key: \"%s\"",
                      indent, "", key_path);
-            strcat(out, newline);
+            size_t nl = strlen(newline);
+            if (out_pos + nl + 2 < out_alloc) { memcpy(out + out_pos, newline, nl); out_pos += nl; }
             found_key = 1;
         }
         else
         {
-            strcat(out, line);
+            size_t ll = strlen(line);
+            if (out_pos + ll + 2 < out_alloc) { memcpy(out + out_pos, line, ll); out_pos += ll; }
         }
 
-        strcat(out, "\n");
+        if (out_pos + 1 < out_alloc) out[out_pos++] = '\n';
 
         if (!next) break;
         line = next + 1;
@@ -301,16 +322,17 @@ static int patch_yaml_config(const char *config_path,
     if (!found_cert)
     {
         char append[512];
-        snprintf(append, sizeof(append), "  ssl-certificate: \"%s\"\n", cert_path);
-        strcat(out, append);
+        int r = snprintf(append, sizeof(append), "  ssl-certificate: \"%s\"\n", cert_path);
+        if (r > 0 && out_pos + (size_t)r < out_alloc) { memcpy(out + out_pos, append, r); out_pos += r; }
     }
     if (!found_key && strcmp(cert_path, key_path) != 0)
     {
         char append[512];
-        snprintf(append, sizeof(append), "  ssl-private-key: \"%s\"\n", key_path);
-        strcat(out, append);
+        int r = snprintf(append, sizeof(append), "  ssl-private-key: \"%s\"\n", key_path);
+        if (r > 0 && out_pos + (size_t)r < out_alloc) { memcpy(out + out_pos, append, r); out_pos += r; }
     }
 
+    out[out_pos] = '\0';
     free(content);
 
     /* Write back */
@@ -346,15 +368,18 @@ static int patch_xml_config(const char *config_path,
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    char *content = (char *)malloc((size_t)fsize + 4096);
+    char *content = (char *)malloc((size_t)fsize + 1);
     if (!content) { fclose(f); set_error("out of memory"); return -1; }
     size_t nread = fread(content, 1, (size_t)fsize, f);
     fclose(f);
     content[nread] = '\0';
 
-    char *out = (char *)malloc((size_t)fsize + 4096);
+    /* Safe output buffer with space for added paths */
+    size_t extra = strlen(cert_path) + strlen(key_path) + 4096;
+    size_t out_alloc = nread + extra;
+    char *out = (char *)malloc(out_alloc);
     if (!out) { free(content); set_error("out of memory"); return -1; }
-    out[0] = '\0';
+    size_t out_pos = 0;
 
     char *p = content;
     int found_cert = 0, found_key = 0;
@@ -372,21 +397,22 @@ static int patch_xml_config(const char *config_path,
 
         if (!earliest)
         {
-            strcat(out, p);
+            size_t rem = strlen(p);
+            if (out_pos + rem < out_alloc) { memcpy(out + out_pos, p, rem); out_pos += rem; }
             break;
         }
 
         /* copy up to the tag */
         size_t pre = (size_t)(earliest - p);
-        strncat(out, p, pre);
+        if (out_pos + pre < out_alloc) { memcpy(out + out_pos, p, pre); out_pos += pre; }
 
         const char *open_tag  = is_cert ? "<ssl-certificate>" : "<ssl-private-key>";
         const char *close_tag = is_cert ? "</ssl-certificate>" : "</ssl-private-key>";
         const char *newval    = is_cert ? cert_path : key_path;
 
         char newelem[1024];
-        snprintf(newelem, sizeof(newelem), "%s%s%s", open_tag, newval, close_tag);
-        strcat(out, newelem);
+        int ne = snprintf(newelem, sizeof(newelem), "%s%s%s", open_tag, newval, close_tag);
+        if (ne > 0 && out_pos + (size_t)ne < out_alloc) { memcpy(out + out_pos, newelem, ne); out_pos += ne; }
 
         if (is_cert) found_cert = 1;
         else         found_key  = 1;
@@ -399,33 +425,35 @@ static int patch_xml_config(const char *config_path,
             p = earliest + strlen(open_tag);
     }
 
+    out[out_pos] = '\0';
+
     /* Append missing tags before </paths> (best-effort) */
     if (!found_cert || !found_key)
     {
         char *paths_close = strstr(out, "</paths>");
         if (paths_close)
         {
-            /* insert before </paths> */
             char insert[1024] = "";
+            size_t ins_pos = 0;
             if (!found_cert)
             {
-                char tmp[512];
-                snprintf(tmp, sizeof(tmp), "    <ssl-certificate>%s</ssl-certificate>\n", cert_path);
-                strcat(insert, tmp);
+                int r = snprintf(insert + ins_pos, sizeof(insert) - ins_pos,
+                    "    <ssl-certificate>%s</ssl-certificate>\n", cert_path);
+                if (r > 0) ins_pos += r;
             }
             if (!found_key && strcmp(cert_path, key_path) != 0)
             {
-                char tmp[512];
-                snprintf(tmp, sizeof(tmp), "    <ssl-private-key>%s</ssl-private-key>\n", key_path);
-                strcat(insert, tmp);
+                int r = snprintf(insert + ins_pos, sizeof(insert) - ins_pos,
+                    "    <ssl-private-key>%s</ssl-private-key>\n", key_path);
+                if (r > 0) ins_pos += r;
             }
-            /* shift tail and insert */
             size_t tail_len = strlen(paths_close);
-            size_t ins_len  = strlen(insert);
-            size_t cur_len  = strlen(out);
-            memmove(paths_close + ins_len, paths_close, tail_len + 1);
-            memcpy(paths_close, insert, ins_len);
-            (void)cur_len;
+            if (out_pos + ins_pos + tail_len < out_alloc)
+            {
+                memmove(paths_close + ins_pos, paths_close, tail_len + 1);
+                memcpy(paths_close, insert, ins_pos);
+                out_pos += ins_pos;
+            }
         }
     }
 
@@ -482,7 +510,15 @@ static int generate_selfsigned(const ssl_gen_params_t *p,
     }
 
     X509_set_version(cert, 2);  /* v3 */
-    ASN1_INTEGER_set(X509_get_serialNumber(cert), 1);
+    /* Use a random 128-bit serial number per RFC 5280 (CWE-330) */
+    {
+        BIGNUM *bn_serial = BN_new();
+        if (bn_serial) {
+            BN_rand(bn_serial, 128, BN_RAND_TOP_ANY, BN_RAND_BOTTOM_ANY);
+            BN_to_ASN1_INTEGER(bn_serial, X509_get_serialNumber(cert));
+            BN_free(bn_serial);
+        }
+    }
     X509_gmtime_adj(X509_getm_notBefore(cert), 0);
     X509_gmtime_adj(X509_getm_notAfter(cert), (long)60 * 60 * 24 * days);
     X509_set_pubkey(cert, pkey);
@@ -506,7 +542,7 @@ static int generate_selfsigned(const ssl_gen_params_t *p,
 
     if (rc == 0)
     {
-        FILE *f = fopen(cert_path, "wb");
+        FILE *f = fopen_secure(cert_path);
         if (!f)
         {
             snprintf(s_last_error, sizeof(s_last_error),
@@ -577,7 +613,7 @@ static int generate_csr(const ssl_gen_params_t *p, int key_bits)
 
     if (rc == 0)
     {
-        FILE *f = fopen(csr_path, "wb");
+        FILE *f = fopen_secure(csr_path);
         if (!f)
         {
             snprintf(s_last_error, sizeof(s_last_error),

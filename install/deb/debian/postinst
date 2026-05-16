@@ -1,0 +1,61 @@
+#!/bin/sh
+# Mcaster1DNAS — postinst script for Debian/Ubuntu .deb package
+set -e
+
+case "$1" in
+    configure)
+        # Create mcaster1 system user if it doesn't exist
+        if ! getent passwd mcaster1 > /dev/null 2>&1; then
+            adduser --system --group --home /var/lib/mcaster1dnas \
+                    --no-create-home --shell /usr/sbin/nologin \
+                    --gecos "Mcaster1DNAS Streaming Server" mcaster1
+        fi
+
+        # Ensure directories exist with correct ownership
+        install -d -o mcaster1 -g mcaster1 -m 0755 /var/log/mcaster1dnas
+        install -d -o mcaster1 -g mcaster1 -m 0755 /run/mcaster1dnas
+
+        # Fix config file ownership (readable by mcaster1 user only)
+        if [ -f /etc/mcaster1dnas/mcaster1dnas.yaml ]; then
+            chown root:mcaster1 /etc/mcaster1dnas/mcaster1dnas.yaml
+            chmod 640 /etc/mcaster1dnas/mcaster1dnas.yaml
+        fi
+
+        # Create tmpfiles.d runtime dir
+        if [ -d /run/systemd ]; then
+            systemd-tmpfiles --create /usr/lib/tmpfiles.d/mcaster1dnas.conf 2>/dev/null || true
+        fi
+
+        # Enable and reload systemd
+        if [ -d /run/systemd/system ]; then
+            systemctl daemon-reload
+            systemctl enable mcaster1-dnas.service 2>/dev/null || true
+            echo ""
+            echo "============================================"
+            echo "  Mcaster1DNAS installed successfully!"
+            echo ""
+            echo "  Config:  /etc/mcaster1dnas/mcaster1dnas.yaml"
+            echo "  Logs:    /var/log/mcaster1dnas/"
+            echo "  Web:     /usr/share/mcaster1dnas/web/"
+            echo "  Admin:   /usr/share/mcaster1dnas/admin/"
+            echo ""
+            echo "  Start:   sudo systemctl start mcaster1-dnas"
+            echo "  Status:  sudo systemctl status mcaster1-dnas"
+            echo ""
+            echo "  Default ports: 9330 (HTTP), 9443 (HTTPS)"
+            echo "  IMPORTANT: Edit /etc/mcaster1dnas/mcaster1dnas.yaml"
+            echo "             and change default passwords before starting!"
+            echo "============================================"
+        fi
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+
+    *)
+        echo "postinst called with unknown argument '$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

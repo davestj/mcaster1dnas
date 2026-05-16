@@ -1,8 +1,8 @@
 # CLAUDE.md — Mcaster1DNAS Project Guide
 
-> **Last updated:** 2026-02-24
-> **Branch:** `windows-dev` (base: `development`)
-> **Version:** 2.5.2-beta
+> **Last updated:** 2026-04-12
+> **Branch:** `development`
+> **Version:** 2.5.3-sec
 
 This file is the authoritative context document for Claude Code sessions working on this project.
 Read it at the start of every session to avoid re-discovering context.
@@ -134,6 +134,27 @@ Then rebuild the installer:
 ```
 
 And update `CHANGELOG-WIN.md`, `TODO.md` with the new release notes.
+
+## Running the Server (Linux systemd)
+
+```bash
+# Dev systemd unit: install/mcaster1-dnas.service
+# Installed at /etc/systemd/system/mcaster1-dnas.service
+# Type: forking (binary uses -b flag to daemonize)
+
+sudo systemctl start mcaster1-dnas       # Start
+sudo systemctl stop mcaster1-dnas        # Stop (graceful, disconnects listeners)
+sudo systemctl restart mcaster1-dnas     # Restart
+sudo systemctl reload mcaster1-dnas      # Reload config (SIGHUP — keeps active listeners)
+sudo systemctl status mcaster1-dnas      # Status + last log lines
+sudo journalctl -u mcaster1-dnas -f      # Live log tail
+
+# Binary: build/bin/mcaster1 -b -c mcaster1-production.yaml
+# Ports: 9330 (HTTP), 9443 (HTTPS)
+# User: mediacast1
+# Config: /var/www/mcaster1.com/mcaster1dnas/mcaster1-production.yaml
+# Logs: /var/www/mcaster1.com/mcaster1dnas/build/logs/
+```
 
 ---
 
@@ -274,16 +295,52 @@ Start-Process powershell -ArgumentList '-File C:\Windows\Temp\myscript.ps1' -Ver
 | `src/cfgfile.c` | XML config parser, `_parse_listen_sock()` |
 | `src/cfgfile_yaml.c` | YAML config parser, `yaml_parse_listen_socket()` |
 | `src/connection.h` | `connection_t` struct with `int ssl_required` field |
-| `src/connection.c` | `connection_peek()` — per-listener TLS enforcement |
+| `src/connection.c` | `connection_peek()` — per-listener TLS enforcement, constant-time password compare |
 | `src/global.h` | `extern int *ssl_on_sock` parallel array declaration |
 | `src/global.c` | `ssl_on_sock` allocation alongside `serversock` |
 | `src/ssl_gen.h` | Cross-platform SSL cert gen API (`#ifdef HAVE_OPENSSL`) |
-| `src/ssl_gen.c` | OpenSSL cert/CSR generation + YAML/XML config patching |
+| `src/ssl_gen.c` | OpenSSL cert/CSR generation + YAML/XML config patching (secure file perms) |
 | `src/main.c` | Entry point, `--ssl-gencert` flags, config discovery |
-| `src/params.c` | **MSVC bug fixed:** struct positional init → memset + explicit assignment |
+| `src/params.c` | Default HTTP headers (HSTS, Referrer-Policy, Server), CORS callbacks, MSVC bug fixed |
+| `src/admin.c` | Admin request handler — requires HTTPS (403 on plain HTTP) |
 | `windows/config.h` | Windows MSVC build config — PACKAGE_VERSION, VERSION macros |
 | `windows/SslGen.h` | C++ wrapper class for CSslGen / SslGenParams |
 | `windows/SslGen.cpp` | Thin wrapper over ssl_gen.c + `win_ssl_gencert` entry point |
+
+---
+
+## Security Hardening (2.5.3-sec, 2026-04-11)
+
+Full SAST + DAST audit performed. See `docs/security_reports.html` for the complete report.
+
+### Build Hardening Flags (Required)
+```bash
+CFLAGS="-g -O2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security"
+LDFLAGS="-Wl,-z,relro,-z,now"
+./configure && make clean && make -j$(nproc)
+```
+
+### Security Rules
+- **Admin pages require HTTPS** — `admin_handle_request()` returns 403 if `client->connection.ssl == NULL`
+- **Password comparison** — all three check functions (`_check_pass_http`, `_check_pass_icy`,
+  `_check_pass_ice`) use `CRYPTO_memcmp()` for constant-time comparison
+- **Server header** — version stripped, just `Mcaster1DNAS` (configurable via `server-id:` in YAML)
+- **PEM files** — `ssl_gen.c` creates private keys with mode 0600 via `fopen_secure()`
+- **X.509 certs** — serial numbers are random 128-bit via `BN_rand()`
+- **Config file** — `mcaster1-production.yaml` must be mode 0640 (contains passwords)
+- **Debug traces** — `mcaster1win_start.log` macros only active in `_DEBUG` builds
+
+### HTTP Security Headers (default_headers[] in params.c)
+| Header | Value | Notes |
+|--------|-------|-------|
+| `Server` | `Mcaster1DNAS` | No version — reduces info disclosure |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | HSTS — safe for streaming |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Safe for streaming |
+| `X-Frame-Options` | `SAMEORIGIN` | On admin 401 responses only |
+| `Cache-Control` | `no-store, no-cache, private` | On 2xx responses |
+
+### Headers NOT Used (See top-level CLAUDE.md)
+Do NOT add CSP media-src, COEP, COOP, or X-Content-Type-Options on streaming endpoints.
 
 ---
 
@@ -396,20 +453,24 @@ a3da4de  Added new github build workflow for windows-dev and other updates
 
 ## Pending / Next Items
 
-### GitHub beta release:
-- Commit 2.5.2-beta version bump changes to `windows-dev`
-- Push and open PR to `development`
-- Create GitHub release tag `v2.5.2-beta` and upload `mcaster1dnas_win64_v2.5.2-beta_setup.exe`
+### Security (from 2.5.3-sec audit — remaining items):
+- **MD5 password hashing** in htpasswd auth → migrate to bcrypt/SHA-512
+- **TLS cipher suite hardening** → restrict to PFS-only suites via config
+- **Authentication rate limiting** → IP ban on repeated failures
+- **Strip admin email** and build timestamp from public `/status-json.xsl`
+- **`verify_path()` hardening** → add `realpath()` resolution
+- **Slowloris protection** → timeout on incomplete HTTP requests
+- **Windows/macOS security audits** → platform-specific SAST/DAST on those OSes
 
-### Plan items still pending (sorted-snuggling-stearns.md):
+### From original plan (partially complete):
 1. **Add `ssl_gen.c` + `SslGen.cpp/.h` to all 3 `.vcxproj` files** — files exist but not wired into build
-2. **Verify `connection.c` per-listener SSL enforcement compiles** — `connection_peek()` rewritten; needs build test
-3. **Config auto-discovery in `src/main.c`** — cross-platform exe-dir search + stdin prompt
+2. **`--ssl-gencert` CLI flags** in `src/main.c` + `windows/Mcaster1Win.cpp`
+3. **Config auto-discovery** — `<exedir>/mcaster1dnas.yaml` → `./mcaster1dnas.yaml`
 4. **`GetOpenFileName` config discovery in `Mcaster1Win.cpp`** — WinUI file-open fallback
 
-### Housekeeping:
-- Delete `resume-session.txt` (untracked, no longer needed)
-- Verify old `mcaster1dnas_win64_v2.5.2-beta.1_setup.exe` is removed before GitHub release upload
+### Installer / housekeeping:
+- Commit all uncommitted Windows fixes to `windows-dev`
+- Add `windows/installer/` to `.gitignore` exclusions
 
 ---
 

@@ -352,11 +352,28 @@ int admin_mount_request (client_t *client)
 
 int admin_handle_request (client_t *client, const char *uri)
 {
-    /* Block admin authentication over plain HTTP to prevent credential exposure (CWE-319).
-     * Admin pages must be accessed over HTTPS. */
+    /* Block plain-HTTP access to INTERACTIVE admin endpoints to prevent credential
+     * exposure (CWE-319). Machine-to-machine metadata-update endpoints used by third-
+     * party source encoders (BUTT, SAM Broadcaster, edcast, Mixxx, Sc_trans, ices,
+     * RadioDJ, Altacast, Mcaster1DSPEncoder, etc.) follow the 20-year-old Icecast2 /
+     * Shoutcast source-client protocol which predates TLS and universally sends plain-
+     * HTTP Basic-auth GETs to /admin/metadata and /admin.cgi?mode=updinfo. Blocking
+     * these would break compatibility with every real-world source encoder, so they
+     * are explicitly exempted. These paths carry the pre-shared source password only
+     * (already sent in clear on the streaming PUT on the same port) and 10-80 bytes
+     * of song metadata per track change — the CWE-319 threat model for interactive
+     * credential exposure does not apply. */
 #ifdef HAVE_OPENSSL
     if (client->connection.ssl == NULL)
-        return client_send_403 (client, "Admin access requires HTTPS");
+    {
+        const char *mode = httpp_get_query_param (client->parser, "mode");
+        int is_shoutcast_updinfo = (strcmp (uri, "/admin.cgi") == 0);
+        int is_icecast_metadata  = (strcmp (uri, "/admin/metadata") == 0);
+        int is_updinfo_mode      = (mode && strcmp (mode, "updinfo") == 0);
+
+        if (!is_shoutcast_updinfo && !is_icecast_metadata && !is_updinfo_mode)
+            return client_send_403 (client, "Admin access requires HTTPS");
+    }
 #endif
 
     const char *mount = httpp_get_query_param(client->parser, "mount");
@@ -1107,6 +1124,36 @@ static int command_metadata (client_t *client, source_t *source, int response)
                 stats_event (source->mount, "artwork", artwork);
             if (intro)
                 source_set_intro (source, NULL, intro);
+
+            /* Legacy stats keys that status-json.xsl, status.xsl, and
+             * webplayer.xsl read. We write these directly from the admin
+             * handler so they land regardless of whether the codec plugin
+             * has a working set_tag hook. For codec containers like Ogg,
+             * the plugin->set_tag path is fragile because the hook is
+             * installed during BOS page detection, which does not always
+             * re-run across client reconnects. Writing to stats directly
+             * sidesteps that entire lifecycle question. */
+            if (song)
+            {
+                stats_event (source->mount, "title", song);
+                stats_event (source->mount, "yp_currently_playing", song);
+                stats_event_time (source->mount, "metadata_updated", STATS_GENERAL);
+                stream_updated = 1;
+            }
+            if (title)
+            {
+                stats_event (source->mount, "title", title);
+                stats_event (source->mount, "yp_currently_playing", title);
+                stats_event_time (source->mount, "metadata_updated", STATS_GENERAL);
+                stream_updated = 1;
+            }
+            if (artist)
+            {
+                stats_event (source->mount, "artist", artist);
+                stats_event_time (source->mount, "metadata_updated", STATS_GENERAL);
+                stream_updated = 1;
+            }
+
             if (plugin->set_tag)
             {
                 if (charset == NULL && plugin->charset)

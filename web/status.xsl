@@ -165,22 +165,23 @@
                                 <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Audio Format</div>
                                 <div style="font-weight: 600; color: var(--text-primary);">
                                     <xsl:choose>
-                                        <xsl:when test="server_type = 'audio/mpeg'">
+                                        <xsl:when test="contains(server_type, 'mpeg')">
                                             <i class="fas fa-file-audio" style="color: var(--mcaster-blue);"></i> MP3
                                         </xsl:when>
-                                        <xsl:when test="server_type = 'audio/aacp'">
+                                        <xsl:when test="contains(server_type, 'aacp')">
                                             <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC+
                                         </xsl:when>
-                                        <xsl:when test="server_type = 'audio/aac'">
+                                        <xsl:when test="contains(server_type, 'aac')">
                                             <i class="fas fa-file-audio" style="color: #f59e0b;"></i> AAC
                                         </xsl:when>
-                                        <xsl:when test="server_type = 'audio/ogg' or server_type = 'application/ogg'">
+                                        <xsl:when test="contains(server_type, 'ogg')">
                                             <i class="fas fa-file-audio" style="color: var(--dnas-green);"></i>
                                             <xsl:choose>
-                                                <xsl:when test="subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
+                                                <xsl:when test="contains(server_type, 'flac') or FLAC_version">Ogg FLAC</xsl:when>
+                                                <xsl:when test="contains(server_type, 'opus')">Ogg Opus</xsl:when>
+                                                <xsl:when test="contains(server_type, 'vorbis') or subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
                                                 <xsl:when test="subtype">Ogg <xsl:value-of select="subtype"/></xsl:when>
-                                                
-                                                <xsl:otherwise>Opus</xsl:otherwise>
+                                                <xsl:otherwise>Ogg</xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:when>
                                         <xsl:otherwise>

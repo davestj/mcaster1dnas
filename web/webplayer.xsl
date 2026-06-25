@@ -886,14 +886,16 @@
                                 <div class="info-value">
                                     <i class="fas fa-file-audio"></i>
                                     <xsl:choose>
-                                        <xsl:when test="//source/server_type = 'audio/mpeg'">MP3</xsl:when>
-                                        <xsl:when test="//source/server_type = 'audio/aacp'">AAC+</xsl:when>
+                                        <xsl:when test="contains(//source/server_type, 'mpeg')">MP3</xsl:when>
+                                        <xsl:when test="contains(//source/server_type, 'aacp')">AAC+</xsl:when>
                                         <xsl:when test="contains(//source/server_type, 'aac')">AAC</xsl:when>
                                         <xsl:when test="contains(//source/server_type, 'ogg')">
                                             <xsl:choose>
-                                                <xsl:when test="//source/subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
+                                                <xsl:when test="contains(//source/server_type, 'flac') or //source/FLAC_version">Ogg FLAC</xsl:when>
+                                                <xsl:when test="contains(//source/server_type, 'opus')">Ogg Opus</xsl:when>
+                                                <xsl:when test="contains(//source/server_type, 'vorbis') or //source/subtype = 'Vorbis'">Ogg Vorbis</xsl:when>
                                                 <xsl:when test="//source/subtype">Ogg <xsl:value-of select="//source/subtype"/></xsl:when>
-                                                <xsl:otherwise>Opus</xsl:otherwise>
+                                                <xsl:otherwise>Ogg</xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:when>
                                         <xsl:otherwise><xsl:value-of select="//source/server_type"/></xsl:otherwise>
